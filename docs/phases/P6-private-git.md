@@ -44,10 +44,12 @@ git push -u origin HEAD
 
 ## 验收
 
-- [ ] `git remote` 为自己的 Gitee 私有地址
-- [ ] push 成功
-- [x] 无公司更新域名作为默认 feed（update-config / sync-version 已清）
-- [x] L2 自动更新默认关闭
+- [x] `git remote` 已指向 `https://gitee.com/honden/local-creator.git`（与公司仓同命名空间）
+- [ ] push 成功 — **需你先在 Gitee 新建私有空仓 `honden/local-creator`**，然后说「推送 P6」
+- [x] 无公司更新域名作为默认 feed
+- [x] L2 自动更新默认关闭（`update-policy.ts`）
+
+完成记录：origin 已配置；Gitee API 无私人令牌无法代建仓（git 凭据非 access_token）。
 
 ## 本路线 L2 结束
 
