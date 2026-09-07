@@ -170,25 +170,23 @@ function readEnvValue(key) {
   return readEnv(key)
 }
 
+/** 开源版：默认无公司后端；空 apiBase 合法；仅警告误配 localhost（可选自建时请改） */
 function assertProductionApiBase() {
   const apiBase = readEnvValue('VITE_API_BASE')
   if (!apiBase) {
-    console.warn('[build] 警告：未找到 VITE_API_BASE，将使用代码内默认公网地址。')
+    console.log('[build] 未设置 VITE_API_BASE（开源本地版默认：不依赖后端，OK）')
     return
   }
   if (/localhost|127\.0\.0\.1/i.test(apiBase)) {
-    console.error(
-      '[build] 错误：VITE_API_BASE 仍为 localhost/127.0.0.1。\n' +
-        '       打包后他人电脑无法登录。请修改 .env.production 或 .env.production.local\n' +
-        '       填入局域网或公网地址（如 http://192.168.x.x:8080/api）后重新 npm run build。',
+    console.warn(
+      '[build] 警告：VITE_API_BASE 为 localhost。安装到其它电脑后该地址不可用；本地自测可忽略。',
     )
-    process.exit(1)
   }
   const uploadOrigin = readEnvValue('VITE_UPLOAD_ORIGIN')
   if (uploadOrigin && /localhost|127\.0\.0\.1/i.test(uploadOrigin)) {
-    console.warn('[build] 警告：VITE_UPLOAD_ORIGIN 仍为 localhost，上传图片可能异常。')
+    console.warn('[build] 警告：VITE_UPLOAD_ORIGIN 仍为 localhost。')
   }
-  console.log(`[build] 后端默认地址：${apiBase}`)
+  console.log(`[build] 可选后端地址：${apiBase}`)
 }
 
 function run(command, args) {
@@ -253,7 +251,7 @@ function electronBuilder(args) {
     builderArgs.push('--config.publish.provider=generic', `--config.publish.url=${publishUrl}`)
     console.log(`[build] 自动更新 feed：${publishUrl}`)
   } else {
-    console.warn('[build] 警告：未设置 VITE_UPDATE_PUBLISH_URL，latest.yml 自动更新地址可能不正确。')
+    console.log('[build] 未设置 VITE_UPDATE_PUBLISH_URL：仅产出本地安装包，不配置自动更新 feed（P6 再接）')
   }
 
   run('npx', ['electron-builder', ...builderArgs])

@@ -184,7 +184,8 @@
     "upload:server-mirror": "node scripts/upload-release.mjs --server-mirror-only",
     "clean:release-junk": "node scripts/clean-release-junk.mjs",
     "purge:global-library-copies": "node scripts/purge-global-library-copies.mjs",
-    "ship:win": "npm run build && npm run upload",
+    "ship:win": "npm run build",
+    "ship:win:upload": "npm run build && npm run upload",
     "release": "node scripts/release.mjs --patch",
     "release:patch": "node scripts/release.mjs --patch"
   },

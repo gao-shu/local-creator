@@ -1,5 +1,8 @@
 {
-  "name": "本地漫创",
-  "version": "0.0.0-private",
-  "note": "占位；正式发版前由发版脚本同步"
+  "version": "0.1.28",
+  "windowsUrl": "",
+  "windowsDirectUrl": "",
+  "macUrl": "",
+  "releaseNotes": "版本 0.1.28 · 本地私发",
+  "updatedAt": "2026-09-07 14:49:17"
 }

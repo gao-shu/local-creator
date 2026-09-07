@@ -294,12 +294,21 @@ async function syncServerInstallerMirror(
 }
 
 async function main() {
-  const websiteOnlyFlag = process.argv.includes('--website-only')
   const tosEnabled = isTosReleaseEnabled(readEnv)
   const host = readEnv('DEPLOY_HOST')
+  if (!tosEnabled && !host?.trim()) {
+    console.log(
+      '[upload] 已跳过：未配置 TOS / DEPLOY_HOST。\n' +
+        '         开源私有阶段默认只本地打包（npm run build → release/）。\n' +
+        '         需要上传时再配置 .env.production 后执行 npm run upload。',
+    )
+    return
+  }
+
+  const websiteOnlyFlag = process.argv.includes('--website-only')
   const username = readEnv('DEPLOY_USER')
   const password = readEnv('DEPLOY_PASSWORD')
-  const remotePath = readEnv('DEPLOY_UPDATE_PATH') || '/opt/haode-client/download'
+  const remotePath = readEnv('DEPLOY_UPDATE_PATH') || '/opt/local-creator/download'
   const port = Number.parseInt(readEnv('DEPLOY_PORT') || '22', 10)
   const staticRoot = remotePath.replace(/\/+$/, '')
 

@@ -15,8 +15,7 @@ const releaseDir = resolve(projectRoot, 'release')
 const versionFile = resolve(projectRoot, 'website/version.json')
 
 const PRODUCT_NAME = '本地漫创'
-const DEFAULT_OFFICIAL_DOWNLOAD_URL =
-  'https://duanju.haodeweishi.cn/haode-client/download/'
+const DEFAULT_OFFICIAL_DOWNLOAD_URL = ''
 
 export function shanghaiNowString() {
   const parts = new Intl.DateTimeFormat('zh-CN', {
@@ -77,16 +76,11 @@ function resolveOfficialDownloadPageUrl(readEnv) {
 
   const publishBase = trimSlashes(resolveUpdatePublishUrl(readEnv))
   if (publishBase) {
-    try {
-      const url = new URL(publishBase)
-      return `${url.origin}/haode-client/download/`
-    } catch {
-      /* ignore */
-    }
+    return `${publishBase}/`
   }
 
   const origin = trimSlashes(readEnv('VITE_UPLOAD_ORIGIN'))
-  if (origin) return `${origin}/haode-client/download/`
+  if (origin) return `${origin}/download/`
 
   return DEFAULT_OFFICIAL_DOWNLOAD_URL
 }
