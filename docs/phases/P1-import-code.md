@@ -77,11 +77,13 @@ git commit -m "chore: import application tree from haode-ai-client (pre-strip)"
 
 ## 验收
 
-- [ ] `npm run compile` 退出码 0
-- [ ] `src/`、`electron/`、`package.json` 存在
-- [ ] `docs/00-decisions.md` 等规划文档仍在
-- [ ] `git status` 干净或仅余已知忽略
-- [ ] 未向 `haode-ai-client` 写入
+- [x] `npm run compile` 退出码 0
+- [x] `src/`、`electron/`、`package.json` 存在
+- [x] `docs/00-decisions.md` 等规划文档仍在
+- [x] `git status` 干净或仅余已知忽略
+- [x] 未向 `haode-ai-client` 写入
+
+完成记录：提交 `24a3e5f`（import snapshot）；密钥见 `docs/P1-import-security-note.md`。
 
 ## 失败排查
 
