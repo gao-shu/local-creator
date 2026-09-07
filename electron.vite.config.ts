@@ -16,8 +16,8 @@ const cjsEntry = (entry: string) => ({
   },
 })
 
-/** 开发态 /api、/uploads 代理默认联调机（与 DEFAULT_LOCAL_API_BASE 一致） */
-const DEFAULT_DEV_PROXY_TARGET = 'http://8.141.97.65'
+/** 开发态可选代理目标（默认本机；开源版不连公司联调机） */
+const DEFAULT_DEV_PROXY_TARGET = 'http://127.0.0.1:28080'
 
 function resolveDevProxyTarget(env: Record<string, string>): string {
   const explicit = env.VITE_DEV_PROXY_TARGET?.trim()

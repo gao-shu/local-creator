@@ -29,7 +29,7 @@ export async function readSettings(): Promise<SettingsReadResult> {
 
   const { createDefaultSettings } = await import('./settings-defaults')
 
-  const launcherDir = 'Documents/HaodeAI'
+  const launcherDir = 'Documents/LocalCreator'
 
   return {
 
@@ -95,7 +95,7 @@ export async function exportDataRootPackage(): Promise<ExportDataRootPackageResu
     }
   }
 
-  return { success: false, error: '打包导出需要在「好的漫创」桌面客户端中使用' }
+  return { success: false, error: '打包导出需要在「本地漫创」桌面客户端中使用' }
 }
 
 
@@ -142,7 +142,7 @@ export async function getSettingsFilePath(): Promise<{
 
   }
 
-  const launcherDir = 'Documents/HaodeAI'
+  const launcherDir = 'Documents/LocalCreator'
 
   return {
 

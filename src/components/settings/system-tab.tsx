@@ -1,8 +1,10 @@
+// Copyright (c) local-creator. All rights reserved.
+
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { canEditApiBaseUrl, resolveApiBase } from '@/lib/auth/api-base'
+import { resolveApiBase } from '@/lib/auth/api-base'
 import { SettingsToggleField } from '@/components/settings/model-config-dialog-shared'
 import { useSettingsStore } from '@/stores/settings-store'
 import { cn } from '@/lib/utils'
@@ -39,7 +41,6 @@ export function SystemTab() {
   if (!settings) return null
 
   const debugEnabled = Boolean(settings.debugEnabled)
-  const apiBaseEditable = canEditApiBaseUrl(debugEnabled)
   const effectiveApiBase = resolveApiBase(settings.apiBaseUrl)
 
   return (
@@ -47,7 +48,7 @@ export function SystemTab() {
       <div>
         <h2 className="text-lg font-semibold">系统参数</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          调试开关与后端联调地址等行为配置。
+          调试开关与可选自建后端地址。默认不连接任何公司服务器。
         </p>
       </div>
 
@@ -66,7 +67,7 @@ export function SystemTab() {
 
         <SettingsSection
           title="调试与开发"
-          description="面向联调与排障；打包版关闭调试时将使用生产默认行为。"
+          description="面向排障；开启后微视生视频可弹出请求参数确认。"
         >
           <SettingsToggleField
             label="开启调试"
@@ -85,7 +86,7 @@ export function SystemTab() {
             <div>
               <h3 className="text-sm font-medium">高级</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                后端 API 地址{apiBaseEditable ? '（调试模式下可编辑）' : '（正式版使用官方地址）'}
+                可选自建后端（默认留空；模型走设置里的 Endpoint + Key）
               </p>
             </div>
             <ChevronDown
@@ -95,29 +96,19 @@ export function SystemTab() {
 
           {advancedOpen ? (
             <div className="border-t border-border/30 px-4 py-4 space-y-1.5">
-              <Label>后端 API 地址</Label>
-              {apiBaseEditable ? (
-                <>
-                  <Input
-                    type="url"
-                    placeholder="/api 或 http://localhost:28080/api"
-                    value={settings.apiBaseUrl || ''}
-                    onChange={(e) => updateSettings({ apiBaseUrl: e.target.value.trim() })}
-                  />
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    微信扫码登录与用户相关接口的根地址。开发环境可用 <code className="text-[11px]">/api</code>；
-                    直连 Docker 常用 <code className="text-[11px]">http://localhost:28080/api</code>。
-                    修改前请确认目标环境可访问。
-                  </p>
-                </>
-              ) : (
-                <>
-                  <Input type="url" value={effectiveApiBase} readOnly disabled />
-                  <p className="text-xs text-muted-foreground">
-                    正式版自动使用 <code className="text-[11px]">{effectiveApiBase}</code>。如需联调测试环境，请先在「调试与开发」中开启调试。
-                  </p>
-                </>
-              )}
+              <Label>自建后端 API（可选）</Label>
+              <Input
+                type="url"
+                placeholder="留空；或填 http://localhost:28080/api"
+                value={settings.apiBaseUrl || ''}
+                onChange={(e) => updateSettings({ apiBaseUrl: e.target.value.trim() })}
+              />
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                本地漫创默认不依赖后端。仅当你自建兼容服务时才填写。
+                {effectiveApiBase
+                  ? ` 当前生效：${effectiveApiBase}`
+                  : ' 当前未配置后端地址。'}
+              </p>
             </div>
           ) : null}
         </section>

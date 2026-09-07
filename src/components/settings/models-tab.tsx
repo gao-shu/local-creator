@@ -175,8 +175,17 @@ export function ModelsTab() {
         </p>
 
         {customList.length === 0 ? (
-          <GlassCard className="col-span-full py-10 text-center text-sm text-muted-foreground">
-            还没有自定义 {activeTab.label}，点击「添加模型」开始配置
+          <GlassCard className="col-span-full py-10 text-center space-y-2">
+            <p className="text-sm text-muted-foreground">
+              还没有自定义 {activeTab.label}。本地漫创只使用你自己配置的模型。
+            </p>
+            <p className="text-xs text-muted-foreground/90 leading-relaxed max-w-md mx-auto">
+              {activeKind === 'llm'
+                ? '点击「添加模型」，选择 OpenAI 兼容并填写 Endpoint + API Key。'
+                : activeKind === 'image'
+                  ? '点击「添加模型」，配置生图 Endpoint + API Key。'
+                  : '可点「微视API」直连微视，或「添加模型」配置其它视频服务。'}
+            </p>
           </GlassCard>
         ) : (
           customList.map((model) => {

@@ -1,7 +1,7 @@
 import { normalizeDataRootPath, joinPathSegments } from '@/lib/storage/storage-path-utils'
 
 /** 启动器目录名（仅存放「数据目录指针」，不存放业务数据） */
-export const APP_LAUNCHER_DIR_NAME = 'HaodeAI'
+export const APP_LAUNCHER_DIR_NAME = 'LocalCreator'
 
 export const STORAGE_ROOT_POINTER_FILE = 'storage-root.json'
 

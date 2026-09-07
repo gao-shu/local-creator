@@ -6,7 +6,7 @@ import type {
   SettingsPromptType,
   TemplateListKey,
 } from '@/types/settings'
-import { getBuiltInApiBase, migrateApiBaseUrl } from '@/lib/auth/api-base'
+import { migrateApiBaseUrl } from '@/lib/auth/api-base'
 import { createLlmPresetModel } from '@/lib/models/llm-model-presets'
 import { createImagePresetModel } from '@/lib/models/image-model-presets'
 import { createVideoPresetModel } from '@/lib/models/video-model-presets'
@@ -36,7 +36,7 @@ import {
   normalizeLayoutKey,
 } from '@/lib/workflow/layout-presets'
 
-export const APP_DATA_DIR_NAME = 'HaodeAI'
+export const APP_DATA_DIR_NAME = 'LocalCreator'
 
 const BUILTIN_WEISHI_VIDEO: ModelConfig = {
   ...createVideoPresetModel('weishi_api'),
@@ -133,7 +133,7 @@ export function createDefaultSettings(dataRoot = ''): AppSettings {
       debugEnabled: false,
       openAtLogin: true,
       weishiReferenceMediaUploadMode: 'weishi_asset',
-      apiBaseUrl: getBuiltInApiBase(),
+      apiBaseUrl: '',
       affixPresets: [...SEED_AFFIX_PRESETS],
       defaultAssetLayoutKeys: { ...DEFAULT_ASSET_LAYOUT_KEYS },
       defaultLlmModelId: BUILTIN_AGNES_LLM_ID,

@@ -246,7 +246,7 @@ export interface AppSettings {
   defaultImageModelId?: string
   /** @deprecated 不再使用，保留字段兼容旧 settings.json */
   defaultVideoModelId?: string
-  /** 好的 AI 后端 API 根地址（微信扫码登录等） */
+  /** 可选自建后端 API 根地址；默认空（不连公司服务器） */
   apiBaseUrl?: string
   /** 分镜固定前后缀预设库 */
   affixPresets?: PromptAffixPreset[]

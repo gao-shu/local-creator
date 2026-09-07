@@ -1,35 +1,47 @@
-/** Cloudflare 隧道直连 backend 时使用（无 /api 前缀） */
-export const DEFAULT_TUNNEL_API_BASE = 'https://strengths-img-isolation-impressed.trycloudflare.com'
+// Copyright (c) local-creator. All rights reserved.
 
-/** 上传文件公网 Origin（与 Cloudflare 隧道一致，供远端模型拉取 /uploads/） */
-export const DEFAULT_TUNNEL_UPLOAD_ORIGIN = 'https://strengths-img-isolation-impressed.trycloudflare.com'
+/**
+ * 开源版：默认无公司后端。apiBase 仅用于可选「自建后端」；空字符串表示不使用。
+ */
 
-/** 本地 / 联调默认 API（8.141.97.65；无 VITE_API_BASE 时的开发兜底） */
-export const DEFAULT_LOCAL_API_BASE = 'http://8.141.97.65/api'
+/** @deprecated 历史联调地址，仅作陈旧值识别 */
+export const DEFAULT_TUNNEL_API_BASE = ''
+
+/** @deprecated */
+export const DEFAULT_TUNNEL_UPLOAD_ORIGIN = ''
+
+/** @deprecated 不再作为默认兜底 */
+export const DEFAULT_LOCAL_API_BASE = ''
 
 /** Node smoke / tsx 脚本中 import.meta.env 可能未注入 */
 function readViteEnv(): ImportMetaEnv {
   return (import.meta as ImportMeta & { env?: ImportMetaEnv }).env ?? ({} as ImportMetaEnv)
 }
 
-/** 构建时 .env.production 注入的 API 地址 */
-export function getBuiltInApiBase(): string {
-  const env = readViteEnv()
-  const fromEnv = env.VITE_API_BASE?.trim()
-  if (fromEnv) return normalizeApiBase(fromEnv)
-  return env.DEV ? DEFAULT_LOCAL_API_BASE : DEFAULT_TUNNEL_API_BASE
+/** 公司/历史默认 host：导入旧 settings 时清空 */
+const STALE_COMPANY_API_PATTERNS = [
+  /^https?:\/\/8\.141\.97\.65(?:\/api)?\/?$/i,
+  /^https?:\/\/115\.191\.9\.56(?:\/api)?\/?$/i,
+  /trycloudflare\.com/i,
+  /learncom\.cn/i,
+  /haodeweishi\.cn/i,
+  /haode-ai\./i,
+  /duanju\./i,
+]
+
+function isStaleCompanyApiBase(url: string): boolean {
+  const n = url.trim()
+  if (!n) return false
+  return STALE_COMPANY_API_PATTERNS.some((re) => re.test(n))
 }
 
-/**
- * 历史：开发态 Vite 同源代理路径（`/api` → VITE_DEV_PROXY_TARGET）。
- * 现已改为直连 `VITE_API_BASE` / DEFAULT_LOCAL_API_BASE，保留常量仅兼容旧 settings。
- */
+/** 历史：开发态 Vite 同源代理路径 */
 export const DEV_PROXY_API_BASE = '/api'
 
 /** @deprecated 使用 resolveApiBase() */
-export const DEFAULT_API_BASE = DEFAULT_LOCAL_API_BASE
+export const DEFAULT_API_BASE = ''
 
-export const API_BASE_LS_KEY = 'haode_api_base'
+export const API_BASE_LS_KEY = 'local_creator_api_base'
 
 const LOCAL_API_PATTERNS = [
   /^https?:\/\/localhost:28080(?:\/api)?\/?$/i,
@@ -42,34 +54,9 @@ const LOCAL_API_PATTERNS = [
   /^https?:\/\/127\.0\.0\.1:15173(?:\/api)?\/?$/i,
 ]
 
-function isPrivateOrLocalHostname(hostname: string): boolean {
-  const h = hostname.toLowerCase()
-  if (h === 'localhost' || h === '127.0.0.1' || h === '::1') return true
-  if (/^192\.168\./.test(h)) return true
-  if (/^10\./.test(h)) return true
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(h)) return true
-  return false
-}
-
-function isPrivateOrLocalApiBase(url: string): boolean {
-  if (url === DEV_PROXY_API_BASE) return true
-  try {
-    const parsed = new URL(url.startsWith('http') ? url : `http://${url}`)
-    return isPrivateOrLocalHostname(parsed.hostname)
-  } catch {
-    return false
-  }
-}
-
-/** 生产包：历史 settings 里常见的无效/旧默认地址，应改用打包注入地址 */
-const PACKAGED_STALE_API_PATTERNS = [
-  ...LOCAL_API_PATTERNS,
-]
-
 export function normalizeApiBase(url: string): string {
   const trimmed = url.trim().replace(/\/+$/, '')
-  if (!trimmed) return getBuiltInApiBase()
-  // 相对路径（Vite 开发代理）原样保留
+  if (!trimmed) return ''
   if (trimmed.startsWith('/')) return trimmed
 
   try {
@@ -86,95 +73,62 @@ export function normalizeApiBase(url: string): string {
   }
 }
 
-/** 旧版客户端默认花生壳地址（本地开发不可用，迁移到 Docker 地址） */
-export const LEGACY_TUNNEL_API_BASE = DEFAULT_TUNNEL_API_BASE
-
-function isLegacyTunnelApiBase(url: string): boolean {
-  const normalized = normalizeApiBase(url)
-  const legacyHttp = LEGACY_TUNNEL_API_BASE.replace(/^https:/, 'http:')
-  const normalizedHttp = normalized.replace(/^https:/, 'http:')
-  return normalized === LEGACY_TUNNEL_API_BASE || normalizedHttp === legacyHttp
+/** 构建时可选注入；未配置则为空（本地直连模型，不依赖公司 API） */
+export function getBuiltInApiBase(): string {
+  const env = readViteEnv()
+  const fromEnv = env.VITE_API_BASE?.trim()
+  if (!fromEnv) return ''
+  if (isStaleCompanyApiBase(fromEnv)) return ''
+  return normalizeApiBase(fromEnv)
 }
 
-/** 开发态不应再指向的历史联调 / 域名 */
-const DEV_STALE_API_HOST_PATTERNS = [
-  /^https?:\/\/learncom\.cn(?:\/api)?\/?$/i,
-  /^https?:\/\/www\.learncom\.cn(?:\/api)?\/?$/i,
-  /^https?:\/\/duanju\.[a-z0-9-]+\.cn(?:\/api)?\/?$/i,
-]
+/** @deprecated */
+export const LEGACY_TUNNEL_API_BASE = ''
 
-function isDevStaleApiBase(url: string): boolean {
-  return DEV_STALE_API_HOST_PATTERNS.some((re) => re.test(normalizeApiBase(url)))
-}
-
-export function migrateApiBaseUrl(url: string | undefined, fallback = getBuiltInApiBase()): string {
+/**
+ * 迁移旧 settings：公司默认域名/IP → 空；保留用户自建后端地址。
+ */
+export function migrateApiBaseUrl(url: string | undefined, fallback = ''): string {
   const trimmed = url?.trim()
   if (!trimmed) return fallback
   const normalized = normalizeApiBase(trimmed)
-
-  // 开发态：旧隧道、Vite `/api` 代理、本机 15173、learncom/生产域名 → 直连 8.141.97.65
-  if (readViteEnv().DEV) {
-    if (isLegacyTunnelApiBase(normalized)) return fallback
-    if (isDevStaleApiBase(normalized)) return fallback
-    if (normalized === DEV_PROXY_API_BASE || normalized.startsWith('/')) return fallback
-    if (LOCAL_API_PATTERNS.some((re) => re.test(normalized))) return fallback
-    return normalized
-  }
-
-  // 生产包：内网/本机/旧隧道/开发代理 → 打包注入的公网地址
-  if (isPackagedStaleApiBase(normalized) || isLegacyTunnelApiBase(normalized)) {
+  if (!normalized) return fallback
+  if (isStaleCompanyApiBase(normalized)) return fallback
+  if (normalized === DEV_PROXY_API_BASE || normalized.startsWith('/')) {
     return fallback
   }
-
   return normalized
 }
 
-/** 生产包是否允许用户在设置页修改 API 地址（仅开发态或开启调试时） */
-export function canEditApiBaseUrl(debugEnabled = false): boolean {
-  return readViteEnv().DEV || debugEnabled
+/** 开源版始终允许编辑可选自建后端地址 */
+export function canEditApiBaseUrl(_debugEnabled = false): boolean {
+  return true
 }
 
-function isPackagedStaleApiBase(url: string): boolean {
-  if (url === DEV_PROXY_API_BASE) return true
-  if (isPrivateOrLocalApiBase(url)) return true
-  return PACKAGED_STALE_API_PATTERNS.some((re) => re.test(url))
-}
-
-/** 开发态亦直连绝对 API 地址（不再改写为 `/api` 同源代理） */
 export function toRuntimeApiBase(resolved: string): string {
-  if (resolved === DEV_PROXY_API_BASE || resolved.startsWith('/')) {
+  if (!resolved || resolved === DEV_PROXY_API_BASE || resolved.startsWith('/')) {
     return getBuiltInApiBase()
   }
   return resolved
 }
 
-/** 优先级：生产包打包地址 > settings（非陈旧值）> 开发态 VITE_API_BASE / 联调默认 */
+/** 优先级：settings 显式地址（非公司陈旧值）> 可选 VITE_API_BASE > 空 */
 export function resolveApiBase(explicit?: string | null): string {
-  const packaged = getBuiltInApiBase()
-  if (!readViteEnv().DEV) {
-    const fromArg = explicit?.trim()
-    if (!fromArg) return packaged
-    const normalized = normalizeApiBase(fromArg)
-    if (isPackagedStaleApiBase(normalized)) return packaged
-    return normalized
-  }
-
   const fromArg = explicit?.trim()
   if (fromArg) {
-    return toRuntimeApiBase(migrateApiBaseUrl(fromArg, packaged))
+    return toRuntimeApiBase(migrateApiBaseUrl(fromArg, getBuiltInApiBase()))
   }
-  return packaged
+  return getBuiltInApiBase()
 }
 
 function isLocalDevUpload(apiBase?: string | null): boolean {
   const base = (apiBase ?? resolveApiBase()).trim()
+  if (!base) return false
   if (base === DEV_PROXY_API_BASE) return true
   return LOCAL_API_PATTERNS.some((re) => re.test(normalizeApiBase(base)))
 }
 
-/** 上传后本地校验用 Origin（开发态走本机，避免花生壳未映射时校验失败） */
 export function resolveVerifyUploadOrigin(apiBase?: string): string {
-  // 开发态：文件实际落在本地 backend /uploads，校验必须走 Vite /uploads 代理，不能走 VITE_UPLOAD_ORIGIN 隧道
   if (readViteEnv().DEV) {
     if (typeof window !== 'undefined') {
       return window.location.origin
@@ -195,14 +149,10 @@ export function resolveVerifyUploadOrigin(apiBase?: string): string {
   return resolveUploadOrigin(apiBase)
 }
 
-/** uploads 等静态资源的公网 Origin（返回给远端 API 的完整 URL 前缀） */
 export function resolveUploadOrigin(apiBase?: string): string {
   const fromEnv = readViteEnv().VITE_UPLOAD_ORIGIN?.trim()
-  if (fromEnv) return fromEnv.replace(/\/+$/, '')
-
-  const tunnelOrigin = DEFAULT_TUNNEL_UPLOAD_ORIGIN.trim()
-  if (tunnelOrigin && !readViteEnv().DEV) {
-    return tunnelOrigin.replace(/\/+$/, '')
+  if (fromEnv && !isStaleCompanyApiBase(fromEnv)) {
+    return fromEnv.replace(/\/+$/, '')
   }
 
   const base = apiBase ?? resolveApiBase()
@@ -225,4 +175,10 @@ export function syncApiBaseToStorage(url: string): void {
   } catch {
     /* ignore */
   }
+}
+
+/** 供迁移/测试：判断是否仍为公司陈旧地址 */
+export function isCompanyStaleApiBase(url: string | undefined | null): boolean {
+  if (!url?.trim()) return false
+  return isStaleCompanyApiBase(normalizeApiBase(url))
 }
