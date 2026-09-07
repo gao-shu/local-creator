@@ -1,0 +1,73 @@
+appId: com.haode.ai.client
+productName: 好的漫创
+# 使用 npm 已安装的 Electron，避免打包时再从官方发布源重复下载
+electronDist: node_modules/electron/dist
+directories:
+  buildResources: build
+  # 实际输出目录由 scripts/build-desktop.mjs 设为 .pack-tmp/，此处仅作占位
+  output: .pack-tmp
+files:
+  - out/**/*
+  - electron/splash.html
+  - package.json
+asar: true
+
+# FFmpeg（视频抽音 Phase 1）：开发 vendor/ffmpeg/win → 打包 resources/ffmpeg/win
+extraResources:
+  - from: vendor/ffmpeg/win
+    to: ffmpeg/win
+    filter:
+      - ffmpeg.exe
+      - ffprobe.exe
+      - LICENSE.txt
+
+# 图标（来源：comic-generator brands/haode/icon.png）
+icon: build/icon.ico
+
+win:
+  executableName: 好的漫创
+  icon: build/icon.ico
+  forceCodeSigning: false
+  # normal：降低 7z 内存峰值，避免本机 OOM（maximum=mx=9）
+  compression: normal
+  target:
+    - nsis
+    # - portable
+nsis:
+  # 完整安装包发版（不打差分 / blockmap）；应用内更新也下载完整 Setup
+  differentialPackage: false
+  # assisted：首次可改目录；升级由 electron-updater 静默覆盖旧目录
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  # 配合 build/installer.nsh customInstallMode：始终当前用户，不弹「为谁安装」
+  perMachine: false
+  include: build/installer.nsh
+  artifactName: ${productName} Setup ${version}.${ext}
+  # 桌面/开始菜单快捷方式：不带版本号
+  shortcutName: 好的漫创
+  # 「应用和功能」列表：带版本号，便于区分已装版本
+  uninstallDisplayName: ${productName} ${version}
+  # 升级安装时重建桌面快捷方式，避免旧版带版本号的残留名称
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+# portable:
+#   artifactName: ${productName}-${version}-portable.${ext}
+#   requestExecutionLevel: user
+mac:
+  icon: build/icon.icns
+  category: public.app-category.productivity
+  artifactName: 好的漫创-${version}-${arch}.${ext}
+  target:
+    - dmg
+    - zip
+  # 未配置 Apple 开发者证书时使用 ad-hoc 签名，便于内测分发
+  identity: "-"
+  gatekeeperAssess: false
+  hardenedRuntime: false
+dmg:
+  title: 好的漫创 ${version}
+  artifactName: 好的漫创-${version}-${arch}.dmg
+# publish.url 由 build-desktop.mjs 从 .env 的 VITE_UPDATE_PUBLISH_URL 注入

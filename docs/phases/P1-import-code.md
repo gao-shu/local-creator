@@ -41,6 +41,10 @@ Copy-Item -Recurse "$env:TEMP\local-creator-docs-backup\*" "$dst\docs\" -Force
 
 **必须排除：** `.git`、`node_modules`、`out`、打包产物、`.env*` 密钥。
 
+**坑：** `robocopy /XD release` 会排除**任意**名为 `release` 的目录，包括 `src/lib/release`。导入后若缺 `changelog-read.ts`，需单独拷贝该目录，并在 `.gitignore` 用 `!/src/lib/release/` 反包含。
+
+**安全：** 勿复制 `.env.production`（可能含密钥）。本仓执行记录见 [../P1-import-security-note.md](../P1-import-security-note.md)。
+
 ### 3. 恢复本仓身份文件
 
 复制后检查并保留/写回：

@@ -1,0 +1,72 @@
+# dependencies
+node_modules/
+
+# build outputs
+out/
+.tmp-e2e/
+.tmp-wx*
+dist/
+/release/
+.pack-tmp/
+release-staging/
+
+# installers (local build artifacts; deploy via CI / release only)
+*.exe
+*.dmg
+*.zip
+*.blockmap
+
+# env & secrets
+.env
+.env*.local
+.env.production
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+.cursor/mcp.json
+.agents/
+*.swp
+*.swo
+
+# codegraph local index (agent tooling)
+.codegraph/
+
+# test / cache
+coverage/
+.cache/
+.playwright-mcp/
+*.tsbuildinfo
+
+# agent / local debug scratch (tmp-media-*.txt, tmp-probe-*.json, etc.)
+tmp-*
+
+# FFmpeg 捆绑包（开发态 vendor；打包走 extraResources，见 npm run fetch:ffmpeg-win）
+vendor/ffmpeg/**/*
+!vendor/ffmpeg/**/.gitkeep
+.tmp-ffmpeg/
+.tmp-ffmpeg-probe/
+.tmp-ffmpeg-extract/
+.tmp-ffmpeg-probe/
+
+# keep changelog helper tracked
+!/src/lib/release/
+!/src/lib/release/**
+
+
+# local IDE / agent (not part of open-source product tree yet)
+.cursor/
+.idea/
+.semgrep/
+.agents/
+

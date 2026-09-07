@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+
+# Build outputs and generated bundles
+out/
+dist/
+build/
+.pack-tmp/
+release/
+release-staging/
+*.exe
+*.dmg
+*.zip
+*.blockmap
+
+# Local test/debug artifacts
+.tmp-e2e/
+.playwright-mcp/
+.uploads/
+.semgrep/
+.cache/
+coverage/
+.tmp-*
+*.tmp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE / local agent state
+.idea/
+.vscode/
+.agents/
+.cursor/mcp.json
+
+# Environment and secrets
+.env
+.env*.local
+.env.production
+.env.production.local
+
+# Generated metadata
+*.tsbuildinfo
+package-lock.json
+skills-lock.json
+
+# Binary/media assets that are rarely useful as model context
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.mp4
+*.mov
+*.wav
+*.mp3

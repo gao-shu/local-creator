@@ -1,0 +1,306 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.5 0.134 242.749);
+  --primary-foreground: oklch(0.977 0.013 236.62);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.8 0 0);
+  --input: oklch(0.8 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.828 0.111 230.318);
+  --chart-2: oklch(0.685 0.169 237.323);
+  --chart-3: oklch(0.588 0.158 241.966);
+  --chart-4: oklch(0.5 0.134 242.749);
+  --chart-5: oklch(0.443 0.11 240.79);
+  --radius: 0.875rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.588 0.158 241.966);
+  --sidebar-primary-foreground: oklch(0.977 0.013 236.62);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.8 0 0);
+  --sidebar-ring: oklch(0.8 0 0);
+  --canvas-workflow-bg: #f4f5f7;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.443 0.11 240.79);
+  --primary-foreground: oklch(0.977 0.013 236.62);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 18%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.828 0.111 230.318);
+  --chart-2: oklch(0.685 0.169 237.323);
+  --chart-3: oklch(0.588 0.158 241.966);
+  --chart-4: oklch(0.5 0.134 242.749);
+  --chart-5: oklch(0.443 0.11 240.79);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.685 0.169 237.323);
+  --sidebar-primary-foreground: oklch(0.293 0.066 243.157);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 14%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --canvas-workflow-bg: #0a0b0d;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  /* 可点击控件默认显示手型光标（cursor 会继承，需显式声明） */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  label[for],
+  select:not(:disabled),
+  summary,
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.75 0 0 / 20%) transparent;
+  }
+  .dark * {
+    scrollbar-color: oklch(1 0 0 / 12%) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.75 0 0 / 20%);
+    border-radius: 9999px;
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.55 0 0 / 35%);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: oklch(1 0 0 / 12%);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: oklch(1 0 0 / 25%);
+  }
+}
+
+::view-transition-old(root) {
+  animation: none;
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  z-index: 9999;
+}
+
+/* 原生 select 下拉项：占位与选项使用相同前景色，避免 disabled 过淡 */
+select option {
+  color: var(--foreground);
+  background-color: var(--popover);
+}
+
+/* 画布节点连接点：悬停整节点时显示两侧圆圈加号（热区/连线中见 data-active） */
+.canvas-workflow-surface .react-flow__node:hover .canvas-node-connector-plus,
+.canvas-workflow-surface .canvas-node-connector-plus[data-active='true'] {
+  opacity: 1;
+}
+
+/* 画布节点连接点：52px 热区铺满，禁用 RF 默认 translate(-50%) 偏移 */
+.canvas-workflow-surface .react-flow__handle.canvas-node-handle {
+  cursor: crosshair !important;
+  pointer-events: all !important;
+  transform: none !important;
+}
+
+.canvas-workflow-surface .react-flow__handle.canvas-node-handle-left {
+  left: 0 !important;
+  top: 0 !important;
+}
+
+.canvas-workflow-surface .react-flow__handle.canvas-node-handle-right {
+  right: auto !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+/* 画布连线：扩大可交互区域，悬停/选中显示中点删除按钮 */
+.canvas-workflow-surface .react-flow__edge {
+  pointer-events: all;
+}
+
+.canvas-workflow-surface .canvas-edge-hit {
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.canvas-workflow-surface .canvas-edge-delete {
+  z-index: 20;
+}
+
+/* 画布节点悬浮控件：抵消缩放后的文字/图标发糊 */
+.canvas-node-sharp-ui {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.canvas-node-sharp-ui svg {
+  shape-rendering: geometricPrecision;
+}
+
+/* 画布节点连接点：拖拽连线时显示十字光标 */
+.react-flow__handle {
+  cursor: crosshair !important;
+}
+
+/* 画布节点：不显示 React Flow 默认选中描边（多选仍生效，仅隐藏视觉框） */
+.canvas-workflow-surface .react-flow__node.selected {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* 图片节点工具条/控制台溢出显示，不参与节点宽高测量 */
+.react-flow__node {
+  overflow: visible !important;
+}
+
+/* 画布小地图：固定尺寸 + 视口白框 */
+.canvas-minimap.react-flow__minimap {
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.dark .canvas-minimap.react-flow__minimap {
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+/* 画布视频节点：隐藏原生全屏与三点菜单，改用自定义右上角按钮 */
+video.canvas-node-inline-video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+}
+
+video.canvas-node-inline-video::-webkit-media-controls-overflow-button {
+  display: none !important;
+}
+
+/* 默认常显底部进度条与时间，不依赖悬浮；隐藏中央大播放钮 */
+video.canvas-node-inline-video::-webkit-media-controls-panel {
+  opacity: 1 !important;
+}
+
+video.canvas-node-inline-video::-webkit-media-controls-enclosure {
+  opacity: 1 !important;
+}
+
+video.canvas-node-inline-video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+}
+
+/* 本地视频解码缓冲时不显示 Chromium 中央 loading 圈（改用 opacity 淡入） */
+video.canvas-node-inline-video::-webkit-media-controls-loading-panel {
+  display: none !important;
+}
