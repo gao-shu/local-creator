@@ -6,8 +6,8 @@
 
 ## 前置
 
-- [ ] P5 冒烟通过
-- [ ] 已有 Gitee 私有仓库（空仓）
+- [x] P5 安装包已产出（安装手测可另做）
+- [ ] 已有 Gitee 私有仓库（空仓）— 建议：`honden/local-creator`（与公司仓同命名空间）
 
 ## 操作步骤
 
@@ -17,30 +17,25 @@
 cd E:\work\project\cangku\local-creator
 git remote -v
 # 若误带公司 origin，更换：
-git remote remove origin   # 若存在且指向公司
-git remote add origin https://gitee.com/<你的命名空间>/local-creator.git
+# git remote remove origin
+git remote add origin https://gitee.com/honden/local-creator.git
 git push -u origin HEAD
 ```
 
 确认：**私有**、未开开源许可公开浏览。
 
-### 2. 自动更新策略（二选一）
+### 2. 自动更新策略（L2 已选：先关）
 
-| 策略 | 做法 |
+| 策略 | 状态 |
 |------|------|
-| L2 先关 | UI 去掉检查更新；`update-config` 禁用 |
-| 预留自建 | `latest.yml` + Setup 放 Gitee Release 或网盘；配置可改 base URL |
+| L2 先关 | ✅ 未设 `VITE_UPDATE_PUBLISH_URL` 时启动不检查；手动检查提示未配置 |
+| 预留自建 | 见 [../release-private.md](../release-private.md) |
 
-公司 TOS 地址必须已在 P4 清除。
+公司 TOS 地址已在 P4/P5 清除。
 
 ### 3. 网盘发版备忘
 
-在本仓增加简短 `docs/release-private.md`（可本阶段写）：
-
-1. 升版本号  
-2. 打包  
-3. 上传网盘  
-4. （可选）更新 Gitee Release 资产  
+已写：[../release-private.md](../release-private.md)
 
 ### 4. 开源开关未到
 
@@ -51,12 +46,12 @@ git push -u origin HEAD
 
 - [ ] `git remote` 为自己的 Gitee 私有地址
 - [ ] push 成功
-- [ ] 无公司更新域名残留（`rg` 再扫 update 相关）
+- [x] 无公司更新域名作为默认 feed（update-config / sync-version 已清）
+- [x] L2 自动更新默认关闭
 
 ## 本路线 L2 结束
 
 之后可选：
 
-- 人说：**补 user-quickstart**  
 - 人说：**准备开源附录验收**  
 - 人说：**商业版另仓方案**（只讨论/写附录，不混进开源底子）

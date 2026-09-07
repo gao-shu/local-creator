@@ -8,6 +8,7 @@ import {
   type UpdateProgress,
   type UpdateStatusResult,
 } from '@/lib/update/app-updater'
+import { AUTO_UPDATE_DISABLED_HINT, isAutoUpdateEnabled } from '@/lib/update/update-policy'
 import { useUpdateStore } from '@/stores/update-store'
 import { UpdateDialog } from './update-dialog'
 
@@ -16,7 +17,7 @@ type UpdateCheckMode = 'interactive' | 'silent' | 'boot'
 /** 安装过渡动画时长，让用户感知「正在安装」而非闪退 */
 const INSTALL_TRANSITION_MS = 1200
 
-const UPDATE_HINT_KEY = 'haode-update-next-version'
+const UPDATE_HINT_KEY = 'local-creator-update-next-version'
 
 function readUpdateHint(): string | null {
   try {
@@ -102,6 +103,15 @@ export function AppUpdateHost() {
   const checkForUpdates = useCallback(async (mode: UpdateCheckMode = 'interactive') => {
     const api = window.electronAPI
     if (!api) return
+
+    if (!isAutoUpdateEnabled()) {
+      if (shouldPromptForStatus(mode)) {
+        setOpen(true)
+        setPhase('error')
+        setErrorMessage(AUTO_UPDATE_DISABLED_HINT)
+      }
+      return
+    }
 
     checkModeRef.current = mode
 
@@ -276,6 +286,7 @@ export function AppUpdateHost() {
 
   useEffect(() => {
     if (!isElectronApp()) return
+    if (!isAutoUpdateEnabled()) return
 
     const runBootUpdateCheck = () => {
       if (bootCheckedRef.current) return
@@ -318,7 +329,7 @@ export function AppUpdateHost() {
       })()
     }
 
-    // 不依赖 haode:app-ready：该事件可能在 useEffect 注册前就已触发（splash 仅隐藏未移除）
+    // splash 可能先于本 effect 触发 app-ready，故用短延时启动检查
     const timer = window.setTimeout(runBootUpdateCheck, 500)
 
     return () => {

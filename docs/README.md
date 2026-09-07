@@ -15,6 +15,7 @@
 | 6 | [brand-placeholder.md](brand-placeholder.md) | 占位品牌与正式改名检查表 |
 | 7 | [phases/](phases/) | **分阶段细操作步骤**（主战场） |
 | — | [user-quickstart.md](user-quickstart.md) | 熟人私发：安装与填 Key 一页 |
+| — | [release-private.md](release-private.md) | 私有发版：升版 / 打包 / 网盘 / 更新预留 |
 | 8 | [appendix-open-source.md](appendix-open-source.md) | 开源发布前清单（后期） |
 | 9 | [appendix-commercial.md](appendix-commercial.md) | 商业版备注（后期，另仓或分支策略） |
 
