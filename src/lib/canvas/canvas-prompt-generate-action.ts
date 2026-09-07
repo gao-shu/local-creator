@@ -1,7 +1,7 @@
 // Copyright (c) Haode AI. All rights reserved.
 
 import type { AppSettings } from '@/types/settings'
-import { formatUserFacingBillingError } from '@/lib/auth/haodou-consume-service'
+import { formatUserFacingBillingError } from '@/lib/utils'
 import { getCanvasExtractLlmErrorHint, resolveCanvasExtractLlmModelId } from '@/lib/canvas/canvas-extract-llm'
 import { callChatCompletions } from '@/lib/models/llm-client'
 import { pickMergedLlmModel } from '@/lib/models/merged-model-picker'

@@ -12,15 +12,6 @@ import { applyStorageRootToSettings } from '@/lib/storage/data-layout'
 
 import { modelListKey } from '@/lib/models/default-model-utils'
 
-import {
-  fetchClientSystemModelsByKind,
-  filterSystemModelsForSelect,
-  mergeModelsForKind,
-  type SystemModelsByKind,
-} from '@/lib/models/system-models-service'
-
-import { overlayWeishiCapabilitiesOnMergedVideoModels, writeBackWeishiCatalogCapabilities } from '@/lib/models/weishi-capability-overlay'
-
 import { bindDataRoot, readSettings, writeSettings } from '@/lib/storage/settings-service'
 
 import { canEditApiBaseUrl, migrateApiBaseUrl, resolveApiBase, syncApiBaseToStorage } from '@/lib/auth/api-base'
@@ -31,6 +22,11 @@ import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets
 import type { InferenceFormat } from '@/lib/workflow/storyboard-image-presets'
 
 
+
+/** 开源版无公司系统模型目录；保留字段以免旧调用点崩溃 */
+export type SystemModelsByKind = Record<ModelKind, ModelConfig[]>
+
+const EMPTY_SYSTEM_MODELS: SystemModelsByKind = { llm: [], image: [], video: [] }
 
 interface SettingsStore {
 
@@ -50,12 +46,10 @@ interface SettingsStore {
 
   dirty: boolean
 
-  /** 平台下发的系统模型（不写入本地 settings.json） */
+  /** 恒为空；公司系统模型已删除 */
   systemModelsByKind: SystemModelsByKind
 
   load: () => Promise<void>
-
-  syncSystemModels: (apiBase?: string) => Promise<void>
 
   getMergedModels: (kind: ModelKind) => ModelConfig[]
 
@@ -172,7 +166,6 @@ function modelKey(kind: ModelKind): 'llmModels' | 'imageModels' | 'videoModels' 
 }
 
 let loadSettingsInflight: Promise<void> | null = null
-let syncSystemModelsInflight: Promise<void> | null = null
 
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
 
@@ -192,53 +185,13 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
 
   dirty: false,
 
-  systemModelsByKind: { llm: [], image: [], video: [] },
+  systemModelsByKind: EMPTY_SYSTEM_MODELS,
 
   getMergedModels: (kind) => {
     const state = get()
-    if (!state.settings) {
-      return filterSystemModelsForSelect(kind, state.systemModelsByKind[kind] || [])
-    }
+    if (!state.settings) return []
     const key = modelKey(kind)
-    const merged = mergeModelsForKind(kind, state.settings[key], state.systemModelsByKind)
-    if (kind !== 'video') return merged
-    // 完整 video catalog（含内部微视）覆盖自定义微视清晰度
-    return overlayWeishiCapabilitiesOnMergedVideoModels(
-      merged,
-      state.systemModelsByKind.video || [],
-    )
-  },
-
-  syncSystemModels: async (apiBase) => {
-    if (syncSystemModelsInflight) return syncSystemModelsInflight
-    syncSystemModelsInflight = (async () => {
-      try {
-        const grouped = await fetchClientSystemModelsByKind(apiBase)
-        set({ systemModelsByKind: grouped })
-
-        // 自定义微视：按 catalog 清晰度写回 settings.json，清掉本地假 480 档
-        const settings = get().settings
-        const catalogVideo = grouped.video || []
-        if (settings?.videoModels?.length && catalogVideo.length) {
-          const { models, changed } = writeBackWeishiCatalogCapabilities(
-            settings.videoModels,
-            catalogVideo,
-          )
-          if (changed) {
-            set({
-              settings: { ...settings, videoModels: models },
-              dirty: true,
-            })
-            void get().save({ silent: true })
-          }
-        }
-      } catch {
-        /* 离线或未登录时忽略 */
-      } finally {
-        syncSystemModelsInflight = null
-      }
-    })()
-    return syncSystemModelsInflight
+    return state.settings[key] || []
   },
 
   load: async () => {
@@ -275,8 +228,6 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
         })
 
         syncApiBaseToStorage(resolveApiBase(res.data?.apiBaseUrl))
-
-        await get().syncSystemModels(resolveApiBase(res.data?.apiBaseUrl))
 
       } finally {
 

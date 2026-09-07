@@ -1,10 +1,5 @@
 // Copyright (c) Haode AI. All rights reserved.
 
-import { resolveApiBase } from '@/lib/auth/api-base'
-import { hasPersistedRealToken } from '@/lib/auth/login-mode'
-import { noteClientSessionFailure } from '@/lib/auth/session-expired'
-import { computeHaodouChargeAmount, parseUnitPrice } from '@/lib/models/system-model-unit-price'
-import { useAuthStore } from '@/stores/auth-store'
 import type {
   ImageModelPricingMeta,
   ImagePricingMode,
@@ -26,7 +21,7 @@ export type ClientModelQuoteDto = {
   pricing_mode?: ImagePricingMode | null
   unit_price: string
   unit_label: string
-  haodou_cost: number
+  unit_cost: number
   pricing_summary?: string | null
   resolution?: string | null
   quality?: ImageQuality | null
@@ -158,104 +153,37 @@ export function isDefaultImageTier(
   return selected.resolution === defaultResolution && selected.quality === defaultQuality
 }
 
-/** 列表同步预估：仅默认档准确；非默认档应调 quote API */
-export function resolveImageHaodouCostSync(
-  model: ModelConfig | null | undefined,
-  options?: { resolution?: string | null; quality?: string | null; quantity?: number },
+/** 开源版无额度计费 */
+export function resolveImageCostSync(
+  _model?: ModelConfig | null,
+  _options?: { resolution?: string | null; quality?: string | null; quantity?: number },
 ): number {
-  if (!model) return 0
-  const quantity = Math.max(1, Math.trunc(options?.quantity ?? 1))
-  if (model.billingMode === 'internal') return 0
-
-  if (
-    model.imagePricing &&
-    isTieredImagePricing(model.imagePricing.pricingMode) &&
-    !isDefaultImageTier(model, options)
-  ) {
-    return 0
-  }
-
-  if (typeof model.unitPrice === 'number' && model.unitPrice > 0) {
-    return computeHaodouChargeAmount(model.unitPrice, quantity)
-  }
-  if (typeof model.haodouCost === 'number' && model.haodouCost > 0) {
-    return quantity === 1 ? model.haodouCost : computeHaodouChargeAmount(model.haodouCost, quantity)
-  }
   return 0
 }
 
 export function shouldFetchImageModelQuote(
-  model: ModelConfig | null | undefined,
-  options?: { resolution?: string | null; quality?: string | null },
+  _model?: ModelConfig | null,
+  _options?: { resolution?: string | null; quality?: string | null },
 ): boolean {
-  if (!model?.imagePricing) return false
-  if (model.billingMode === 'internal') return false
-  if (!isTieredImagePricing(model.imagePricing.pricingMode)) return false
-  return !isDefaultImageTier(model, options)
+  return false
 }
 
 export async function quoteClientModel(
-  options: ImageModelQuoteRequest,
+  _options: ImageModelQuoteRequest,
 ): Promise<ClientModelQuoteDto> {
-  const token = useAuthStore.getState().token
-  if (!token || !hasPersistedRealToken(token)) {
-    throw new Error('未登录')
-  }
-
-  const modelKey = options.modelKey.trim()
-  if (!modelKey) throw new Error('模型标识无效')
-
-  const quantity = Math.trunc(options.quantity ?? 1)
-  const body: Record<string, unknown> = {
-    model_key: modelKey,
-    quantity,
-  }
-  if (options.resolution) body.resolution = options.resolution
-  if (options.quality) body.quality = options.quality
-
-  const base = resolveApiBase(options.apiBase).replace(/\/+$/, '')
-  const url = base.startsWith('/') ? `${base}/client/models/quote` : `${base}/client/models/quote`
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-  const json = (await res.json()) as QuoteEnvelope & { detail?: string }
-  if (!res.ok || json.code !== 0 || !json.data) {
-    const hint = json.message || (typeof json.detail === 'string' ? json.detail : undefined)
-    noteClientSessionFailure(res.status, hint, json.code)
-    throw new Error(json.message || hint || '询价失败')
-  }
-  return json.data
+  throw new Error('公司询价接口已移除')
 }
 
-export async function resolveImageHaodouCost(
-  model: ModelConfig | null | undefined,
-  options?: {
+export async function resolveImageCost(
+  _model?: ModelConfig | null,
+  _options?: {
     resolution?: string | null
     quality?: string | null
     quantity?: number
     apiBase?: string
   },
 ): Promise<number> {
-  if (!model?.modelKey?.trim()) return 0
-  if (model.billingMode === 'internal') return 0
-
-  if (shouldFetchImageModelQuote(model, options)) {
-    const quote = await quoteClientModel({
-      modelKey: model.modelKey,
-      resolution: options?.resolution ?? undefined,
-      quality: options?.quality ?? undefined,
-      quantity: options?.quantity,
-      apiBase: options?.apiBase,
-    })
-    return quote.haodou_cost
-  }
-
-  return resolveImageHaodouCostSync(model, options)
+  return 0
 }
 
 export function formatImageUnitPriceLabel(quote: ClientModelQuoteDto): string {
@@ -289,21 +217,10 @@ export function buildImageCapabilityDisplay(model: ModelConfig | null | undefine
   }
 }
 
-/** 列表/下拉展示价：优先 pricing_summary，否则好豆兜底 */
+/** 列表/下拉展示价 */
 export function formatImageModelListPriceLabel(model: ModelConfig | null | undefined): string | null {
   if (!model) return null
-  const summary = model.imagePricing?.pricingSummary?.trim()
-  if (summary) return summary
-  if (model.billingMode === 'internal') return null
-  if (typeof model.haodouCost === 'number' && model.haodouCost > 0) {
-    const unit = model.unitLabel?.trim() || '豆/张'
-    return `${model.haodouCost} ${unit}`
-  }
-  if (typeof model.unitPrice === 'number' && model.unitPrice > 0) {
-    const unit = model.unitLabel?.trim() || '豆/张'
-    return `${model.unitPrice.toFixed(1)} ${unit}`
-  }
-  return null
+  return model.imagePricing?.pricingSummary?.trim() || null
 }
 
 export type ImageModelGroup = {

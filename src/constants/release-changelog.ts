@@ -87,7 +87,7 @@ export const RELEASE_CHANGELOG: ReleaseChangelogEntry[] = [
     items: [
       '工坊与画布项目删除进入回收站，可恢复或彻底清除',
       'Step4 新增分镜校验流程，便于对比确认后继续生成',
-      '账户页可查看好豆流水；图片/视频支持分档计费与费用预估',
+      '账户页可查看额度流水；图片/视频支持分档计费与费用预估',
       '画布图片节点支持一键压缩，生成中遮罩可穿透且保留取消按钮',
       '素材库与音色库交互文案统一，列表与导入体验更顺手',
     ],
@@ -304,11 +304,11 @@ export const RELEASE_CHANGELOG: ReleaseChangelogEntry[] = [
   {
     version: '0.1.3',
     date: '2026-06-26',
-    windowsModule: '好豆 · 工坊 · 反馈',
+    windowsModule: '额度 · 工坊 · 反馈',
     items: [
-      '好豆体系：平台系统模型按次扣豆，自定义模型不消耗好豆',
-      '创作工坊分集、资产、分镜生图/生视频及 LLM 推理接入好豆扣费',
-      '侧边栏与个人中心展示好豆余额，生成失败自动退还',
+      '额度体系：平台系统模型按次扣豆，自定义模型不消耗额度',
+      '创作工坊分集、资产、分镜生图/生视频及 LLM 推理接入额度扣费',
+      '侧边栏与个人中心展示额度余额，生成失败自动退还',
       '帮助与反馈支持上传截图，便于排查问题',
     ],
   },
@@ -334,10 +334,10 @@ export const RELEASE_CHANGELOG: ReleaseChangelogEntry[] = [
   {
     version: '0.1.0',
     date: '2026-06-25',
-    windowsModule: '画布 · 账号 · 好豆',
+    windowsModule: '画布 · 账号 · 额度',
     items: [
       '新增无限画布创作模块，支持节点编排与 @ 引用联动',
-      '账号体系升级：手机号/密码登录、好豆余额与充值购买',
+      '账号体系升级：手机号/密码登录、额度余额与充值购买',
       '系统模型配置：管理端统一下发 LLM/图片/视频模型，客户端自动同步',
       '分镜与资产库交互优化，视频生成接口兼容性增强',
     ],
@@ -413,7 +413,7 @@ export const RELEASE_CHANGELOG: ReleaseChangelogEntry[] = [
       '飞书发版页仅保留安装包附件，详细说明仅在应用内查看',
       '打包前自动校验飞书发版页链接与客户端「到飞书下载」一致',
       '更新弹窗支持跳转飞书发版页下载 Windows 安装包',
-      'API 与自动更新统一走 duanju.haodeweishi.cn',
+      'API 与自动更新统一走 duanju.removed-company-domain.cn',
     ],
   },
   {
@@ -424,7 +424,7 @@ export const RELEASE_CHANGELOG: ReleaseChangelogEntry[] = [
       '飞书发版页支持上传 Windows 安装包附件',
       '客户端「检查更新」支持「到飞书下载」',
       '应用内优先增量更新，失败自动回退全量下载',
-      'API 统一走 duanju.haodeweishi.cn',
+      'API 统一走 duanju.removed-company-domain.cn',
     ],
   },
 ]

@@ -1,9 +1,7 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
 import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
-import { isSystemModel } from '@/lib/models/system-models-service'
-import { isInternalSystemModel } from '@/lib/models/system-model-routing'
 import { shouldUseOpenAiVideoClient } from '@/lib/video/openai-video-client'
 import { isGrokVideoModel } from '@/lib/video/grok-video-client'
 import { isZhipuVideoModel } from '@/lib/video/zhipu-video-client'
@@ -22,15 +20,9 @@ export type VideoProviderKind =
   | 'grok'
   | 'agnes_video_25'
   | 'openai_compatible'
-  | 'system'
   | 'unsupported'
 
 export function resolveVideoProviderKind(model: ModelConfig): VideoProviderKind {
-  if (isSystemModel(model) && model.modelKey) {
-    // internal + weishi_api：成员 Key 直连微视，不走管理端代理
-    if (isInternalSystemModel(model) && isWeishiApiModel(model)) return 'weishi'
-    return 'system'
-  }
   if (isWeishiApiModel(model)) return 'weishi'
   if (isAgnesVideo25Model(model)) return 'agnes_video_25'
   if (isGrokVideoModel(model)) return 'grok'
@@ -50,7 +42,7 @@ export interface PrepareExternalVideoRefsOptions {
   abortSignal?: AbortSignal
 }
 
-/** 非微视模型：按参考模式选图 → 上传后台 → 返回 https URL 列表 */
+/** 非微视模型：按参考模式选图 → 上传/解析 → 返回可用 URL 列表 */
 export async function prepareExternalVideoReferenceUrls(
   options: PrepareExternalVideoRefsOptions,
 ): Promise<string[]> {

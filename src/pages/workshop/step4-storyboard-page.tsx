@@ -10,7 +10,7 @@ import {
   resolveSoftwareVideoModelId,
 } from '@/lib/models/software-model-prefs'
 import { buildModelSelectOptions, buildVideoModelSelectOptions } from '@/lib/models/model-select-options'
-import { formatUserFacingBillingError } from '@/lib/auth/haodou-consume-service'
+import { formatUserFacingBillingError } from '@/lib/utils'
 import { StoryboardLeftPanel } from '@/components/workshop/storyboard-left-panel'
 import { MaterialLibraryPickerDialog } from '@/components/workshop/material-library-picker-dialog'
 import { StoryboardRightPanel } from '@/components/workshop/storyboard-right-panel'

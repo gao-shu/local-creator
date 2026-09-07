@@ -5,6 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/** 用户可见错误文案（开源版无额度计费包装） */
+export function formatUserFacingError(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message.trim() ? error.message : fallback
+}
+
+/** @deprecated alias — use formatUserFacingError */
+export const formatUserFacingBillingError = formatUserFacingError
+
 export function generateUUID(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID()

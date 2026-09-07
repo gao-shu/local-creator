@@ -1,6 +1,6 @@
 /**
  * 生视频确认弹窗：能力参数区 vs 费用区文案约定（H1）
- * 能力区只展示规格选项，禁止混入单价/好豆。
+ * 能力区只展示规格选项，禁止混入单价/额度。
  */
 
 export const VIDEO_CONFIRM_PARAMS_SECTION_TITLE = '生成参数'

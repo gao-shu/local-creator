@@ -1,18 +1,13 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
-import type { BillingMode, ModelConfig } from '@/types/settings'
-import { hasPersistedRealToken, isLoginRequired, isRealUserSession } from '@/lib/auth/login-mode'
-import { useAuthStore } from '@/stores/auth-store'
+import type { ModelConfig } from '@/types/settings'
 import { isWeishiApiModel, WEISHI_API_PRESET } from '@/lib/models/weishi-model-presets'
 import { WEISHI_VIDEO_MODELS } from '@/lib/models/video-model-utils'
-import {
-  findWeishiSystemModelByUpstreamId,
-} from '@/lib/models/weishi-capability-overlay'
+import { findWeishiSystemModelByUpstreamId } from '@/lib/models/weishi-capability-overlay'
 
 export type WeishiVideoModelOption = {
   modelId: string
   label: string
-  billingMode?: BillingMode
 }
 
 export {
@@ -20,7 +15,7 @@ export {
   findWeishiSystemModelByUpstreamId,
 } from '@/lib/models/weishi-capability-overlay'
 
-/** 系统模型名常为「内部·Seedance 2.0」，设置里只展示 · 后的可读名 */
+/** 设置里只展示 · 后的可读名 */
 function formatWeishiVideoModelOptionLabel(model: ModelConfig, modelId: string): string {
   const displayName = model.name?.trim()
   if (!displayName) return modelId
@@ -32,12 +27,12 @@ function formatWeishiVideoModelOptionLabel(model: ModelConfig, modelId: string):
   return displayName !== modelId ? displayName : modelId
 }
 
-/** 从 GET /client/models 同步的系统视频模型中筛 weishi_api（后台仅返回 enabled） */
-export function listWeishiVideoModelOptions(systemVideoModels: ModelConfig[]): WeishiVideoModelOption[] {
+/** 从已配置的自定义视频模型中筛 weishi_api */
+export function listWeishiVideoModelOptions(videoModels: ModelConfig[]): WeishiVideoModelOption[] {
   const seen = new Set<string>()
   const options: WeishiVideoModelOption[] = []
 
-  for (const model of systemVideoModels) {
+  for (const model of videoModels) {
     if (!isWeishiApiModel(model)) continue
     const modelId = model.model?.trim()
     if (!modelId || seen.has(modelId)) continue
@@ -45,7 +40,6 @@ export function listWeishiVideoModelOptions(systemVideoModels: ModelConfig[]): W
     options.push({
       modelId,
       label: formatWeishiVideoModelOptionLabel(model, modelId),
-      billingMode: model.billingMode,
     })
   }
 
@@ -56,33 +50,25 @@ export function fallbackWeishiVideoModelOptions(): WeishiVideoModelOption[] {
   return WEISHI_VIDEO_MODELS.map((modelId) => ({ modelId, label: modelId }))
 }
 
-/** 本地离线 / 未登录：允许硬编码兜底；真实登录 Session：仅信后台 catalog */
+/** 开源版始终可用本地兜底列表 */
 export function shouldUseWeishiVideoModelFallback(): boolean {
-  try {
-    if (!isLoginRequired()) return true
-  } catch {
-    return true
-  }
-  const token = useAuthStore.getState().token
-  if (!token || !hasPersistedRealToken(token) || !isRealUserSession(token)) return true
-  return false
+  return true
 }
 
-/** 优先后台 catalog；登录态下无 weishi 系统模型时不回退硬编码 */
-export function resolveWeishiVideoModelOptions(systemVideoModels: ModelConfig[]): WeishiVideoModelOption[] {
-  const fromBackend = listWeishiVideoModelOptions(systemVideoModels)
-  if (fromBackend.length > 0) return fromBackend
-  if (shouldUseWeishiVideoModelFallback()) return fallbackWeishiVideoModelOptions()
-  return []
+/** 优先已配置模型；否则硬编码兜底 */
+export function resolveWeishiVideoModelOptions(videoModels: ModelConfig[]): WeishiVideoModelOption[] {
+  const fromConfig = listWeishiVideoModelOptions(videoModels)
+  if (fromConfig.length > 0) return fromConfig
+  return fallbackWeishiVideoModelOptions()
 }
 
-/** 新建微视配置时默认选中的 upstream model（优先后台 catalog 首项） */
-export function resolveDefaultWeishiUpstreamModelId(systemVideoModels: ModelConfig[]): string {
-  const options = resolveWeishiVideoModelOptions(systemVideoModels)
+/** 新建微视配置时默认选中的 upstream model */
+export function resolveDefaultWeishiUpstreamModelId(videoModels: ModelConfig[]): string {
+  const options = resolveWeishiVideoModelOptions(videoModels)
   return options[0]?.modelId?.trim() || WEISHI_API_PRESET.model?.trim() || 'seedance-2.0'
 }
 
-/** 保留编辑中的历史 model id（可能已从后台下架） */
+/** 保留编辑中的历史 model id */
 export function ensureWeishiVideoModelOption(
   options: WeishiVideoModelOption[],
   currentModelId?: string | null,
@@ -95,13 +81,13 @@ export function ensureWeishiVideoModelOption(
 }
 
 /**
- * 用户自定义微视配置：从平台 catalog 同步 endpoint / 能力字段（设置页不展示，保存时写入）
+ * 用户自定义微视配置：从已有 catalog 条目同步能力字段；无则用预设
  */
 export function buildWeishiCustomModelPatchFromCatalog(
   modelId: string,
-  systemVideoModels: ModelConfig[],
+  videoModels: ModelConfig[],
 ): Partial<ModelConfig> {
-  const catalog = findWeishiSystemModelByUpstreamId(systemVideoModels, modelId)
+  const catalog = findWeishiSystemModelByUpstreamId(videoModels, modelId)
   if (!catalog) {
     return {
       model: modelId.trim(),

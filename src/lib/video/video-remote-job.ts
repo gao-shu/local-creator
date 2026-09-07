@@ -18,7 +18,6 @@ import {
 import { assertNotAborted } from '@/lib/video/video-generation-abort'
 import { resolveVideoProviderKind } from '@/lib/video/video-provider'
 import { pickVideoModel } from '@/lib/video/video-client'
-import { pollSystemModelVideoJob } from '@/lib/models/system-model-proxy'
 
 export function isVideoRemoteJobStale(job: VideoRemoteJobSnapshot, now = Date.now()): boolean {
   return now - (job.createdAt || 0) > VIDEO_REMOTE_JOB_HANG_MS
@@ -69,20 +68,11 @@ export async function resumeVideoRemoteJob(
       model,
       apiBase: options?.apiBaseUrl,
     })
-  } else if (job.provider !== 'system' && !apiKey) {
+  } else if (!apiKey) {
     throw new Error(`模型「${model.name}」未配置 API Key，无法恢复生视频`)
   }
 
   onProgress?.(VIDEO_PROGRESS_SUBMITTED)
-
-  if (job.provider === 'system') {
-    return pollSystemModelVideoJob({
-      jobId: job.apiTaskId,
-      apiBase: options?.apiBaseUrl,
-      abortSignal: options?.abortSignal,
-      onProgress,
-    })
-  }
 
   if (job.provider === 'zhipu') {
     const result = await pollZhipuVideoTask(

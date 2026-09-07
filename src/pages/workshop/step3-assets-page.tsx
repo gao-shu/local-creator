@@ -77,8 +77,6 @@ import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
 import { resolveSoftwareImageModelId } from '@/lib/models/software-model-prefs'
 import { buildModelSelectOptions } from '@/lib/models/model-select-options'
 import { ImageGenerationTierField } from '@/components/models/image-generation-tier-field'
-import { ImageGenerationCostHint } from '@/components/models/image-generation-cost-hint'
-import { useImageGenerationCostPreview } from '@/hooks/use-image-generation-cost-preview'
 import {
   normalizeImageGenerationTierParams,
   resolveAssetImageTierPrefs,
@@ -282,11 +280,8 @@ export function Step3AssetsPage() {
     [rememberAssetImageTierParams],
   )
 
-  const { previewText: imageCostPreview, loading: imageCostLoading } = useImageGenerationCostPreview({
-    model: activeImageModel,
-    tierParams: imageTierParams,
-    apiBase: settings?.apiBaseUrl,
-  })
+  const imageCostPreview = ''
+  const imageCostLoading = false
 
   useEffect(() => {
     if (!activeImageModel) return
@@ -1033,8 +1028,8 @@ export function Step3AssetsPage() {
         weishiAssetId: result.weishiAssetId,
         weishiAssetUrl: result.weishiAssetUrl,
         weishiAssetStatus: result.weishiAssetStatus,
-        jimengAssetId: result.jimengAssetId,
-        jimengAssetStatus: result.jimengAssetStatus,
+        jimengAssetId: undefined,
+        jimengAssetStatus: undefined,
         reviewImagePath: result.reviewImagePath,
       }
 
@@ -1052,7 +1047,7 @@ export function Step3AssetsPage() {
       )
       await store.save({ silent: true })
 
-      const label = result.provider === 'weishi' ? '微视' : '即梦'
+      const label = '微视'
       const snapshot = getAssetReviewSnapshot({
         ...selectedAsset,
         ...reviewPatch,
@@ -1255,11 +1250,7 @@ export function Step3AssetsPage() {
               value={imageTierParams}
               onChange={handleImageTierParamsChange}
             />
-            <ImageGenerationCostHint
-              text={imageCostPreview}
-              loading={imageCostLoading}
-              className="self-end pb-1 min-w-[88px]"
-            />
+            {null}
             <div className="w-[220px]">
               <WorkflowStyleFollowBar
                 label="生图风格"

@@ -26,8 +26,6 @@ import {
 } from '@/lib/workflow/storyboard-image-presets'
 import { normalizeImageSizePreset } from '@/lib/workflow/image-size-presets'
 import { ImageGenerationTierField } from '@/components/models/image-generation-tier-field'
-import { ImageGenerationCostHint } from '@/components/models/image-generation-cost-hint'
-import { useImageGenerationCostPreview } from '@/hooks/use-image-generation-cost-preview'
 import {
   normalizeImageGenerationTierParams,
   resolveStoryboardImageTierPrefs,
@@ -212,11 +210,8 @@ export function StoryboardRightPanel({
     })
   }
 
-  const { previewText: imageCostPreview, loading: imageCostLoading } = useImageGenerationCostPreview({
-    model: activeImageModel,
-    tierParams: imageTierParams,
-    apiBase: settings?.apiBaseUrl,
-  })
+  const imageCostPreview = ''
+  const imageCostLoading = false
 
   useEffect(() => {
     if (!activeImageModel) return
@@ -414,10 +409,7 @@ export function StoryboardRightPanel({
                   labelClassName="text-[11px] text-foreground"
                 />
 
-                <ImageGenerationCostHint
-                  text={imageCostPreview}
-                  loading={imageCostLoading}
-                />
+                {null}
 
                 <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5 space-y-2">
                   <WorkflowStyleFollowBar

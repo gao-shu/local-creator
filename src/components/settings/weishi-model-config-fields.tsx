@@ -32,16 +32,16 @@ export function WeishiModelConfigFields({
   showKey = false,
   onToggleShowKey,
 }: WeishiModelConfigFieldsProps) {
-  const systemVideoModels = useSettingsStore((state) => state.systemModelsByKind.video)
+  const videoModels = useSettingsStore((state) => state.settings?.videoModels ?? [])
   const [advancedOpen, setAdvancedOpen] = useState(false)
 
   const weishiModelOptions = useMemo(() => {
-    const resolved = resolveWeishiVideoModelOptions(systemVideoModels)
+    const resolved = resolveWeishiVideoModelOptions(videoModels)
     return ensureWeishiVideoModelOption(resolved, form.model)
-  }, [systemVideoModels, form.model])
+  }, [videoModels, form.model])
 
   const handleModelChange = (modelId: string) => {
-    const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, systemVideoModels)
+    const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, videoModels)
     onPatch({ ...catalogPatch, model: modelId })
   }
 
@@ -55,7 +55,7 @@ export function WeishiModelConfigFields({
         </label>
         {catalogEmpty ? (
           <div className={cn(inputClass, 'text-sm text-amber-600 dark:text-amber-400')}>
-            管理端暂无启用的微视系统模型（api_format=weishi_api）
+            暂无可用的微视模型列表
           </div>
         ) : (
           <select
@@ -71,9 +71,7 @@ export function WeishiModelConfigFields({
           </select>
         )}
         <p className="text-xs text-muted-foreground leading-relaxed">
-          {catalogEmpty
-            ? '请在管理端「系统模型」启用微视 Seedance，或联系管理员配置 api_format=weishi_api'
-            : '平台系统模型目录；单价随分辨率变化，请在分镜 Step4 查看；比例与时长亦在 Step4 选择'}
+          自备微视 API Key 直连；比例与时长在分镜 Step4 选择。
         </p>
       </div>
 

@@ -11,11 +11,6 @@ interface ImportMetaEnv {
   readonly VITE_APP_ENV?: string
   /** 可选：TOS/CDN 公网 Origin，用于识别已上传对象存储 URL */
   readonly VITE_TOS_PUBLIC_ORIGIN?: string
-  /**
-   * 是否要求微信登录。默认 false（本地模式，跳过登录页）。
-   * 设为 true / 1 / yes 时启用扫码登录与后台文件上传。
-   */
-  readonly VITE_LOGIN_REQUIRED?: string
   /** 桌面端自动更新 feed URL（下载与更新共用；改域名优先改此项） */
   readonly VITE_UPDATE_PUBLISH_URL?: string
   /** 侧边栏「官网」链接（HTML 落地页；勿填 TOS 对象存储地址） */

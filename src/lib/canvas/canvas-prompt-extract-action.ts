@@ -7,7 +7,7 @@ import {
   getCanvasExtractLlmErrorHint,
   resolveCanvasExtractLlmModelId,
 } from '@/lib/canvas/canvas-extract-llm'
-import { formatUserFacingBillingError } from '@/lib/auth/haodou-consume-service'
+import { formatUserFacingBillingError } from '@/lib/utils'
 import { extractScriptAssets } from '@/lib/workflow/extract-service'
 import { resolveQuickExtractTemplateKey } from '@/lib/workflow/asset-utils'
 

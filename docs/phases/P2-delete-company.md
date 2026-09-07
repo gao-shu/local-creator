@@ -7,8 +7,8 @@
 
 ## 前置
 
-- [ ] P1 `compile` 通过
-- [ ] 已读 [../delete-inventory.md](../delete-inventory.md)
+- [x] P1 `compile` 通过
+- [x] 已读 [../delete-inventory.md](../delete-inventory.md)
 
 ## 总原则
 
@@ -121,10 +121,12 @@ refactor: remove company billing, system models, and cloud auth for open-source 
 
 ## 验收清单
 
-- [ ] delete-inventory A–D、F 在 `src/electron` 无业务命中
-- [ ] `npm run compile` 通过
-- [ ] 模型设置仅自定义模型
-- [ ] 无好豆 UI
+- [x] delete-inventory A–D、F 在 `src`/`electron` 无业务命中
+- [x] `npm run compile` 通过
+- [x] 模型设置仅自定义模型
+- [x] 无好豆 UI
+
+完成记录：本地会话 + 自定义模型直连；公司 `/client/auth`、好豆、系统模型代理、即梦审核入口、`backend_https` 已移除。品牌/appId 留 P4。
 
 ## 下一步
 

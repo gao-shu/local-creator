@@ -109,12 +109,7 @@ export function CanvasImageCharacterOverlay({
     ],
   )
   const reviewProvider = reviewModel ? resolveReviewProvider(reviewModel) : null
-  const reviewTooltip =
-    reviewProvider === 'weishi'
-      ? '到微视审核'
-      : reviewProvider === 'jimeng'
-        ? '到即梦审核'
-        : ''
+  const reviewTooltip = reviewProvider === 'weishi' ? '到微视审核' : ''
 
   const reviewAsset = useMemo(
     () => canvasImageNodeToReviewAsset(nodeId, data),
@@ -145,17 +140,17 @@ export function CanvasImageCharacterOverlay({
         weishiAssetId: result.weishiAssetId,
         weishiAssetUrl: result.weishiAssetUrl,
         weishiAssetStatus: result.weishiAssetStatus,
-        jimengAssetId: result.jimengAssetId,
-        jimengAssetStatus: result.jimengAssetStatus,
+        jimengAssetId: undefined,
+        jimengAssetStatus: undefined,
         reviewImagePath: result.reviewImagePath,
       })
-      const label = result.provider === 'weishi' ? '微视' : '即梦'
+      const label = '微视'
       const nextSnapshot = getAssetReviewSnapshot({
         ...reviewAsset,
         weishiAssetId: result.weishiAssetId,
         weishiAssetStatus: result.weishiAssetStatus,
-        jimengAssetId: result.jimengAssetId,
-        jimengAssetStatus: result.jimengAssetStatus,
+        jimengAssetId: undefined,
+        jimengAssetStatus: undefined,
         reviewImagePath: result.reviewImagePath,
       })
       if (nextSnapshot.isApproved) {

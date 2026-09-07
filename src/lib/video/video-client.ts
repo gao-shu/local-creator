@@ -5,11 +5,7 @@ import {
   resolveWeishiCreateUrl,
   type WeishiVideoReferenceItem,
 } from '@/lib/models/weishi-video-client'
-import { proxySystemModelVideo } from '@/lib/models/system-model-proxy'
-import {
-  buildVideoProxyTierPayload,
-  normalizeVideoResolutionValue,
-} from '@/lib/models/video-generation-tier-params'
+import { normalizeVideoResolutionValue } from '@/lib/models/video-generation-tier-params'
 import { readSettings } from '@/lib/storage/settings-service'
 import { normalizeApiBase } from '@/lib/models/model-endpoint'
 import { normalizeVideoModelConfig } from '@/lib/models/video-model-utils'
@@ -91,65 +87,10 @@ async function generateVideoRemoteUrlInner(options: GenerateVideoOptions): Promi
   const resolution = normalizeVideoResolutionValue(options.resolution, model)
   const provider = resolveVideoProviderKind(model)
 
-  if (provider === 'system') {
-    const settings = (await readSettings()).data
-    // external 系统模型：扣豆由 admin 异步 job 创建时计费（失败退还），不再客户端 pre-consume
-    if (options.resumeJob?.provider === 'system') {
-      return resumeVideoRemoteJob(options.resumeJob, model, options.onProgress, {
-        apiBaseUrl: options.apiBaseUrl || settings.apiBaseUrl,
-        abortSignal: options.abortSignal,
-      })
-    }
-    const rawImagePath = options.referenceImagePaths?.[0] || options.referenceImagePath
-    let imageUrl = rawImagePath ? pickRemoteImageUrlForVideoApi(rawImagePath) : ''
-    if (!imageUrl && rawImagePath) {
-      options.onProgress?.(VIDEO_PROGRESS_UPLOADING)
-      imageUrl = await resolveVideoApiImageUrl(rawImagePath, {
-        apiBaseUrl: settings.apiBaseUrl,
-        projectRoot: options.projectRoot,
-        label: 'system_video_ref',
-        abortSignal: options.abortSignal,
-      })
-    }
-    assertNotAborted(options.abortSignal)
-    options.onProgress?.(VIDEO_PROGRESS_SUBMITTING)
-    const proxyTier = buildVideoProxyTierPayload(model, { resolution })
-    const url = await proxySystemModelVideo({
-      modelKey: model.modelKey!,
-      prompt,
-      durationSec: options.durationSec ?? 5,
-      aspectRatio,
-      resolution: proxyTier.resolution ?? resolution,
-      imageUrl: imageUrl || undefined,
-      apiBase: settings.apiBaseUrl,
-      abortSignal: options.abortSignal,
-      onProgress: options.onProgress,
-      onJobCreated: options.onRemoteJobCreated
-        ? async (job) => {
-            await options.onRemoteJobCreated?.(
-              buildVideoRemoteJobSnapshot({
-                provider: 'system',
-                apiTaskId: job.job_id,
-                model,
-                durationSec: options.durationSec ?? 5,
-                resolution: proxyTier.resolution ?? resolution,
-              }),
-            )
-          }
-        : undefined,
-    })
-    options.onProgress?.({
-      message: '生成完成，准备下载…',
-      progress: 100,
-      status: 'completed',
-    })
-    return url
-  }
-
-  if (provider !== 'system' && !model.apiKey?.trim()) {
+  if (!model.apiKey?.trim()) {
     throw new Error(`模型「${model.name}」未配置 API Key`)
   }
-  if (provider !== 'system' && !model.model?.trim()) {
+  if (!model.model?.trim()) {
     throw new Error(`模型「${model.name}」未配置 model 名称`)
   }
 

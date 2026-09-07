@@ -34,9 +34,9 @@ export interface CanvasVideoPromptExpandFooterProps {
   generateTestId?: string
   running?: boolean
   generateDisabled?: boolean
-  showHaodou?: boolean
-  haodouCost?: number | null
-  haodouLoading?: boolean
+  showGenerateCost?: boolean
+  generateCost?: number | null
+  generateCostLoading?: boolean
   onGenerate: () => void
   onStop?: () => void
 }
@@ -255,9 +255,9 @@ export function CanvasVideoPromptExpandDialog({
                         Boolean(footer.running) ||
                         (footer.generateDisabled ?? !footer.modelOptions.length)
                       }
-                      showHaodou={footer.showHaodou}
-                      haodouCost={footer.haodouCost}
-                      haodouLoading={footer.haodouLoading}
+                      showGenerateCost={footer.showGenerateCost}
+                      generateCost={footer.generateCost}
+                      generateCostLoading={footer.generateCostLoading}
                       onClick={footer.onGenerate}
                     />
                     {footer.running && footer.onStop ? (

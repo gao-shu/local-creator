@@ -1,6 +1,5 @@
 import type { ModelConfig, ModelKind } from '@/types/settings'
-import { isLoginRequired } from '@/lib/auth/login-mode'
-import { isCharacterRefItem, type ShotVideoReferenceItem } from '@/lib/workflow/shot-video-utils'
+import type { ShotVideoReferenceItem } from '@/lib/workflow/shot-video-utils'
 import { generateUUID } from '@/lib/utils'
 
 /** 对齐 haode-ai-client Settings weishi_api 默认项 */
@@ -43,8 +42,8 @@ export function isWeishiReviewModel(
   return isWeishiApiModel(model)
 }
 
-/** 微视生视频参考素材上传方式 */
-export type WeishiReferenceMediaUploadMode = 'weishi_asset' | 'backend_https'
+/** 微视生视频参考素材上传方式（开源版仅微视直传） */
+export type WeishiReferenceMediaUploadMode = 'weishi_asset'
 
 export const DEFAULT_WEISHI_REFERENCE_MEDIA_UPLOAD_MODE: WeishiReferenceMediaUploadMode =
   'weishi_asset'
@@ -52,51 +51,35 @@ export const DEFAULT_WEISHI_REFERENCE_MEDIA_UPLOAD_MODE: WeishiReferenceMediaUpl
 export const WEISHI_REFERENCE_MEDIA_UPLOAD_OPTIONS: Array<{
   value: WeishiReferenceMediaUploadMode
   label: string
-}> = [
-  { value: 'weishi_asset', label: '微视 /v1/assets（asset://）' },
-  { value: 'backend_https', label: '后台服务器（https 公网 URL）' },
-]
+}> = [{ value: 'weishi_asset', label: '微视 /v1/assets（asset://）' }]
 
 export function normalizeWeishiReferenceMediaUploadMode(
-  value?: string | null,
+  _value?: string | null,
 ): WeishiReferenceMediaUploadMode {
-  if (WEISHI_REFERENCE_MEDIA_UPLOAD_OPTIONS.some((item) => item.value === value)) {
-    return value as WeishiReferenceMediaUploadMode
-  }
   return DEFAULT_WEISHI_REFERENCE_MEDIA_UPLOAD_MODE
 }
 
-/** 非微视模型或兜底：读取系统设置的上传策略 */
+/** 开源版固定微视 /v1/assets，不再走公司后台 https 上传 */
 export function resolveEffectiveWeishiReferenceMediaUploadMode(
-  value?: string | null,
-  model?: Pick<ModelConfig, 'apiFormat'> | null,
+  _value?: string | null,
+  _model?: Pick<ModelConfig, 'apiFormat'> | null,
 ): WeishiReferenceMediaUploadMode {
-  if (model && isWeishiApiModel(model)) {
-    return 'backend_https'
-  }
-  if (!isLoginRequired()) return 'weishi_asset'
-  return normalizeWeishiReferenceMediaUploadMode(value)
+  return 'weishi_asset'
 }
 
-/** 微视生视频参考图：仅 @角色 → /v1/assets；分镜/场景/道具/参考槽 → 后台 https */
 export function resolveWeishiReferenceImageUploadMode(
-  item: Pick<ShotVideoReferenceItem, 'kind' | 'label'>,
-  model?: Pick<ModelConfig, 'apiFormat'> | null,
-  globalMode?: string | null,
+  _item: Pick<ShotVideoReferenceItem, 'kind' | 'label'>,
+  _model?: Pick<ModelConfig, 'apiFormat'> | null,
+  _globalMode?: string | null,
 ): WeishiReferenceMediaUploadMode {
-  if (model && isWeishiApiModel(model)) {
-    return isCharacterRefItem(item) ? 'weishi_asset' : 'backend_https'
-  }
-  return resolveEffectiveWeishiReferenceMediaUploadMode(globalMode, model)
+  return 'weishi_asset'
 }
 
-/** 微视生视频参考音频：一律走后台 https */
 export function resolveWeishiReferenceAudioUploadMode(
-  model?: Pick<ModelConfig, 'apiFormat'> | null,
-  globalMode?: string | null,
+  _model?: Pick<ModelConfig, 'apiFormat'> | null,
+  _globalMode?: string | null,
 ): WeishiReferenceMediaUploadMode {
-  if (model && isWeishiApiModel(model)) return 'backend_https'
-  return resolveEffectiveWeishiReferenceMediaUploadMode(globalMode, model)
+  return 'weishi_asset'
 }
 
 /** 微视 API 分镜生视频可选时长（秒） */

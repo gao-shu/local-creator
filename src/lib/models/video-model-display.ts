@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
 import {
@@ -6,11 +6,7 @@ import {
   formatVideoModelListPriceLabel,
   formatVideoPricingModeLabel,
 } from '@/lib/models/video-model-pricing'
-import {
-  formatModelSelectOptionLabels,
-  getSystemModelBillingBadge,
-  type ModelSelectOptionLabels,
-} from '@/lib/models/system-model-display'
+import type { ModelSelectOptionLabels } from '@/lib/models/image-model-display'
 
 export function getVideoModelDisplayTags(model: ModelConfig | null | undefined): string[] {
   if (!model?.videoPricing) return []
@@ -24,11 +20,8 @@ export function getVideoModelDisplayTags(model: ModelConfig | null | undefined):
 
 export function formatVideoModelSelectOptionLabels(model: ModelConfig): ModelSelectOptionLabels {
   const priceLabel = formatVideoModelListPriceLabel(model)
-  const badge = getSystemModelBillingBadge(model)
-
   return {
     label: model.name,
     ...(priceLabel ? { suffix: priceLabel } : {}),
-    ...(badge ? { systemBadgeTone: badge.tone } : {}),
   }
 }

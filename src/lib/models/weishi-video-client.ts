@@ -12,10 +12,6 @@ import {
   uploadWeishiMediaAssetReference,
 } from '@/lib/models/weishi-asset-service'
 import {
-  uploadReferenceAudioForGeneration,
-  uploadReferenceImageForGeneration,
-} from '@/lib/workflow/reference-audio-upload'
-import {
   formatWeishiVideoMetadataResolution,
   resolveEffectiveWeishiReferenceMediaUploadMode,
   resolveWeishiReferenceAudioUploadMode,
@@ -605,20 +601,11 @@ async function resolveWeishiReferenceImageUrl(
   const cacheKey = weishiUploadCacheKey(options.model.endpoint || '', trimmed)
   const sessionCached = weishiUploadedPathCache.get(cacheKey)
   if (sessionCached) {
-    if (uploadMode === 'weishi_asset' && /^asset:\/\//i.test(sessionCached)) return sessionCached
-    if (uploadMode === 'backend_https' && /^https:\/\//i.test(sessionCached)) return sessionCached
+    if (/^asset:\/\//i.test(sessionCached)) return sessionCached
     if (sessionCached.startsWith('http://')) weishiUploadedPathCache.delete(cacheKey)
   }
 
-  const url =
-    uploadMode === 'backend_https'
-      ? await uploadReferenceImageForGeneration(trimmed, {
-          apiBaseUrl: options.apiBaseUrl,
-          projectRoot: options.projectRoot,
-          label: options.label ?? 'storyboard',
-        })
-      : await uploadWeishiAssetReferenceUrl(trimmed, options)
-
+  const url = await uploadWeishiAssetReferenceUrl(trimmed, options)
   weishiUploadedPathCache.set(cacheKey, url)
   return normalizeWeishiContentMediaUrl(url)
 }
@@ -636,28 +623,16 @@ async function resolveWeishiReferenceAudioUrl(
   const trimmed = ref.trim()
   if (!trimmed) throw new Error('缺少参考音频')
 
-  const uploadMode =
-    options.uploadMode ??
-    resolveEffectiveWeishiReferenceMediaUploadMode(undefined, options.model)
-
-  if (uploadMode === 'weishi_asset' && /^asset:\/\//i.test(trimmed)) return trimmed
+  if (/^asset:\/\//i.test(trimmed)) return trimmed
 
   const cacheKey = weishiUploadCacheKey(options.model.endpoint || '', trimmed)
   const sessionCached = weishiUploadedPathCache.get(cacheKey)
   if (sessionCached) {
-    if (uploadMode === 'weishi_asset' && /^asset:\/\//i.test(sessionCached)) return sessionCached
-    if (uploadMode === 'backend_https' && /^https:\/\//i.test(sessionCached)) return sessionCached
+    if (/^asset:\/\//i.test(sessionCached)) return sessionCached
     if (sessionCached.startsWith('http://')) weishiUploadedPathCache.delete(cacheKey)
   }
 
-  const url =
-    uploadMode === 'backend_https'
-      ? await uploadReferenceAudioForGeneration(trimmed, {
-          apiBaseUrl: options.apiBaseUrl,
-          projectRoot: options.projectRoot,
-          label: options.label ?? 'weishi_ref_audio',
-        })
-      : await uploadWeishiAssetReferenceAudioUrl(trimmed, options)
+  const url = await uploadWeishiAssetReferenceAudioUrl(trimmed, options)
 
   weishiUploadedPathCache.set(cacheKey, url)
   return normalizeWeishiContentMediaUrl(url)

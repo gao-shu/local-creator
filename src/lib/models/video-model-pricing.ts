@@ -1,10 +1,5 @@
 // Copyright (c) Haode AI. All rights reserved.
 
-import { resolveApiBase } from '@/lib/auth/api-base'
-import { hasPersistedRealToken } from '@/lib/auth/login-mode'
-import { noteClientSessionFailure } from '@/lib/auth/session-expired'
-import { computeHaodouChargeAmount, parseUnitPrice } from '@/lib/models/system-model-unit-price'
-import { useAuthStore } from '@/stores/auth-store'
 import type { ModelConfig, VideoModelPricingMeta, VideoPricingMode } from '@/types/settings'
 
 export type { VideoPricingMode }
@@ -47,7 +42,7 @@ export type ClientVideoModelQuoteDto = {
   pricing_mode?: VideoPricingMode | null
   unit_price: string
   unit_label: string
-  haodou_cost: number
+  unit_cost: number
   pricing_summary?: string | null
   resolution?: string | null
   duration_sec?: number | null
@@ -164,118 +159,35 @@ export function isDefaultVideoTier(
   return selected.resolution === defaultResolution
 }
 
-export function resolveVideoHaodouCostSync(
-  model: ModelConfig | null | undefined,
-  options?: { resolution?: string | null; durationSec?: number },
+export function resolveVideoCostSync(
+  _model?: ModelConfig | null,
+  _options?: { resolution?: string | null; durationSec?: number },
 ): number {
-  if (!model) return 0
-  const durationSec = Math.max(1, Math.trunc(options?.durationSec ?? 5))
-  if (model.billingMode === 'internal') return 0
-
-  if (
-    model.videoPricing &&
-    isTieredVideoPricing(model.videoPricing.pricingMode) &&
-    !isDefaultVideoTier(model, options)
-  ) {
-    return 0
-  }
-
-  if (typeof model.unitPrice === 'number' && model.unitPrice > 0) {
-    return computeHaodouChargeAmount(model.unitPrice, durationSec)
-  }
-  if (typeof model.haodouCost === 'number' && model.haodouCost > 0) {
-    return computeHaodouChargeAmount(model.haodouCost, durationSec)
-  }
   return 0
 }
 
 export function shouldFetchVideoModelQuote(
-  model: ModelConfig | null | undefined,
-  options?: { resolution?: string | null },
+  _model?: ModelConfig | null,
+  _options?: { resolution?: string | null; durationSec?: number },
 ): boolean {
-  if (!model?.videoPricing) return false
-  if (model.billingMode === 'internal') return false
-  if (!isTieredVideoPricing(model.videoPricing.pricingMode)) return false
-  return !isDefaultVideoTier(model, options)
+  return false
 }
 
 export async function quoteClientVideoModel(
-  options: VideoModelQuoteRequest,
+  _options: VideoModelQuoteRequest,
 ): Promise<ClientVideoModelQuoteDto> {
-  const token = useAuthStore.getState().token
-  if (!token || !hasPersistedRealToken(token)) {
-    throw new Error('未登录')
-  }
-
-  const modelKey = options.modelKey.trim()
-  if (!modelKey) throw new Error('模型标识无效')
-
-  const body = buildClientVideoQuoteRequestBody({
-    modelKey,
-    durationSec: options.durationSec,
-    resolution: options.resolution,
-  })
-
-  const base = resolveApiBase(options.apiBase).replace(/\/+$/, '')
-  const url = base.startsWith('/') ? `${base}/client/models/quote` : `${base}/client/models/quote`
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-  const json = (await res.json()) as QuoteEnvelope & { detail?: string }
-  if (!res.ok || json.code !== 0 || !json.data) {
-    const hint = json.message || (typeof json.detail === 'string' ? json.detail : undefined)
-    noteClientSessionFailure(res.status, hint, json.code)
-    throw new Error(json.message || hint || '询价失败')
-  }
-  return json.data
+  throw new Error('公司询价接口已移除')
 }
 
-/**
- * Quote 请求体仅含计价字段（H2）：model_key + duration_sec + 可选 resolution。
- * 禁止夹带 aspect_ratio / reference_mode。
- */
-export function buildClientVideoQuoteRequestBody(options: {
-  modelKey: string
-  durationSec: number
-  resolution?: string | null
-}): Record<string, unknown> {
-  const durationSec = Math.max(1, Math.trunc(options.durationSec))
-  const body: Record<string, unknown> = {
-    model_key: options.modelKey.trim(),
-    duration_sec: durationSec,
-  }
-  const resolution = normalizeVideoResolution(options.resolution)
-  if (resolution) body.resolution = resolution
-  return body
-}
-
-export async function resolveVideoHaodouCost(
-  model: ModelConfig | null | undefined,
-  options?: {
+export async function resolveVideoCost(
+  _model?: ModelConfig | null,
+  _options?: {
     resolution?: string | null
     durationSec?: number
     apiBase?: string
   },
 ): Promise<number> {
-  if (!model?.modelKey?.trim()) return 0
-  if (model.billingMode === 'internal') return 0
-
-  if (shouldFetchVideoModelQuote(model, options)) {
-    const quote = await quoteClientVideoModel({
-      modelKey: model.modelKey,
-      resolution: options?.resolution ?? undefined,
-      durationSec: options?.durationSec ?? 5,
-      apiBase: options?.apiBase,
-    })
-    return quote.haodou_cost
-  }
-
-  return resolveVideoHaodouCostSync(model, options)
+  return 0
 }
 
 export function formatVideoPricingModeLabel(mode: VideoPricingMode | null | undefined): string | null {
@@ -297,18 +209,7 @@ export function buildVideoCapabilityDisplay(model: ModelConfig | null | undefine
 
 export function formatVideoModelListPriceLabel(model: ModelConfig | null | undefined): string | null {
   if (!model) return null
-  const summary = model.videoPricing?.pricingSummary?.trim()
-  if (summary) return summary
-  if (model.billingMode === 'internal') return null
-  if (typeof model.haodouCost === 'number' && model.haodouCost > 0) {
-    const unit = model.unitLabel?.trim() || '豆/秒'
-    return `${model.haodouCost} ${unit}`
-  }
-  if (typeof model.unitPrice === 'number' && model.unitPrice > 0) {
-    const unit = model.unitLabel?.trim() || '豆/秒'
-    return `${model.unitPrice.toFixed(1)} ${unit}`
-  }
-  return null
+  return model.videoPricing?.pricingSummary?.trim() || null
 }
 
 export function formatVideoUnitPriceLabel(quote: ClientVideoModelQuoteDto): string {

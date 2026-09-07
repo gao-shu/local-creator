@@ -1995,7 +1995,7 @@ export function CanvasEditorProvider({
             abortSignal: abortController.signal,
             allowUnauthenticatedDownload:
               !String(model?.apiKey || '').trim() ||
-              /\/client\/system-models\/video\/jobs\//i.test(remoteUrl),
+              /\/client\/legacy-proxy-jobs\/video\/jobs\//i.test(remoteUrl),
           })
           const successNow = Date.now()
           const successPatch = {

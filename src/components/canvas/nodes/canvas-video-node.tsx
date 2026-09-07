@@ -1,38 +1,5 @@
 // Copyright (c) Haode AI. All rights reserved.
 
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type MouseEvent,
-  type PointerEvent,
-  type SyntheticEvent,
-} from 'react'
-import type { NodeProps } from '@xyflow/react'
-import { useUpdateNodeInternals } from '@xyflow/react'
-import { Video as VideoIcon, AudioLines } from 'lucide-react'
-import { toast } from 'sonner'
-import { Select } from '@/components/ui/select'
-import { CanvasGeneratePill } from '@/components/canvas/canvas-generate-pill'
-import { CanvasVideoParamsPopover } from '@/components/canvas/nodes/canvas-video-params-popover'
-import { CanvasNodeConnector } from '@/components/canvas/nodes/canvas-node-connector'
-import { CanvasVideoCornerActions } from '@/components/canvas/nodes/canvas-video-corner-actions'
-import { CanvasVideoGeneratingOverlay } from '@/components/canvas/nodes/canvas-video-generating-overlay'
-import { CanvasImageNameEditor } from '@/components/canvas/nodes/canvas-image-name-editor'
-import { CanvasVideoTopToolbar } from '@/components/canvas/nodes/canvas-video-top-toolbar'
-import {
-  CanvasNodeContextMenu,
-  type CanvasNodeContextMenuAnchor,
-} from '@/components/canvas/nodes/canvas-node-context-menu'
-import { MentionTextarea } from '@/components/workshop/mention-textarea'
-import { useVideoGenerationCostPreview } from '@/hooks/use-video-generation-cost-preview'
-import {
-  resolveCanvasGenerateHaodouCost,
-  shouldShowCanvasGenerateHaodou,
-} from '@/lib/canvas/canvas-generate-haodou-display'
 import { normalizeVideoGenerationTierParams } from '@/lib/models/video-generation-tier-params'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useAuthStore } from '@/stores/auth-store'
@@ -631,12 +598,8 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     () => normalizeVideoGenerationTierParams(activeModel, { resolution: resolutionValue }),
     [activeModel, resolutionValue],
   )
-  const { estimate: videoCostEstimate, loading: videoCostLoading } = useVideoGenerationCostPreview({
-    model: activeModel,
-    tierParams: canvasVideoTierParams,
-    durationSec: canvasVideoDurationSec,
-    apiBase: settings?.apiBaseUrl,
-  })
+  const videoCostEstimate = null
+  const videoCostLoading = false
   const consoleAspectRatio = canvasVideoParams.aspectRatio ?? '16:9'
   const { frameStyle, onVideoLoadedMetadata, previewWidth } = useAdaptiveVideoFrame(
     previewSrc,
@@ -1635,9 +1598,9 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
                   testId={`canvas-node-${id}-generate-video`}
                   running={running}
                   disabled={!modelOptions.length || running}
-                  showHaodou={shouldShowCanvasGenerateHaodou('video', activeModel, videoCostEstimate)}
-                  haodouCost={resolveCanvasGenerateHaodouCost(videoCostEstimate)}
-                  haodouLoading={videoCostLoading}
+                  showGenerateCost={false}
+                  generateCost={null}
+                  generateCostLoading={videoCostLoading}
                   className="h-8 gap-1 px-3"
                   onClick={handleRun}
                 />
@@ -1753,9 +1716,9 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
           generateTestId: `canvas-node-${id}-generate-video-expand`,
           running,
           generateDisabled: !modelOptions.length,
-          showHaodou: shouldShowCanvasGenerateHaodou('video', activeModel, videoCostEstimate),
-          haodouCost: resolveCanvasGenerateHaodouCost(videoCostEstimate),
-          haodouLoading: videoCostLoading,
+          showGenerateCost: false,
+          generateCost: null,
+          generateCostLoading: videoCostLoading,
           onGenerate: handleRun,
           onStop: () => stopNode(id),
         }}

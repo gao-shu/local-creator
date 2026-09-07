@@ -4,11 +4,9 @@ import { useCallback, useMemo, useState } from 'react'
 import { Loader2, Play } from 'lucide-react'
 import { toast } from 'sonner'
 import { Select } from '@/components/ui/select'
-import { HaodouIcon } from '@/components/ui/haodou-icon'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CanvasBatchGenerateConfirmDialog } from '@/components/canvas/dialogs/canvas-batch-generate-confirm-dialog'
 import { useCanvasEditor } from '@/components/canvas/canvas-editor-context'
-import { useVideoBatchBillingPreview } from '@/hooks/use-video-batch-billing-preview'
 import {
   collectPendingStoryboardShotItems,
   collectPendingStoryboardShots,
@@ -55,14 +53,8 @@ export function CanvasAiBar({ projectId: _projectId }: CanvasAiBarProps) {
   const pendingShots = useMemo(() => collectPendingStoryboardShots(nodes), [nodes])
   const pendingShotItems = useMemo(() => collectPendingStoryboardShotItems(nodes), [nodes])
   const pendingShotCount = pendingShots.length
-  const { barPreview: batchCostPreview, loading: batchCostLoading } = useVideoBatchBillingPreview({
-    videoModel: selectedVideoModel,
-    shotCount: pendingShotCount,
-    durationSec: canvasVideoParams.durationSec ?? 5,
-    resolution: canvasVideoParams.resolution,
-    apiBase: settings?.apiBaseUrl,
-    enabled: pendingShotCount > 0,
-  })
+  const batchCostPreview: { amount?: number } | null = null
+  const batchCostLoading = false
 
   const handleBatchGenerate = useCallback(() => {
     if (!pendingShotCount) {
@@ -96,7 +88,7 @@ export function CanvasAiBar({ projectId: _projectId }: CanvasAiBarProps) {
   const batchButtonDisabled = batchVideoGenerating || pendingShotCount === 0 || !videoModelOptions.length
   const showBatchCost = pendingShotCount > 0 && (batchCostLoading || batchCostPreview)
 
-  const formatHaodouAmount = (value: number) =>
+  const formatCostAmount = (value: number) =>
     Number.isInteger(value) ? String(value) : value.toFixed(1)
 
   return (
@@ -132,16 +124,16 @@ export function CanvasAiBar({ projectId: _projectId }: CanvasAiBarProps) {
           <div
             data-testid="canvas-ai-bar-batch-cost"
             className="inline-flex shrink-0 items-center gap-0.5 text-amber-600/90 dark:text-amber-400/90"
-            title={batchCostPreview?.kind === 'haodou' ? batchCostPreview.tooltip : undefined}
+            title={batchCostPreview?.kind === 'cost' ? batchCostPreview.tooltip : undefined}
           >
             {batchCostLoading ? (
               <Loader2 className="h-3 w-3 animate-spin" />
-            ) : batchCostPreview?.kind === 'haodou' ? (
+            ) : batchCostPreview?.kind === 'cost' ? (
               <>
                 <span className="text-[12px] font-semibold tabular-nums">
-                  需{formatHaodouAmount(batchCostPreview.amount)}
+                  需{formatCostAmount(batchCostPreview.amount)}
                 </span>
-                <HaodouIcon />
+                {null}
               </>
             ) : batchCostPreview?.kind === 'project' ? (
               <span className="text-[10px]">{batchCostPreview.text}</span>

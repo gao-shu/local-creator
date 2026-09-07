@@ -77,7 +77,7 @@ export function ModelConfigDialog({
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
-  const systemVideoModels = useSettingsStore((state) => state.systemModelsByKind.video)
+  const videoModels = useSettingsStore((state) => state.settings?.videoModels ?? [])
 
   useEffect(() => {
     if (!open) return
@@ -92,9 +92,9 @@ export function ModelConfigDialog({
             })
           : initial
       if (kind === 'video' && isWeishiApiModel(base)) {
-        const systemVideo = useSettingsStore.getState().systemModelsByKind.video
-        const modelId = base.model?.trim() || resolveDefaultWeishiUpstreamModelId(systemVideo)
-        const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, systemVideo)
+        const configured = useSettingsStore.getState().settings?.videoModels ?? []
+        const modelId = base.model?.trim() || resolveDefaultWeishiUpstreamModelId(configured)
+        const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, configured)
         setForm({ ...base, ...catalogPatch, model: modelId, autoAppendV1: base.autoAppendV1 !== false })
       } else {
         setForm({ ...base, autoAppendV1: base.autoAppendV1 !== false })
@@ -102,9 +102,9 @@ export function ModelConfigDialog({
     } else {
       const empty = createEmptyModel(kind)
       if (kind === 'video' && isWeishiApiModel(empty)) {
-        const systemVideo = useSettingsStore.getState().systemModelsByKind.video
-        const modelId = empty.model?.trim() || resolveDefaultWeishiUpstreamModelId(systemVideo)
-        const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, systemVideo)
+        const configured = useSettingsStore.getState().settings?.videoModels ?? []
+        const modelId = empty.model?.trim() || resolveDefaultWeishiUpstreamModelId(configured)
+        const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, configured)
         setForm({ ...empty, ...catalogPatch, model: modelId })
       } else {
         setForm(empty)
@@ -133,15 +133,15 @@ export function ModelConfigDialog({
     const isWeishiVideo = kind === 'video' && isWeishiApiModel(form)
 
     if (isWeishiVideo) {
-      if (!isWeishiModelCatalogReady(systemVideoModels)) {
-        return fail('管理端暂无启用的微视系统模型，无法保存')
+      if (!isWeishiModelCatalogReady(videoModels)) {
+        return fail('暂无可用的微视模型列表，无法保存')
       }
       if (!form.model?.trim()) {
         return fail('请选择模型')
       }
-      const catalogPatch = buildWeishiCustomModelPatchFromCatalog(form.model, systemVideoModels)
+      const catalogPatch = buildWeishiCustomModelPatchFromCatalog(form.model, videoModels)
       if (!catalogPatch.endpoint?.trim()) {
-        return fail('所选模型缺少平台接口地址，请联系管理员')
+        return fail('所选模型缺少接口地址，请检查预设或手动填写')
       }
       if (!form.apiKey?.trim()) {
         return fail('请填写 API 密钥')
@@ -214,7 +214,7 @@ export function ModelConfigDialog({
       const isWeishiVideo = kind === 'video' && isWeishiApiModel(form)
       const weishiCatalogPatch =
         isWeishiVideo && form.model?.trim()
-          ? buildWeishiCustomModelPatchFromCatalog(form.model, systemVideoModels)
+          ? buildWeishiCustomModelPatchFromCatalog(form.model, videoModels)
           : {}
       const mergedForm = isWeishiVideo
         ? {
@@ -274,7 +274,7 @@ export function ModelConfigDialog({
   const hideModelIdField = kind === 'video' && isWeishiApiModel(form)
   const hideApiFormatPicker = kind === 'video' && isWeishiApiModel(form)
   const isWeishiVideo = kind === 'video' && isWeishiApiModel(form)
-  const weishiCatalogReady = !isWeishiVideo || isWeishiModelCatalogReady(systemVideoModels)
+  const weishiCatalogReady = !isWeishiVideo || isWeishiModelCatalogReady(videoModels)
   const showAutoAppendV1 =
     kind === 'llm'
       ? llmPresetKey === 'openai_compatible'

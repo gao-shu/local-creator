@@ -13,7 +13,7 @@ function extractFileNameFromUrl(rawUrl: string): string {
 }
 
 function isServerMirrorFeed(feedBaseUrl: string): boolean {
-  return /haodeweishi\.cn|115\.191\.9\.56/i.test(feedBaseUrl)
+  return /115\.191\.9\.56/i.test(feedBaseUrl)
 }
 
 /** 解析 latest.yml 中的安装包 URL；相对路径拼 feed 根目录；业务服务器 feed 优先走同源镜像 */

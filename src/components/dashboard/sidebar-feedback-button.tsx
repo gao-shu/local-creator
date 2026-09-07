@@ -1,7 +1,8 @@
-import { useState } from 'react'
+// Copyright (c) local-creator. All rights reserved.
+
 import { MessageSquarePlus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { FeedbackDialog } from '@/components/dashboard/feedback-dialog'
+import { toast } from 'sonner'
 
 const feedbackButtonClass = cn(
   'flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs sm:text-sm min-w-0',
@@ -15,6 +16,12 @@ const compactFeedbackButtonClass = cn(
   'hover:border-border/60 hover:bg-card hover:text-foreground transition-colors',
 )
 
+function onFeedbackClick() {
+  toast.message('反馈入口已移除', {
+    description: '开源版暂不连接公司反馈服务，可后续改为 Issue 链接。',
+  })
+}
+
 export function SidebarFeedbackButton({
   className,
   variant = 'default',
@@ -24,42 +31,34 @@ export function SidebarFeedbackButton({
   variant?: 'default' | 'compact'
   testId?: string
 }) {
-  const [feedbackOpen, setFeedbackOpen] = useState(false)
-
   if (variant === 'compact') {
     return (
-      <>
-        <button
-          type="button"
-          onClick={() => setFeedbackOpen(true)}
-          className={cn(compactFeedbackButtonClass, className)}
-          title="建议与反馈"
-          data-testid={testId}
-        >
-          <MessageSquarePlus className="h-3.5 w-3.5 shrink-0" />
-          <span className="text-[9px] leading-[1.2] text-center font-medium">
-            <span className="block">建议</span>
-            <span className="block">与反馈</span>
-          </span>
-        </button>
-        <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-      </>
+      <button
+        type="button"
+        onClick={onFeedbackClick}
+        className={cn(compactFeedbackButtonClass, className)}
+        title="建议与反馈"
+        data-testid={testId}
+      >
+        <MessageSquarePlus className="h-3.5 w-3.5 shrink-0" />
+        <span className="text-[9px] leading-[1.2] text-center font-medium">
+          <span className="block">建议</span>
+          <span className="block">与反馈</span>
+        </span>
+      </button>
     )
   }
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setFeedbackOpen(true)}
-        className={cn(feedbackButtonClass, 'w-full justify-center', className)}
-        title="建议与反馈"
-        data-testid={testId}
-      >
-        <MessageSquarePlus className="h-4 w-4 shrink-0" />
-        <span className="truncate">建议与反馈</span>
-      </button>
-      <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
-    </>
+    <button
+      type="button"
+      onClick={onFeedbackClick}
+      className={cn(feedbackButtonClass, className)}
+      title="建议与反馈"
+      data-testid={testId}
+    >
+      <MessageSquarePlus className="h-4 w-4 shrink-0" />
+      <span className="truncate">建议与反馈</span>
+    </button>
   )
 }

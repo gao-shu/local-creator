@@ -1,13 +1,12 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
-import { toPublicFileUrl } from '@/lib/auth/client-file-service'
 import { isBackendUploadPathUrl } from '@/lib/auth/upload-storage'
-import { canUseBackendFileUpload } from '@/lib/auth/login-mode'
 import {
   uploadReferenceAudioForGeneration,
   uploadReferenceImageForGeneration,
 } from '@/lib/workflow/reference-audio-upload'
 import { assertNotAborted } from '@/lib/video/video-generation-abort'
+import { toPublicFileUrl } from '@/lib/workflow/reference-image-upload'
 
 export interface ResolveVideoApiMediaOptions {
   apiBaseUrl?: string
@@ -21,8 +20,8 @@ function isRemoteHttpsUrl(value: string): boolean {
 }
 
 /**
- * 非微视视频 API：本地/项目相对路径 → 后台 admin upload → 公网 https URL。
- * 已是 https 或后台 /uploads/ 地址时 rewrite 到当前 Origin 并复用。
+ * 非微视视频 API：本地路径 → data URL / https。
+ * 公司后台上传已移除；若 API 强制 https，请改用微视。
  */
 export async function resolveVideoApiImageUrl(
   imagePath: string,
@@ -32,11 +31,12 @@ export async function resolveVideoApiImageUrl(
   if (!trimmed) throw new Error('缺少参考图')
 
   if (isBackendUploadPathUrl(trimmed)) {
-    return toPublicFileUrl(trimmed, options?.apiBaseUrl)
+    const url = toPublicFileUrl(trimmed, options?.apiBaseUrl)
+    if (isRemoteHttpsUrl(url)) return url
+    throw new Error('公司后台上传已移除，请改用微视 API 或提供 https 参考图')
   }
   if (isRemoteHttpsUrl(trimmed)) return trimmed
 
-  requireBackendUpload()
   return uploadReferenceImageForGeneration(trimmed, {
     apiBaseUrl: options?.apiBaseUrl,
     projectRoot: options?.projectRoot,
@@ -44,15 +44,6 @@ export async function resolveVideoApiImageUrl(
   })
 }
 
-function requireBackendUpload(): void {
-  if (!canUseBackendFileUpload()) {
-    throw new Error(
-      '当前视频模型需将参考素材上传至后台服务器（https）。请开启登录（VITE_LOGIN_REQUIRED）并完成账号登录，或改用微视 API。',
-    )
-  }
-}
-
-/** 批量解析分镜参考图，供智谱/OpenAI 兼容等视频模型使用 */
 export async function resolveVideoApiImageUrls(
   paths: string[],
   options?: ResolveVideoApiMediaOptions,
@@ -74,7 +65,6 @@ export async function resolveVideoApiImageUrls(
   return urls
 }
 
-/** 非微视视频 API：参考音频上传后台并返回 https URL */
 export async function resolveVideoApiAudioUrl(
   audioPath: string,
   options?: ResolveVideoApiMediaOptions,
@@ -83,11 +73,12 @@ export async function resolveVideoApiAudioUrl(
   if (!trimmed) throw new Error('缺少参考音频')
 
   if (isBackendUploadPathUrl(trimmed)) {
-    return toPublicFileUrl(trimmed, options?.apiBaseUrl)
+    const url = toPublicFileUrl(trimmed, options?.apiBaseUrl)
+    if (isRemoteHttpsUrl(url)) return url
+    throw new Error('公司后台上传已移除，请改用微视 API 或提供 https 参考音频')
   }
   if (isRemoteHttpsUrl(trimmed)) return trimmed
 
-  requireBackendUpload()
   return uploadReferenceAudioForGeneration(trimmed, {
     apiBaseUrl: options?.apiBaseUrl,
     projectRoot: options?.projectRoot,

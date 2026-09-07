@@ -1,10 +1,5 @@
-import type { HaodouConsumeReason } from '@/lib/auth/haodou-labels'
 import type { ModelConfig } from '@/types/settings'
-import { runWithHaodouConsume } from '@/lib/auth/haodou-generation-guard'
 import { resolveChatUrl } from '@/lib/models/model-endpoint'
-import { isSystemModel, shouldUseSystemModelProxy } from '@/lib/models/system-models-service'
-import { proxySystemModelChat } from '@/lib/models/system-model-proxy'
-import { readSettings } from '@/lib/storage/settings-service'
 
 function extractMessageContent(payload: unknown): string {
   const data = payload as {
@@ -29,8 +24,8 @@ export interface ChatCompletionMessage {
 
 export type LlmCallOptions = {
   temperature?: number
-  /** external 系统模型扣豆 reason，默认 consume_script */
-  haodouReason?: HaodouConsumeReason
+  /** @deprecated ignored — kept for call-site compatibility */
+  billingReason?: string
   /** 用户取消生图/分镜等 */
   signal?: AbortSignal
 }
@@ -99,20 +94,6 @@ export function formatLlmHttpError(
   return `「${modelLabel}」请求失败 (${status})${detail ? `：${detail.slice(0, 200)}` : ''}`
 }
 
-function flattenMessagesForSystemModelPrompt(messages: ChatCompletionMessage[]): string {
-  const systemParts = messages.filter((item) => item.role === 'system').map((item) => item.content)
-  const dialogParts = messages
-    .filter((item) => item.role !== 'system')
-    .map((item) => `${item.role === 'user' ? 'User' : 'Assistant'}: ${item.content}`)
-  return [
-    systemParts.length ? `[System Instructions]\n${systemParts.join('\n\n')}` : '',
-    dialogParts.length ? `[Conversation]\n${dialogParts.join('\n\n')}` : '',
-    'Reply as Assistant in concise Chinese. Do not prefix with "Assistant:".',
-  ]
-    .filter(Boolean)
-    .join('\n\n')
-}
-
 /** 多轮对话（system / user / assistant） */
 export async function callChatCompletionsWithMessages(
   model: ModelConfig,
@@ -120,35 +101,6 @@ export async function callChatCompletionsWithMessages(
   options?: LlmCallOptions,
 ): Promise<string> {
   const temperature = options?.temperature ?? 0.7
-  const promptText = flattenMessagesForSystemModelPrompt(messages)
-
-  if (shouldUseSystemModelProxy(model)) {
-    const settings = (await readSettings()).data
-    return runWithHaodouConsume(
-      {
-        model,
-        kind: 'llm',
-        reason: options?.haodouReason ?? 'consume_script',
-        apiBase: settings.apiBaseUrl,
-      },
-      async () => {
-        const content = await proxySystemModelChat({
-          modelKey: model.modelKey,
-          prompt: promptText,
-          temperature,
-          apiBase: settings.apiBaseUrl,
-          abortSignal: options?.signal,
-        })
-        return content
-      },
-    )
-  }
-
-  if (isSystemModel(model) && model.modelKey && !shouldUseSystemModelProxy(model)) {
-    throw new Error(
-      `内部 API 模型「${model.name}」不走服务端代理，请使用支持的模型类型（当前 LLM 内部模型暂不支持）`,
-    )
-  }
 
   if (!model.apiKey?.trim()) {
     throw new Error(`模型「${model.name}」未配置 API Key`)
@@ -186,65 +138,11 @@ export async function callChatCompletions(
   prompt: string,
   options?: LlmCallOptions,
 ): Promise<string> {
-  const temperature = options?.temperature ?? 0.7
-
-  if (shouldUseSystemModelProxy(model)) {
-    const settings = (await readSettings()).data
-    return runWithHaodouConsume(
-      {
-        model,
-        kind: 'llm',
-        reason: options?.haodouReason ?? 'consume_script',
-        apiBase: settings.apiBaseUrl,
-      },
-      async () => {
-        const content = await proxySystemModelChat({
-          modelKey: model.modelKey,
-          prompt,
-          temperature,
-          apiBase: settings.apiBaseUrl,
-          abortSignal: options?.signal,
-        })
-        return content
-      },
-    )
-  }
-
-  if (isSystemModel(model) && model.modelKey && !shouldUseSystemModelProxy(model)) {
-    throw new Error(
-      `内部 API 模型「${model.name}」不走服务端代理，请使用支持的模型类型（当前 LLM 内部模型暂不支持）`,
-    )
-  }
-
-  if (!model.apiKey?.trim()) {
-    throw new Error(`模型「${model.name}」未配置 API Key`)
-  }
-  if (!model.model?.trim()) {
-    throw new Error(`模型「${model.name}」未配置 model 名称`)
-  }
-
-  const url = resolveChatUrl(model)
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${model.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: model.model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature,
-    }),
-    signal: options?.signal,
-  })
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '')
-    throw new Error(formatLlmHttpError(response.status, detail, model))
-  }
-
-  const payload = await response.json()
-  return extractMessageContent(payload)
+  return callChatCompletionsWithMessages(
+    model,
+    [{ role: 'user', content: prompt }],
+    options,
+  )
 }
 
 export function resolvePreferredLlmModelId(

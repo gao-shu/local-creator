@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
+import { Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
-import { HaodouIcon } from '@/components/ui/haodou-icon'
 import { recordThemeToggleForEasterEgg } from '@/lib/easter-eggs/theme-flicker-easter-egg'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +19,7 @@ type RainDrop = {
   drift: string
 }
 
-/** T1 文案 + T2 好豆雨：连续狂切主题时触发一次（有冷却） */
+/** T1 文案 + T2 光影雨：连续狂切主题时触发一次（有冷却） */
 export function maybeTriggerThemeFlickerEasterEgg() {
   if (typeof window === 'undefined') return
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -30,7 +30,7 @@ export function maybeTriggerThemeFlickerEasterEgg() {
   }
   if (!recordThemeToggleForEasterEgg()) return
 
-  toast.message('导演在对光？', { description: '好豆雨过一遍，先选定影调吧。' })
+  toast.message('导演在对光？', { description: '光影雨过一遍，先选定影调吧。' })
   window.dispatchEvent(new CustomEvent('haode:theme-flicker-easter-egg'))
 }
 
@@ -70,7 +70,7 @@ export function ThemeFlickerEasterEggHost() {
         <span
           key={drop.id}
           className={cn(
-            'absolute top-[-24px] inline-flex animate-[haode-haodou-fall_var(--fall-duration)_ease-in_forwards]',
+            'absolute top-[-24px] inline-flex animate-[theme-flicker-fall_var(--fall-duration)_ease-in_forwards]',
             'opacity-90',
           )}
           style={
@@ -82,11 +82,11 @@ export function ThemeFlickerEasterEggHost() {
             } as CSSProperties
           }
         >
-          <HaodouIcon size={drop.size} className="text-amber-300 drop-shadow-sm" />
+          <Sparkles className="h-4 w-4 text-amber-300 drop-shadow-sm" />
         </span>
       ))}
       <style>{`
-        @keyframes haode-haodou-fall {
+        @keyframes theme-flicker-fall {
           0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
           12% { opacity: 1; }
           100% { transform: translate3d(var(--fall-drift), 110vh, 0) rotate(28deg); opacity: 0.15; }

@@ -30,7 +30,7 @@ import {
   resolveAssetImageTierPrefs,
 } from '@/lib/models/image-generation-tier-params'
 import { resolveSoftwareImageModelId } from '@/lib/models/software-model-prefs'
-import { mergeModelsForKind } from '@/lib/models/system-models-service'
+import { mergeModelsForKind } from '@/lib/models/model-merge'
 import { useSettingsStore } from '@/stores/settings-store'
 import {
   resolveCanvasImageNodePrompt,
@@ -430,7 +430,7 @@ export async function runCanvasVideoNode(
       downloadRetries: 3,
       allowUnauthenticatedDownload:
         !String(model.apiKey || '').trim() ||
-        /\/client\/system-models\/video\/jobs\//i.test(String(remoteUrl || '')),
+        /\/client\/legacy-proxy-jobs\/video\/jobs\//i.test(String(remoteUrl || '')),
     })
   } catch (error: unknown) {
     if (isVideoGenerationAbortError(error)) throw error

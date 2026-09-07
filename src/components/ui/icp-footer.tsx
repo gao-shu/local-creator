@@ -3,12 +3,13 @@ import { cn } from '@/lib/utils'
 
 interface IcpFooterProps {
   className?: string
-  /** dark：登录页等深色背景；muted：设置页等浅色背景 */
   variant?: 'dark' | 'muted'
   showDomain?: boolean
 }
 
 export function IcpFooter({ className, variant = 'muted', showDomain = true }: IcpFooterProps) {
+  if (!SITE_ICP_RECORD) return null
+
   const linkClass =
     variant === 'dark'
       ? 'text-white/35 hover:text-white/55'
@@ -16,7 +17,7 @@ export function IcpFooter({ className, variant = 'muted', showDomain = true }: I
 
   return (
     <p className={cn('text-center text-xs leading-relaxed', linkClass, className)}>
-      {showDomain ? (
+      {showDomain && SITE_ICP_DOMAIN ? (
         <>
           <span>{SITE_ICP_DOMAIN}</span>
           <span className="mx-1.5 opacity-50">·</span>

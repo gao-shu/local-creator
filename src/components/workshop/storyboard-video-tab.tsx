@@ -22,10 +22,8 @@ import {
   resolveVideoReferenceModeOptions,
 } from '@/lib/models/video-model-capability'
 import { VideoGenerationTierSelects } from '@/components/models/video-generation-tier-selects'
-import { VideoGenerationCostHint } from '@/components/models/video-generation-cost-hint'
 import { shouldShowVideoResolutionSelector } from '@/lib/models/video-generation-tier-params'
 import { normalizeVideoGenerationTierParams } from '@/lib/models/video-generation-tier-params'
-import { useVideoGenerationCostPreview } from '@/hooks/use-video-generation-cost-preview'
 import type { ModelConfig } from '@/types/settings'
 import { useSettingsStore } from '@/stores/settings-store'
 import { getGeneratedVideoPaths } from '@/lib/workflow/shot-video-utils'
@@ -139,12 +137,8 @@ export function StoryboardVideoTab({
     [resolution, selectedVideoModel],
   )
   const durationSec = Number(duration) || Number(durationOptions[0]?.value) || 5
-  const { previewText: videoCostPreview, loading: videoCostLoading } = useVideoGenerationCostPreview({
-    model: selectedVideoModel,
-    tierParams: videoTierParams,
-    durationSec,
-    apiBase: settings?.apiBaseUrl,
-  })
+  const videoCostPreview = ''
+  const videoCostLoading = false
 
   useEffect(() => {
     if (!settings) return
@@ -339,10 +333,7 @@ export function StoryboardVideoTab({
           </InlineSelectRow>
         ) : null}
 
-        <VideoGenerationCostHint
-          text={videoCostPreview}
-          loading={videoCostLoading}
-        />
+        {null}
 
         {videoBusy ? (
           <Button

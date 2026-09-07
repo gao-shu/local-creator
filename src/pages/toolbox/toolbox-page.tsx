@@ -10,7 +10,6 @@ import { ImageCropTool } from '@/components/toolbox/image-crop-tool'
 import { ScriptCreateTool } from '@/components/toolbox/script-create-tool'
 import { ToolboxToolCard } from '@/components/toolbox/toolbox-tool-card'
 import { ToolboxToolModal } from '@/components/toolbox/toolbox-tool-modal'
-import { ToolboxWishForm } from '@/components/toolbox/toolbox-wish-form'
 import { VideoMergeTool } from '@/components/toolbox/video-merge-tool'
 
 type ToolboxToolId = 'video-merge' | 'image-crop' | 'script-create'
@@ -135,8 +134,7 @@ export function ToolboxPage() {
         </div>
 
         <motion.div variants={itemVariants} className="mt-8" id="tool-wish">
-          <ToolboxWishForm />
-        </motion.div>
+</motion.div>
       </motion.div>
 
       {activeMeta ? (

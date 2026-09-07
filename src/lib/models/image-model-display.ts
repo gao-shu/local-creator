@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
 import {
@@ -7,11 +7,26 @@ import {
   formatImagePricingModeLabel,
 } from '@/lib/models/image-model-pricing'
 import { formatVideoModelSelectOptionLabels } from '@/lib/models/video-model-display'
-import {
-  formatModelSelectOptionLabels,
-  getSystemModelBillingBadge,
-  type ModelSelectOptionLabels,
-} from '@/lib/models/system-model-display'
+
+export type ModelSelectOptionLabels = {
+  label: string
+  suffix?: string
+  systemBadgeTone?: 'internal' | 'external'
+}
+
+export function formatModelSelectOptionLabels(model: ModelConfig): ModelSelectOptionLabels {
+  return { label: model.name }
+}
+
+export function getSystemModelBillingBadge(
+  _model: ModelConfig | null | undefined,
+): { tone: 'internal' | 'external'; label: string } | null {
+  return null
+}
+
+export function sortModelsForSelect(models: ModelConfig[]): ModelConfig[] {
+  return [...models].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+}
 
 /** 设置页 / 下拉菜单用的能力 Tag 文案 */
 export function getImageModelDisplayTags(model: ModelConfig | null | undefined): string[] {
@@ -28,16 +43,12 @@ export function getImageModelDisplayTags(model: ModelConfig | null | undefined):
 
 export function formatImageModelSelectOptionLabels(model: ModelConfig): ModelSelectOptionLabels {
   const priceLabel = formatImageModelListPriceLabel(model)
-  const badge = getSystemModelBillingBadge(model)
-
   return {
     label: model.name,
     ...(priceLabel ? { suffix: priceLabel } : {}),
-    ...(badge ? { systemBadgeTone: badge.tone } : {}),
   }
 }
 
-/** 无分档元数据时回退通用标签逻辑 */
 export function formatModelSelectOptionLabelsForKind(
   model: ModelConfig,
   kind: 'llm' | 'image' | 'video',

@@ -9,7 +9,7 @@ import {
   resolveCanvasExtractLlmModelId,
 } from '@/lib/canvas/canvas-extract-llm'
 import { buildCanvasGraphFromShots } from '@/lib/canvas/canvas-import-service'
-import { formatUserFacingBillingError } from '@/lib/auth/haodou-consume-service'
+import { formatUserFacingBillingError } from '@/lib/utils'
 import { callChatCompletions } from '@/lib/models/llm-client'
 import { pickMergedLlmModel } from '@/lib/models/merged-model-picker'
 import { getE2eMockDelayMs, shouldUseE2eMockAi } from '@/lib/e2e/e2e-mock-ai'

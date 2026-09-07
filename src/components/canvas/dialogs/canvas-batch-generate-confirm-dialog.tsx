@@ -3,7 +3,6 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { X } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { useVideoBatchBillingPreview } from '@/hooks/use-video-batch-billing-preview'
 import { useSettingsStore } from '@/stores/settings-store'
 import type { PendingStoryboardShotItem } from '@/lib/canvas/canvas-shot-utils'
 import {
@@ -55,14 +54,8 @@ export function CanvasBatchGenerateConfirmDialog({
     .map((nodeId) => items.find((item) => item.nodeId === nodeId))
     .filter((item): item is PendingStoryboardShotItem => Boolean(item))
 
-  const { lines: billingLines, loading: billingLoading } = useVideoBatchBillingPreview({
-    videoModel,
-    shotCount: selectedNodeIds.length,
-    durationSec,
-    resolution,
-    apiBase: settings?.apiBaseUrl,
-    enabled: open && selectedNodeIds.length > 0,
-  })
+  const billingLines: Array<{ text: string }> = []
+  const billingLoading = false
 
   const capabilityFields = useMemo(() => {
     const modeKey = String(referenceMode || '').trim() as VideoReferenceMode
@@ -182,7 +175,7 @@ export function CanvasBatchGenerateConfirmDialog({
                 key={line.kind}
                 className={cn(
                   'text-sm font-medium',
-                  line.kind === 'haodou' && 'text-amber-600/90 dark:text-amber-400/90',
+                  line.kind === 'cost' && 'text-amber-600/90 dark:text-amber-400/90',
                   line.kind === 'project' && 'text-cyan-600/90 dark:text-cyan-400/90',
                   line.kind === 'info' && 'text-muted-foreground font-normal',
                 )}

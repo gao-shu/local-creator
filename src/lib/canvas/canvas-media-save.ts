@@ -297,7 +297,7 @@ export async function saveCanvasGeneratedVideo(options: {
     needsAuthenticatedVideoDownload(remoteUrl, videoId) &&
     !String(options.apiKey || '').trim() &&
     !options.allowUnauthenticatedDownload &&
-    !/\/client\/system-models\/video\/jobs\/[^/]+\/content\/?$/i.test(remoteUrl)
+    !/\/client\/legacy-proxy-jobs\/video\/jobs\/[^/]+\/content\/?$/i.test(remoteUrl)
   ) {
     throw new Error('下载成片需要 API Key，请在设置中检查该视频模型的密钥')
   }

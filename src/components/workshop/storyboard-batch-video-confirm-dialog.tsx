@@ -2,8 +2,6 @@
 
 import { Fragment, useMemo } from 'react'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { useVideoBatchBillingPreview } from '@/hooks/use-video-batch-billing-preview'
-import { useSettingsStore } from '@/stores/settings-store'
 import {
   VIDEO_CONFIRM_BILLING_SECTION_TITLE,
   VIDEO_CONFIRM_PARAMS_SECTION_TITLE,
@@ -43,15 +41,8 @@ export function StoryboardBatchVideoConfirmDialog({
   onClose,
   onConfirm,
 }: StoryboardBatchVideoConfirmDialogProps) {
-  const settings = useSettingsStore((state) => state.settings)
-  const { lines: billingLines, loading: billingLoading } = useVideoBatchBillingPreview({
-    videoModel,
-    shotCount: Math.max(0, targetCount),
-    durationSec,
-    resolution,
-    apiBase: settings?.apiBaseUrl,
-    enabled: open && targetCount > 0,
-  })
+  const billingLines: Array<{ text: string }> = []
+  const billingLoading = false
 
   const capabilityFields = useMemo(() => {
     const modeKey = String(referenceMode || '').trim() as VideoReferenceMode
@@ -128,7 +119,7 @@ export function StoryboardBatchVideoConfirmDialog({
                 key={line.kind}
                 className={cn(
                   'text-sm font-medium',
-                  line.kind === 'haodou' && 'text-amber-600/90 dark:text-amber-400/90',
+                  line.kind === 'cost' && 'text-amber-600/90 dark:text-amber-400/90',
                   line.kind === 'project' && 'text-cyan-600/90 dark:text-cyan-400/90',
                   line.kind === 'info' && 'text-muted-foreground font-normal',
                 )}

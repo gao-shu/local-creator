@@ -1,6 +1,4 @@
 import type { ModelConfig } from '@/types/settings'
-import type { HaodouConsumeReason } from '@/lib/auth/haodou-labels'
-import { buildImageProxyTierPayload } from '@/lib/models/image-generation-tier-params'
 import type { ImageGenerationTierParams } from '@/lib/models/image-generation-tier-params'
 import { isGrokImageModel } from '@/lib/models/image-model-presets'
 import { normalizeRemoteMediaUrl } from '@/lib/storage/media-path-resolver'
@@ -9,9 +7,6 @@ import {
   resolveImageTaskPollUrl,
   resolveImageUrl,
 } from '@/lib/models/model-endpoint'
-import { isSystemModel, shouldUseSystemModelProxy } from '@/lib/models/system-models-service'
-import { proxySystemModelImage } from '@/lib/models/system-model-proxy'
-import { readSettings } from '@/lib/storage/settings-service'
 
 /** xAI Grok Imagine 支持的画幅（docs.x.ai images） */
 const GROK_IMAGE_ASPECT_RATIOS = [
@@ -423,31 +418,9 @@ export async function generateImage(
   size = '1024x1024',
   referenceImageUrls?: string[],
   signal?: AbortSignal,
-  haodouReason: HaodouConsumeReason = 'consume_image',
-  tierOptions?: ImageGenerationTierParams | null,
+  _billingReason?: string,
+  _tierOptions?: ImageGenerationTierParams | null,
 ): Promise<string> {
-  if (shouldUseSystemModelProxy(model)) {
-    const settings = (await readSettings()).data
-    const tierPayload = buildImageProxyTierPayload(model, tierOptions)
-    // external 系统模型：扣豆由代理接口按档计价（含失败退还），不再客户端 pre-consume
-    return proxySystemModelImage({
-      modelKey: model.modelKey!,
-      prompt,
-      size,
-      imageUrls: referenceImageUrls,
-      resolution: tierPayload.resolution,
-      quality: tierPayload.quality,
-      apiBase: settings.apiBaseUrl,
-      abortSignal: signal,
-    })
-  }
-
-  if (isSystemModel(model) && model.modelKey) {
-    throw new Error(
-      `内部 API 模型「${model.name}」不走服务端代理，请使用支持的模型类型（当前图片内部模型暂不支持）`,
-    )
-  }
-
   if (!model.apiKey?.trim()) throw new Error(`模型「${model.name}」未配置 API Key`)
   if (!model.model?.trim()) throw new Error(`模型「${model.name}」未配置 model 名称`)
 

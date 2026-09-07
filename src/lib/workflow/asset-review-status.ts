@@ -1,4 +1,3 @@
-import { isJimengAssetFailed, isJimengAssetReady } from '@/lib/models/jimeng-asset-service'
 import { isWeishiAssetFailed, isWeishiAssetReady } from '@/lib/models/weishi-asset-service'
 import {
   collectAssetPreviewPaths,
@@ -67,8 +66,8 @@ export function getAssetReviewSnapshot(
     provider === 'weishi' ? asset.weishiAssetStatus : asset.jimengAssetStatus,
   )
 
-  const isReady = provider === 'weishi' ? isWeishiAssetReady : isJimengAssetReady
-  const isFailed = provider === 'weishi' ? isWeishiAssetFailed : isJimengAssetFailed
+  const isReady = isWeishiAssetReady
+  const isFailed = isWeishiAssetFailed
 
   const isApproved = Boolean(assetId) && isReady(status)
   const failed = isFailed(status)

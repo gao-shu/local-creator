@@ -96,11 +96,11 @@ function isLegacyTunnelApiBase(url: string): boolean {
   return normalized === LEGACY_TUNNEL_API_BASE || normalizedHttp === legacyHttp
 }
 
-/** 开发态不应再指向的历史联调 / 域名（改走 8.141.97.65） */
+/** 开发态不应再指向的历史联调 / 域名 */
 const DEV_STALE_API_HOST_PATTERNS = [
   /^https?:\/\/learncom\.cn(?:\/api)?\/?$/i,
   /^https?:\/\/www\.learncom\.cn(?:\/api)?\/?$/i,
-  /^https?:\/\/duanju\.haodeweishi\.cn(?:\/api)?\/?$/i,
+  /^https?:\/\/duanju\.[a-z0-9-]+\.cn(?:\/api)?\/?$/i,
 ]
 
 function isDevStaleApiBase(url: string): boolean {

@@ -1,31 +1,5 @@
 // Copyright (c) Haode AI. All rights reserved.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import {
-  AudioLines,
-  BrushCleaning,
-  ClipboardList,
-  Copy,
-  Grid2X2,
-  ImageIcon,
-  LayoutGrid,
-  Loader2,
-  MessageCircleMore,
-  SendHorizontal,
-  Sparkles,
-  Video,
-  X,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { useCanvasEditor } from '@/components/canvas/canvas-editor-context'
-import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { Select } from '@/components/ui/select'
-import { HaodouIcon } from '@/components/ui/haodou-icon'
-import {
-  resolveCanvasGenerateHaodouCost,
-  shouldShowCanvasGenerateHaodou,
-} from '@/lib/canvas/canvas-generate-haodou-display'
 import { buildCanvasVideoModelSwitchPatch } from '@/lib/canvas/canvas-video-params-sync'
 import { buildModelSelectOptions } from '@/lib/models/model-select-options'
 import { CanvasAgentReferenceChip } from '@/components/canvas/canvas-agent-reference-chip'
@@ -37,7 +11,6 @@ import {
 } from '@/lib/models/llm-client'
 import { resolveSoftwareImageModelId, resolveSoftwareLlmModelId } from '@/lib/models/software-model-prefs'
 import { CanvasImageParamsPopover } from '@/components/canvas/nodes/canvas-image-params-popover'
-import { useImageGenerationCostPreview } from '@/hooks/use-image-generation-cost-preview'
 import {
   normalizeImageGenerationTierParams,
   resolveAssetImageTierPrefs,
@@ -295,12 +268,8 @@ export function CanvasAgentSidebar({ open, onClose }: CanvasAgentSidebarProps) {
   const [agentMode, setAgentMode] = useState<CanvasAgentMode>('chat')
   const [mediaTab, setMediaTab] = useState<CanvasAgentSkillMediaTab>('featured')
   const agentModeRef = useRef<CanvasAgentMode>('chat')
-  const { estimate: imageCostEstimate, loading: imageCostLoading } = useImageGenerationCostPreview({
-    model: activeImageModel,
-    tierParams: imageTierParams,
-    apiBase: settings?.apiBaseUrl,
-    enabled: agentMode === 'edit_image',
-  })
+  const imageCostEstimate = null
+  const imageCostLoading = false
   const [busy, setBusy] = useState(false)
   const [pendingAction, setPendingAction] = useState<CanvasAgentPendingAction | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -1092,13 +1061,13 @@ export function CanvasAgentSidebar({ open, onClose }: CanvasAgentSidebarProps) {
                   {busy || (agentMode === 'edit_image' && imageCostLoading) ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : agentMode === 'edit_image' &&
-                    shouldShowCanvasGenerateHaodou('image', activeImageModel, imageCostEstimate) ? (
+                    false ? (
                     <>
                       <span className="text-[11px] font-semibold">运行</span>
                       <span className="text-[12px] font-semibold tabular-nums">
-                        {resolveCanvasGenerateHaodouCost(imageCostEstimate) ?? 0}
+                        {null ?? 0}
                       </span>
-                      <HaodouIcon className="text-violet-700 dark:text-violet-200" />
+                      {null}
                     </>
                   ) : (
                     <span className="text-[11px] font-semibold">运行</span>

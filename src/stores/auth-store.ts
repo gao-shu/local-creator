@@ -1,10 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { fetchClientProfile } from '@/lib/auth/auth-service'
-import { resolveApiBase } from '@/lib/auth/api-base'
 import {
-  hasPersistedRealToken,
-  isLoginRequired,
   isOfflineLocalToken,
   OFFLINE_LOCAL_TOKEN,
   OFFLINE_LOCAL_USER,
@@ -31,15 +27,10 @@ export const useAuthStore = create<AuthStore>()(
       refreshToken: null,
       user: null,
 
-      isAuthenticated: () => {
-        if (!isLoginRequired()) return true
-        return hasPersistedRealToken(get().token)
-      },
+      isAuthenticated: () => true,
 
       bootstrapLocalSession: () => {
-        if (isLoginRequired()) return
         const token = get().token
-        // 已有真实 Session，或已是本地占位 Token，勿重复 set（避免 AuthGuard effect 抖动）
         if (token && !isOfflineLocalToken(token)) return
         if (isOfflineLocalToken(token) && get().user?.id === OFFLINE_LOCAL_USER.id) return
         const user = OFFLINE_LOCAL_USER
@@ -60,45 +51,12 @@ export const useAuthStore = create<AuthStore>()(
         } catch {
           /* ignore */
         }
-        void import('@/stores/settings-store').then(({ useSettingsStore }) => {
-          void useSettingsStore.getState().syncSystemModels()
-        })
       },
 
-      validateSession: async (apiBase) => {
-        const token = get().token
-        if (!token || isOfflineLocalToken(token)) return false
-        try {
-          // 冷启动校验失败只静默清会话，避免一打开就 Toast
-          const user = await fetchClientProfile(token, apiBase ?? resolveApiBase(), {
-            reportSessionExpired: false,
-          })
-          if (!user) {
-            get().clearAuth()
-            return false
-          }
-          set({ user })
-          void import('@/stores/settings-store').then(({ useSettingsStore }) => {
-            void useSettingsStore.getState().syncSystemModels(apiBase)
-          })
-          return true
-        } catch {
-          // 超时/网络失败：保留本地会话，不阻断冷启动
-          return hasPersistedRealToken(get().token)
-        }
-      },
+      validateSession: async () => true,
 
-      fetchUserInfo: async (apiBase) => {
-        const token = get().token
-        if (!token || isOfflineLocalToken(token)) return
-        try {
-          const user = await fetchClientProfile(token, apiBase ?? resolveApiBase(), {
-            reportSessionExpired: true,
-          })
-          if (user) set({ user })
-        } catch {
-          /* 刷新资料失败时保留现有 user */
-        }
+      fetchUserInfo: async () => {
+        /* 开源版无公司云 profile */
       },
 
       logout: () => {
@@ -110,6 +68,7 @@ export const useAuthStore = create<AuthStore>()(
         } catch {
           /* ignore */
         }
+        get().bootstrapLocalSession()
       },
 
       clearAuth: () => {
@@ -124,22 +83,14 @@ export const useAuthStore = create<AuthStore>()(
         refreshToken: state.refreshToken,
         user: state.user,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (!state?.token || !hasPersistedRealToken(state.token)) return
-        void import('@/stores/settings-store').then(({ useSettingsStore }) => {
-          void useSettingsStore.getState().syncSystemModels()
-        })
-      },
     },
   ),
 )
 
-/** 供路由守卫订阅：token 变化会触发重渲染 */
 export function selectAuthToken(state: AuthStore): string | null {
   return state.token
 }
 
-export function selectIsAuthenticated(state: AuthStore): boolean {
-  if (!isLoginRequired()) return true
-  return hasPersistedRealToken(state.token)
+export function selectIsAuthenticated(_state: AuthStore): boolean {
+  return true
 }

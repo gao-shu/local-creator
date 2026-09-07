@@ -59,15 +59,11 @@ export interface ModelConfig {
   apiFormat?: string
   platform?: string
   autoAppendV1?: boolean
-  /** 模型来源：system=平台系统模型，custom=用户自定义 */
+  /** 模型来源：仅保留 custom（历史 system 字段可读入后过滤） */
   source?: 'system' | 'custom'
-  /** 系统模型标识，对应后台 client_system_models.model_key */
+  /** 系统模型标识（遗留字段，开源版忽略） */
   modelKey?: string
-  /** 系统模型计费模式：internal=配额(成员Key)，external=好豆+代理 */
-  billingMode?: BillingMode
-  /** 后台标记是否可走 /client/system-models 代理（external） */
-  proxyAvailable?: boolean
-  /** @deprecated 使用 source === 'system' */
+  /** @deprecated */
   isBackendModel?: boolean
   /** 微视 API：提交角色图到 /v1/assets 审核（对齐 haode-ai-client） */
   weishiAssetWhitelistEnabled?: boolean
@@ -90,8 +86,8 @@ export interface ModelConfig {
   unitPrice?: number
   /** 单价单位文案，如 元/秒、豆/张 */
   unitLabel?: string
-  /** 平台系统模型单次好豆扣费（legacy 展示；计费以 unitPrice×数量 为准） */
-  haodouCost?: number
+  /** 平台系统模型单次额度扣费（legacy 展示；计费以 unitPrice×数量 为准） */
+  generateCost?: number
   /** 项目消耗计费（仅 source=system，由后台 consumption-prices 配置） */
   consumption?: ModelConsumptionConfig
   /** 系统图片模型分档计价（external/internal 均可展示；扣豆仅 external） */
@@ -172,10 +168,9 @@ export interface AppSettings {
   /** 开机时自动启动应用（默认 true；仅打包版写入系统登录项） */
   openAtLogin?: boolean
   /**
-   * 非微视模型的参考图/音频上传方式。
-   * 微视 API（weishi_api）固定分流：@角色 → /v1/assets（asset://）；场景/道具/分镜/音频 → 后台 https。
+   * 微视参考素材上传方式（开源版仅微视 /v1/assets）。
    */
-  weishiReferenceMediaUploadMode?: 'weishi_asset' | 'backend_https'
+  weishiReferenceMediaUploadMode?: 'weishi_asset'
   /** 最近一次在创作流程中选用的 LLM 配置 id */
   lastUsedLlmModelId?: string
   /** Step2 分集规划上次选用的 LLM id */

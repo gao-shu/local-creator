@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Haode AI. All rights reserved.
 
 import type { AppSettings } from '@/types/settings'
-import { formatUserFacingBillingError } from '@/lib/auth/haodou-consume-service'
+import { formatUserFacingBillingError } from '@/lib/utils'
 import { callChatCompletions } from '@/lib/models/llm-client'
 import { getMergedLlmModels, pickMergedLlmModel } from '@/lib/models/merged-model-picker'
 import { buildScriptCreatePrompt } from '@/lib/toolbox/script-create/prompt'
@@ -32,7 +32,7 @@ export async function generateScriptFromIdea(input: {
   const raw = await callChatCompletions(model, prompt, {
     signal: input.signal,
     temperature: 0.8,
-    haodouReason: 'consume_script',
+    billingReason: 'consume_script',
   })
 
   const text = raw.trim()

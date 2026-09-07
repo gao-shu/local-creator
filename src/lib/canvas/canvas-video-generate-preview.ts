@@ -50,7 +50,7 @@ import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client
 import type { ModelConfig } from '@/types/settings'
 import type { CanvasImageNodeData, CanvasVideoNodeData } from '@/types/canvas-nodes'
 import { useSettingsStore } from '@/stores/settings-store'
-import { mergeModelsForKind } from '@/lib/models/system-models-service'
+import { mergeModelsForKind } from '@/lib/models/model-merge'
 
 export interface CanvasVideoGenerateContext {
   projectId: string

@@ -1,43 +1,47 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
-import {
-  buildVideoBatchBillingLines,
-  estimateVideoBatchBilling,
-  type VideoBatchBillingEstimate,
-  type VideoBatchBillingLine,
-} from '@/lib/auth/billing-display'
 import type { ModelConfig } from '@/types/settings'
 
-/** @deprecated 使用 VideoBatchBillingEstimate */
+export type VideoBatchBillingEstimate = {
+  perShotCostEstimate: number | null
+  totalCostEstimate: number | null
+  shotCount: number
+}
+
 export type CanvasVideoBatchCostEstimate = VideoBatchBillingEstimate & {
-  /** @deprecated 使用 perShotHaodou */
   perShotCost: number | null
-  /** @deprecated 使用 totalHaodou */
   totalCost: number | null
 }
 
-function toLegacyEstimate(estimate: VideoBatchBillingEstimate): CanvasVideoBatchCostEstimate {
-  return {
-    ...estimate,
-    perShotCost: estimate.perShotHaodou,
-    totalCost: estimate.totalHaodou,
-  }
+export type VideoBatchBillingLine = { text: string }
+
+export function estimateVideoBatchBilling(_options: {
+  videoModel: ModelConfig | null | undefined
+  shotCount: number
+  durationSec?: number
+  resolution?: string | null
+}): VideoBatchBillingEstimate {
+  return { perShotCostEstimate: null, totalCostEstimate: null, shotCount: _options.shotCount }
 }
 
-/** 估算画布批量视频生成计费（好豆 / 项目统计） */
+export function buildVideoBatchBillingLines(_estimate: VideoBatchBillingEstimate): VideoBatchBillingLine[] {
+  return []
+}
+
 export function estimateCanvasVideoBatchCost(options: {
   videoModel: ModelConfig | null | undefined
   shotCount: number
   durationSec?: number
   resolution?: string | null
 }): CanvasVideoBatchCostEstimate {
-  return toLegacyEstimate(estimateVideoBatchBilling(options))
+  const estimate = estimateVideoBatchBilling(options)
+  return {
+    ...estimate,
+    perShotCost: null,
+    totalCost: null,
+  }
 }
 
-export function formatCanvasVideoBatchCostLine(estimate: CanvasVideoBatchCostEstimate): string {
-  return buildVideoBatchBillingLines(estimate)
-    .map((line) => line.text)
-    .join(' ')
+export function formatCanvasVideoBatchCostLine(_estimate: CanvasVideoBatchCostEstimate): string {
+  return ''
 }
-
-export { buildVideoBatchBillingLines, type VideoBatchBillingLine }

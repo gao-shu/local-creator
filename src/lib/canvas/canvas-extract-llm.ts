@@ -3,7 +3,7 @@
 import type { AppSettings } from '@/types/settings'
 import { getMergedLlmModels } from '@/lib/models/merged-model-picker'
 import { resolveSoftwareLlmModelId } from '@/lib/models/software-model-prefs'
-import { isSystemModel } from '@/lib/models/system-models-service'
+import { isSystemModel } from '@/lib/models/model-merge'
 
 function hasCustomLlmCredentials(model: { apiKey?: string; endpoint?: string; model?: string }) {
   return Boolean(model.apiKey?.trim() && model.endpoint?.trim() && model.model?.trim())

@@ -163,10 +163,10 @@ export function extractVideoIdFromApiContentUrl(url: string): string {
 /** 成片下载是否需要带 API Key：
  * - URL 为 `/videos/{id}/content`，或
  * - 任务 id 为 OpenAI 风格 `video_*` / 中转 `task_*`（即使 URL 形态略有差异）
- * 注意：admin `/client/system-models/video/jobs/.../content` 用登录态，不算上游 Key。
+ * 注意：admin `/client/removed-legacy-proxy-jobs/video/jobs/.../content` 用登录态，不算上游 Key。
  */
 export function needsAuthenticatedVideoDownload(url: string, videoId?: string): boolean {
-  if (/\/client\/system-models\/video\/jobs\/[^/]+\/content\/?$/i.test(url)) return false
+  if (/\/client\/legacy-proxy-jobs\/video\/jobs\/[^/]+\/content\/?$/i.test(url)) return false
   if (isApiVideoContentUrl(url)) return true
   const id = String(videoId || '').trim()
   if (id && looksLikeOpenAiStyleVideoId(id)) return true
@@ -259,7 +259,7 @@ export function resolveVideoDownloadHeaders(options: {
   apiKey?: string
   videoId?: string
 }): Record<string, string> | undefined {
-  if (/\/client\/system-models\/video\/jobs\/[^/]+\/content\/?$/i.test(options.url)) {
+  if (/\/client\/legacy-proxy-jobs\/video\/jobs\/[^/]+\/content\/?$/i.test(options.url)) {
     const token = String(useAuthStore.getState().token || '').trim()
     if (token) return { Authorization: `Bearer ${token}` }
     return undefined

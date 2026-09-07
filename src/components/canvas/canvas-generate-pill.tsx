@@ -1,7 +1,6 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator. All rights reserved.
 
 import { Loader2, Send } from 'lucide-react'
-import { HaodouIcon } from '@/components/ui/haodou-icon'
 import { cn } from '@/lib/utils'
 
 interface CanvasGeneratePillProps {
@@ -11,51 +10,14 @@ interface CanvasGeneratePillProps {
   variant?: 'light' | 'dark'
   className?: string
   onClick: () => void
-  /** 展示好豆扣费（替代「生成」文案） */
-  showHaodou?: boolean
-  haodouCost?: number | null
-  haodouLoading?: boolean
+  /** @deprecated ignored */
+  showGenerateCost?: boolean
+  /** @deprecated ignored */
+  generateCost?: number | null
+  /** @deprecated ignored */
+  generateCostLoading?: boolean
 }
 
-function formatHaodouCost(value: number): string {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1)
-}
-
-function GeneratePillContent({
-  running,
-  showHaodou,
-  haodouCost,
-  haodouLoading,
-  iconClassName,
-  costClassName,
-}: {
-  running: boolean
-  showHaodou: boolean
-  haodouCost?: number | null
-  haodouLoading?: boolean
-  iconClassName?: string
-  costClassName?: string
-}) {
-  if (running || (showHaodou && haodouLoading)) {
-    return <Loader2 className={cn('h-4 w-4 animate-spin', iconClassName)} />
-  }
-
-  if (showHaodou) {
-    const cost =
-      haodouCost != null && haodouCost > 0 ? formatHaodouCost(haodouCost) : '0'
-    return (
-      <>
-        <span className={cn('text-[13px] font-semibold tabular-nums', costClassName)}>{cost}</span>
-        <HaodouIcon />
-        <Send className={cn('h-3.5 w-3.5', iconClassName)} strokeWidth={2.25} />
-      </>
-    )
-  }
-
-  return <Send className={cn('h-3.5 w-3.5', iconClassName)} strokeWidth={2.25} />
-}
-
-/** 画布节点生成按钮：light 为浅色胶囊，dark 融入暗色控制台 */
 export function CanvasGeneratePill({
   testId,
   running = false,
@@ -63,18 +25,13 @@ export function CanvasGeneratePill({
   variant = 'light',
   className,
   onClick,
-  showHaodou = false,
-  haodouCost,
-  haodouLoading = false,
 }: CanvasGeneratePillProps) {
-  const busy = running || haodouLoading
-
   if (variant === 'dark') {
     return (
       <button
         type="button"
         data-testid={testId}
-        disabled={disabled || busy}
+        disabled={disabled || running}
         onClick={(event) => {
           event.stopPropagation()
           onClick()
@@ -89,14 +46,11 @@ export function CanvasGeneratePill({
           className,
         )}
       >
-        <GeneratePillContent
-          running={running}
-          showHaodou={showHaodou}
-          haodouCost={haodouCost}
-          haodouLoading={haodouLoading}
-          iconClassName="text-white/75"
-          costClassName="text-[12px] font-medium"
-        />
+        {running ? (
+          <Loader2 className="h-4 w-4 animate-spin text-white/75" />
+        ) : (
+          <Send className="h-3.5 w-3.5 text-white/75" strokeWidth={2.25} />
+        )}
       </button>
     )
   }
@@ -105,7 +59,7 @@ export function CanvasGeneratePill({
     <button
       type="button"
       data-testid={testId}
-      disabled={disabled || busy}
+      disabled={disabled || running}
       onClick={(event) => {
         event.stopPropagation()
         onClick()
@@ -120,13 +74,11 @@ export function CanvasGeneratePill({
         className,
       )}
     >
-      <GeneratePillContent
-        running={running}
-        showHaodou={showHaodou}
-        haodouCost={haodouCost}
-        haodouLoading={haodouLoading}
-        iconClassName="text-[#111827]/70"
-      />
+      {running ? (
+        <Loader2 className="h-4 w-4 animate-spin text-[#111827]/70" />
+      ) : (
+        <Send className="h-3.5 w-3.5 text-[#111827]/70" strokeWidth={2.25} />
+      )}
     </button>
   )
 }

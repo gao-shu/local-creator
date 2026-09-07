@@ -7,8 +7,6 @@ export type VideoRemoteJobProvider =
   | 'weishi'
   | 'grok'
   | 'agnes_video_25'
-  /** admin 异步系统模型 video job（apiTaskId = job_id） */
-  | 'system'
 
 export interface VideoRemoteJobSnapshot {
   provider: VideoRemoteJobProvider

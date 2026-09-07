@@ -12,7 +12,6 @@ import {
   VIDEO_CONFIRM_PARAMS_SECTION_TITLE,
   buildVideoConfirmCapabilityFields,
 } from '@/lib/models/video-confirm-sections'
-import { useVideoBatchBillingPreview } from '@/hooks/use-video-batch-billing-preview'
 import { useSettingsStore } from '@/stores/settings-store'
 import type { ModelConfig } from '@/types/settings'
 
@@ -75,14 +74,8 @@ export function WeishiVideoConfirmDialog({
     [getMergedModels, preview, videoModel, videoModelsVersion],
   )
   const shotCount = Math.max(1, preview?.context?.batchCount ?? 1)
-  const { lines: billingLines, loading: billingLoading } = useVideoBatchBillingPreview({
-    videoModel: resolvedVideoModel,
-    shotCount,
-    durationSec: preview?.context?.durationSec,
-    resolution: preview?.context?.resolution,
-    apiBase: settings?.apiBaseUrl,
-    enabled: open && Boolean(preview?.context),
-  })
+  const billingLines: Array<{ text: string }> = []
+  const billingLoading = false
 
   const handleCopyPayload = useCallback(async () => {
     if (!preview) return
@@ -297,7 +290,7 @@ export function WeishiVideoConfirmDialog({
                         key={line.kind}
                         className={cn(
                           'text-xs rounded-lg px-3 py-2 border',
-                          line.kind === 'haodou' &&
+                          line.kind === 'cost' &&
                             'text-amber-600/95 dark:text-amber-400/95 bg-amber-500/10 border-amber-500/20',
                           line.kind === 'project' &&
                             'text-cyan-600/95 dark:text-cyan-400/95 bg-cyan-500/10 border-cyan-500/20',

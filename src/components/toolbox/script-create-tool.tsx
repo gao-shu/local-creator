@@ -387,7 +387,7 @@ export function ScriptCreateTool({
                   生成剧本
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  使用 AI 生成，大约 15～40 秒；按账号策略可能消耗好豆
+                  使用 AI 生成，大约 15～40 秒；按账号策略可能消耗额度
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs text-muted-foreground">试试：</span>
