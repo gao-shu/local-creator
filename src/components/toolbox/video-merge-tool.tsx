@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useState } from 'react'
 import { ArrowDown, ArrowUp, Film, Loader2, Plus, Trash2 } from 'lucide-react'

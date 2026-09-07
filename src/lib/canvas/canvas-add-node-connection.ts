@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { addEdge, type Edge, type FinalConnectionState } from '@xyflow/react'
 import { CANVAS_EDGE_HANDLE_LEFT, CANVAS_EDGE_HANDLE_RIGHT } from '@/lib/canvas/canvas-edge-utils'

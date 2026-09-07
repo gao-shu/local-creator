@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** BrowserView 在主窗口客户区中的矩形（物理像素，相对内容区左上） */
 export interface DoubaoWebPanelBounds {

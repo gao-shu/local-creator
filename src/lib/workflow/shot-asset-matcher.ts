@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { textIncludesAssetFullName } from '@/lib/workflow/asset-utils'
 import {

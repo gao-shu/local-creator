@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useMemo, useState } from 'react'
 import { ChevronDown, Eye, EyeOff } from 'lucide-react'

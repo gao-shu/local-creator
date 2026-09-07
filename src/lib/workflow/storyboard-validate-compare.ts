@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Phase 3.5：同一剧本 5 镜「增强前 / 增强后」prompt 规模与分批预算对比。

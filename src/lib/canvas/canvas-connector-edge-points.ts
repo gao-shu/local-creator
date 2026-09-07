@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { Position } from '@xyflow/react'
 import { CANVAS_CONNECTOR_HIT_PX } from '@/lib/canvas/canvas-edge-utils'

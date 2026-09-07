@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useState, type MouseEvent, type ReactNode } from 'react'
 import { Loader2, Play } from 'lucide-react'

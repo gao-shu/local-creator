@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useEffect, useState } from 'react'
 import { ImageIcon, MapPin, Trash2, Users, Wrench } from 'lucide-react'

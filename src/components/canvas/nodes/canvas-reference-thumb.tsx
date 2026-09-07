@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { X } from 'lucide-react'
 import { useCanvasImagePreview } from '@/hooks/use-canvas-media-preview'

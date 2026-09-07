@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 新增音色表单说明（软件级索引，各项目可选用） */
 export const VOICE_LIBRARY_SAVE_HINT = '保存到软件音色库，各项目均可选用'

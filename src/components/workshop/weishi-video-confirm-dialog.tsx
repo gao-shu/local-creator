@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useMemo, useState, Fragment } from 'react'
 import { createPortal } from 'react-dom'

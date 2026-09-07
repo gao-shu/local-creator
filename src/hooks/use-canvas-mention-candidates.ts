@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useEffect, useMemo, useState } from 'react'
 import type { Edge, Node } from '@xyflow/react'

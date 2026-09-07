@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useState, type ReactNode } from 'react'
 import { ChevronDown, Settings2 } from 'lucide-react'

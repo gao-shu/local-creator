@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * OpenAI Videos / 中转站成片常返回相对路径 `/v1/videos/{id}/content`，

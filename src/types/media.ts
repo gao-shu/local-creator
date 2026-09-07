@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** ffprobe 视频音轨与时长探测结果 */
 export interface ProbeVideoAudioResult {

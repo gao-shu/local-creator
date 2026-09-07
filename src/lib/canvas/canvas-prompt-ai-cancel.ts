@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 取消后是否允许把智能分镜/提取资产结果写入画布（落盘与 UI） */
 export function shouldPersistCanvasPromptAiResult(cancelled: boolean): boolean {

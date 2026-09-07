@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { WorkflowShot } from '@/types/workflow'
 import { applyPromptAffix } from '@/lib/workflow/prompt-affix-utils'

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { AlertTriangle, Loader2, Search, Trash2 } from 'lucide-react'

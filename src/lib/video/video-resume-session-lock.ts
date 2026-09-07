@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** F5 / HMR 后内存 inflight 丢失，用 sessionStorage 防止重复恢复轮询 */
 const RESUME_LOCK_PREFIX = 'haode:video:resume-lock:'

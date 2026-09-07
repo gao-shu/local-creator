@@ -188,7 +188,7 @@ function execRemote(command, config, timeoutMs = 15000) {
 
 /** 解析 semver x.y.z 用于排序 */
 function parseSemver(name) {
-  const match = name.match(/^好的漫创 Setup (\d+\.\d+\.\d+)/)
+  const match = name.match(/^本地漫创 Setup (\d+\.\d+\.\d+)/)
   if (!match) return null
   const parts = match[1].split('.').map((n) => Number.parseInt(n, 10))
   return { version: match[1], parts, fileName: name }

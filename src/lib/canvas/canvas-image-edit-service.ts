@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { resolveCanvasMediaProjectRoot } from '@/lib/canvas/canvas-media-resolve'
 import {

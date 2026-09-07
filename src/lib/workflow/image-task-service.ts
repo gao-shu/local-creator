@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { WorkflowEpisode, WorkflowTask } from '@/types/workflow'
 import { generateUUID } from '@/lib/utils'

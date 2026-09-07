@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 用户主动停止工坊/分镜生视频 */
 export class VideoGenerationCancelledError extends Error {

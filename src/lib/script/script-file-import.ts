@@ -1,4 +1,4 @@
-// Copyright (c) HaodeAI. Script file import helpers.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import mammoth from 'mammoth'
 

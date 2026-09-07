@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useState, type MouseEvent } from 'react'
 import { Clock, GitBranch, Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'

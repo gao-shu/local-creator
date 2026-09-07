@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 工坊 / 画布列表区保留段，不可当作项目 id */
 const LIST_RESERVED_SEGMENTS = new Set(['recycle'])

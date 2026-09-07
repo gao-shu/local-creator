@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import cloudStylePresets from '@/lib/workflow/data/style-presets-cloud.json'
 import type { AppSettings, PromptTemplate } from '@/types/settings'

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useMemo, useState } from 'react'
 import { Loader2, ShieldCheck } from 'lucide-react'

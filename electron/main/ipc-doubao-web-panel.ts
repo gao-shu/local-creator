@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * 豆包网页侧栏 IPC（阶段 2.2 通道 + 2.3 BrowserView）。

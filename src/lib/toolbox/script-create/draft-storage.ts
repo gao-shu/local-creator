@@ -1,4 +1,4 @@
-﻿// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { ScriptCreateDraft, ScriptCreateParams } from '@/lib/toolbox/script-create/types'
 import { DEFAULT_SCRIPT_CREATE_PARAMS } from '@/lib/toolbox/script-create/types'

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 一键快速提取专用模板 key（比 V2 更短、更快） */
 export const EXTRACT_TEMPLATE_LITE_KEY = '提取模板Lite'

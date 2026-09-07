@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { CanvasNoteNode } from '@/components/canvas/canvas-note-node'
 import { CanvasPromptNode } from '@/components/canvas/nodes/canvas-prompt-node'

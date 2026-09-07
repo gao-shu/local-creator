@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, type MouseEvent } from 'react'
 import { useCanvasEditor } from '@/components/canvas/canvas-editor-context'

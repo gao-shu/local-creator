@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'

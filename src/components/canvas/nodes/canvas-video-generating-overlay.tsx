@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { splitVideoProgressMessage } from '@/lib/video/video-progress'
 import { CanvasNodeGeneratingOverlay } from '@/components/canvas/nodes/canvas-node-generating-overlay'

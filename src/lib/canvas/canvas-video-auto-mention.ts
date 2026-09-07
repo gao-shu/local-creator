@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 const CANVAS_VIDEO_AUTO_MENTION_KEY = 'haode-canvas-video-auto-mention'
 

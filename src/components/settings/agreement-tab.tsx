@@ -1,6 +1,9 @@
-import { GlassCard } from '@/components/ui/glass-card'
+// Copyright (c) local-creator contributors. All rights reserved.
 
-const AGREEMENT_UPDATED_AT = '2026-07-04'
+import { GlassCard } from '@/components/ui/glass-card'
+import { APP_PRODUCT_NAME } from '@/constants/brand'
+
+const AGREEMENT_UPDATED_AT = '2026-09-07'
 
 export function AgreementTab() {
   return (
@@ -8,7 +11,7 @@ export function AgreementTab() {
       <div>
         <h2 className="text-lg font-semibold">用户协议</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          好的漫创桌面客户端使用条款。最后更新：{AGREEMENT_UPDATED_AT}
+          {APP_PRODUCT_NAME}桌面客户端使用条款。最后更新：{AGREEMENT_UPDATED_AT}
         </p>
       </div>
 
@@ -16,8 +19,9 @@ export function AgreementTab() {
         <section>
           <h3 className="text-foreground font-medium mb-2">1. 软件性质</h3>
           <p>
-            好的漫创是一款 AI 辅助影视/漫创工具。剧本解析、分镜、生图、生视频等生成结果由您选用的 AI 模型或平台服务产生，
-            本软件不对模型输出内容的准确性、完整性、合法性承担保证责任。您应对生成内容的审核、发布与使用自行负责。
+            {APP_PRODUCT_NAME}
+            是一款本地优先的 AI 辅助影视/漫创工具。剧本解析、分镜、生图、生视频等生成结果由您选用的
+            AI 模型产生，本软件不对模型输出内容的准确性、完整性、合法性承担保证责任。您应对生成内容的审核、发布与使用自行负责。
           </p>
         </section>
 
@@ -40,7 +44,7 @@ export function AgreementTab() {
         <section>
           <h3 className="text-foreground font-medium mb-2">4. 本地会话</h3>
           <p>
-            开源版默认本地模式，不提供公司云登录、充值或邀请体系。会话仅保存在本机。
+            默认本地模式，不提供公司云登录、充值或邀请体系。会话仅保存在本机。
           </p>
         </section>
 
@@ -48,12 +52,12 @@ export function AgreementTab() {
           <h3 className="text-foreground font-medium mb-2">5. 隐私</h3>
           <p>
             除您主动发起的模型 API 请求，以及为完成生图/生视频所必需的直连上传与回调外，
-            本软件不会将您的剧本正文、分镜稿、项目资产等创作数据批量上传至我们的服务器。
+            本软件不会将您的剧本正文、分镜稿、项目资产等创作数据批量上传至第三方以外的我们的服务器。
           </p>
         </section>
 
         <section>
-          <h3 className="text-foreground font-medium mb-2">6. 免责声明</h3>
+          <h3 className="text-foreground font-medium mb-2">6. 免声明</h3>
           <p>
             因网络、第三方 API 故障、模型服务中断或您本地环境（含路径、权限、磁盘空间）导致的数据丢失或任务失败，
             我们将在合理范围内提供排查支持，但不承担由此产生的间接损失。建议您定期使用「打包导出」备份便携数据目录。

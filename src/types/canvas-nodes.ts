@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { CanvasImageLightingConfig, CanvasImageSubjectView } from '@/types/canvas-image-tools'
 import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets'

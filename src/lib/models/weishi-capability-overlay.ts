@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { ModelConfig, VideoModelPricingMeta } from '@/types/settings'
 import { coerceVideoResolutionTag } from '@/lib/models/video-model-pricing'

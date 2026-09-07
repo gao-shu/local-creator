@@ -53,7 +53,7 @@ export function pickPendingUpdateFile(
   if (!rawUrl || !sha512) return null
 
   const url = resolveUpdateFileUrl(rawUrl, feedBaseUrl)
-  let fileName = '好的漫创 Setup.exe'
+  let fileName = '本地漫创 Setup.exe'
   const fromUrl = extractFileNameFromUrl(url)
   if (fromUrl) fileName = fromUrl
 

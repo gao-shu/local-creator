@@ -15,7 +15,7 @@ const junkDirs = ['win-unpacked', 'release-staging']
 
 function tryStopApp() {
   if (process.platform !== 'win32') return
-  spawnSync('taskkill', ['/F', '/IM', '好的漫创.exe', '/T'], { stdio: 'ignore' })
+  spawnSync('taskkill', ['/F', '/IM', '本地漫创.exe', '/T'], { stdio: 'ignore' })
 }
 
 function removeDir(target) {
@@ -54,7 +54,7 @@ if (ok) {
 } else {
   console.error(
     '[clean] 部分目录仍被占用。\n' +
-      '       请关闭「好的漫创」客户端、关闭 Cursor/资源管理器中的 release 文件夹，\n' +
+      '       请关闭「本地漫创」客户端、关闭 Cursor/资源管理器中的 release 文件夹，\n' +
       '       然后在外部 PowerShell 再执行：npm run clean:release-junk',
   )
   process.exit(1)

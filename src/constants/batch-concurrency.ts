@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** Step3 资产生图 / 分镜批量生图 worker 池并发（写死，不提供设置项） */
 export const IMAGE_BATCH_CONCURRENCY = 3

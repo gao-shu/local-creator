@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * FFmpeg 可执行文件路径约定（Phase 1 · Windows 主战场）

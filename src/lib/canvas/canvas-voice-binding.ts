@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { Connection, Node } from '@xyflow/react'
 import { isCanvasCharacterImageNode } from '@/lib/canvas/canvas-image-character'

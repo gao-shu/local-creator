@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { cn } from '@/lib/utils'
 import { getVideoModelDisplayTags } from '@/lib/models/video-model-display'

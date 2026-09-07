@@ -1,8 +1,5 @@
 {
-  "version": "0.1.28",
-  "windowsUrl": "https://haode-ai.tos-cn-beijing.volces.com/haode-client/download/",
-  "windowsDirectUrl": "https://haode-ai.tos-cn-beijing.volces.com/releases/client/download/%E5%A5%BD%E7%9A%84%E6%BC%AB%E5%88%9B%20Setup%200.1.28.exe",
-  "macUrl": "",
-  "releaseNotes": "版本 0.1.28",
-  "updatedAt": "2026-07-28 09:00:45"
+  "name": "本地漫创",
+  "version": "0.0.0-private",
+  "note": "占位；正式发版前由发版脚本同步"
 }

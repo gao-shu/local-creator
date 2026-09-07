@@ -1,4 +1,4 @@
-﻿// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { createPortal } from 'react-dom'
 import type { LucideIcon } from 'lucide-react'

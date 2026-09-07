@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Crop, Loader2, Save } from 'lucide-react'

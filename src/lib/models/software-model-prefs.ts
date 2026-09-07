@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { AppSettings, ModelConfig } from '@/types/settings'
 import { resolveInitialModelId } from '@/lib/models/default-model-utils'

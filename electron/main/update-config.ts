@@ -1,6 +1,6 @@
 /**
  * 桌面端自动更新 feed 配置（generic provider）
- * 下载与更新共用同一目录，地址从 .env 注入
+ * 未配置 VITE_UPDATE_PUBLISH_URL 时禁用自动更新（开源私有阶段默认）
  */
 
 function trimSlashes(value: string): string {
@@ -12,14 +12,8 @@ function readEnv(key: string): string {
   if (key === 'VITE_UPDATE_PUBLISH_URL') {
     return trimSlashes(process.env.VITE_UPDATE_PUBLISH_URL || '')
   }
-  if (key === 'HAODE_UPDATE_PUBLISH_URL') {
-    return trimSlashes(process.env.HAODE_UPDATE_PUBLISH_URL || '')
-  }
   if (key === 'VITE_UPDATE_ORIGIN') {
     return trimSlashes(process.env.VITE_UPDATE_ORIGIN || '')
-  }
-  if (key === 'VITE_UPLOAD_ORIGIN') {
-    return trimSlashes(process.env.VITE_UPLOAD_ORIGIN || '')
   }
   return trimSlashes(process.env[key] || '')
 }
@@ -29,13 +23,12 @@ export function resolveDesktopDownloadBase(): string {
   return resolveUpdatePublishUrl()
 }
 
+/** 仅认显式更新地址；不再回落公司 haode-client 路径 */
 export function resolveUpdatePublishUrl(): string {
-  const explicit = readEnv('VITE_UPDATE_PUBLISH_URL') || readEnv('HAODE_UPDATE_PUBLISH_URL')
+  const explicit = readEnv('VITE_UPDATE_PUBLISH_URL')
   if (explicit) return explicit
   const updateOrigin = readEnv('VITE_UPDATE_ORIGIN')
-  if (updateOrigin) return `${updateOrigin}/haode-client/download`
-  const origin = readEnv('VITE_UPLOAD_ORIGIN')
-  if (origin) return `${origin}/haode-client/download`
+  if (updateOrigin) return `${updateOrigin}/download`
   return ''
 }
 
@@ -44,7 +37,7 @@ export function resolveWindowsInstallerUrl(): string {
   const base = resolveUpdatePublishUrl()
   if (!base) return ''
   const version = process.env.npm_package_version || ''
-  const productName = '好的漫创'
+  const productName = '本地漫创'
   if (!version) return `${base}/${productName} Setup.exe`
   return `${base}/${productName} Setup ${version}.exe`
 }

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { normalizeStoredMediaPath } from '@/lib/storage/media-path-resolver'
 

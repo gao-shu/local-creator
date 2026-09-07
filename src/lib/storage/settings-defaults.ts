@@ -1,11 +1,10 @@
 import type {
   AppSettings,
   ModelConfig,
-  ModelKind,
   PromptTemplate,
-  SettingsPromptType,
   TemplateListKey,
 } from '@/types/settings'
+import { APP_LAUNCHER_DIR_NAME } from '@/constants/brand'
 import { migrateApiBaseUrl } from '@/lib/auth/api-base'
 import { createLlmPresetModel } from '@/lib/models/llm-model-presets'
 import { createImagePresetModel } from '@/lib/models/image-model-presets'
@@ -22,11 +21,6 @@ import {
   SEED_STYLE_TEMPLATES,
   REMOVED_STORYBOARD_TEMPLATE_KEYS,
 } from '@/lib/storage/prompt-templates-seed'
-
-const BUILTIN_STORYBOARD_TEMPLATES: PromptTemplate[] = [
-  ...SEED_STORYBOARD_TEMPLATES,
-  ...HAND_STORYBOARD_TEMPLATES,
-]
 import { normalizePathHistory } from '@/lib/storage/storage-path-utils'
 import { generateUUID } from '@/lib/utils'
 import { normalizeAffixPresets, SEED_AFFIX_PRESETS } from '@/lib/workflow/prompt-affix-utils'
@@ -36,7 +30,12 @@ import {
   normalizeLayoutKey,
 } from '@/lib/workflow/layout-presets'
 
-export const APP_DATA_DIR_NAME = 'LocalCreator'
+const BUILTIN_STORYBOARD_TEMPLATES: PromptTemplate[] = [
+  ...SEED_STORYBOARD_TEMPLATES,
+  ...HAND_STORYBOARD_TEMPLATES,
+]
+
+export const APP_DATA_DIR_NAME = APP_LAUNCHER_DIR_NAME
 
 const BUILTIN_WEISHI_VIDEO: ModelConfig = {
   ...createVideoPresetModel('weishi_api'),
@@ -53,7 +52,7 @@ const BUILTIN_AGNES_LLM: ModelConfig = {
   apiFormat: 'openai',
   platform: 'openai_compatible',
   endpoint: 'https://apihub.agnes-ai.com',
-  apiKey: 'sk-ZwiKGxKYSaRyWy9kmsmsFPwGJChWevm4EL2kW6SISNKkufQw',
+  apiKey: '',
   model: 'Agnes-2.5-Flash',
   autoAppendV1: true,
   source: 'custom',

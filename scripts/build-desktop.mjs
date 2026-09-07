@@ -50,7 +50,7 @@ function sleepMs(ms) {
 /** Windows：结束可能占用 app.asar 的客户端进程 */
 function tryStopRunningAppOnWindows() {
   if (!isWin) return
-  spawnSync('taskkill', ['/F', '/IM', '好的漫创.exe', '/T'], { stdio: 'ignore' })
+  spawnSync('taskkill', ['/F', '/IM', '本地漫创.exe', '/T'], { stdio: 'ignore' })
 }
 
 function isBusyError(error) {

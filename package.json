@@ -1,9 +1,9 @@
 {
-  "name": "haode-ai-client",
-  "productName": "好的漫创",
+  "name": "local-creator",
+  "productName": "本地漫创",
   "version": "0.1.28",
-  "description": "AI 驱动的漫剧/短剧创作桌面工具",
-  "author": "HaodeAI",
+  "description": "本地 AI 漫剧/短剧创作桌面工具（开源底子）",
+  "author": "local-creator contributors",
   "license": "UNLICENSED",
   "type": "module",
   "main": "out/main/index.cjs",

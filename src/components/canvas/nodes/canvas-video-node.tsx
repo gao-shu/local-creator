@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { normalizeVideoGenerationTierParams } from '@/lib/models/video-generation-tier-params'
 import { useSettingsStore } from '@/stores/settings-store'

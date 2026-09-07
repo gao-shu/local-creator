@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * 画布顶栏「豆包」网页侧栏常量（阶段 2.1；会话约定见 1.2）。

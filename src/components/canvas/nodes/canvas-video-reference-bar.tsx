@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useState } from 'react'
 import { AtSign, ImagePlus, Maximize2, Upload, X } from 'lucide-react'

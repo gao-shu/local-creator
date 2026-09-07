@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Electron `webContents.startDrag` 拖到剪映时，若未落到外部应用而松手在本窗口，

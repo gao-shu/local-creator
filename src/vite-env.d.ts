@@ -15,7 +15,7 @@ interface ImportMetaEnv {
   readonly VITE_UPDATE_PUBLISH_URL?: string
   /** 侧边栏「官网」链接（HTML 落地页；勿填 TOS 对象存储地址） */
   readonly VITE_OFFICIAL_WEBSITE_URL?: string
-  /** 站点根地址；未设 VITE_UPDATE_PUBLISH_URL 时自动拼 /haode-client/download */
+  /** 站点根地址；未设 VITE_UPDATE_PUBLISH_URL 时可用于拼自有 /download */
   readonly VITE_UPDATE_ORIGIN?: string
 }
 

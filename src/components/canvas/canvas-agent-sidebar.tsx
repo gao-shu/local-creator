@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { buildCanvasVideoModelSwitchPatch } from '@/lib/canvas/canvas-video-params-sync'
 import { buildModelSelectOptions } from '@/lib/models/model-select-options'

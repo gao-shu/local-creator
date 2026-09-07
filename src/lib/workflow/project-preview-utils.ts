@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { getAssetPreviewPath } from '@/lib/workflow/asset-utils'
 import { getShotPreviewPath } from '@/lib/workflow/shot-utils'

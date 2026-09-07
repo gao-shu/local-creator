@@ -1,11 +1,13 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { resolvePublicAssetUrl } from '@/lib/brand/public-asset-url'
+import { APP_PRODUCT_NAME } from '@/constants/brand'
 import { cn } from '@/lib/utils'
+
+export { APP_PRODUCT_NAME } from '@/constants/brand'
 
 /** 应用品牌 Logo（与 public/favicon.png、打包 icon 一致） */
 export const APP_LOGO_SRC = resolvePublicAssetUrl('/favicon.png')
-export const APP_PRODUCT_NAME = '好的漫创'
 
 type AppLogoSize = 'sm' | 'md' | 'lg'
 

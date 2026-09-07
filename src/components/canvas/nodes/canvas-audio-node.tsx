@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { memo, useCallback, useMemo, useState, type MouseEvent } from 'react'
 import { type NodeProps } from '@xyflow/react'

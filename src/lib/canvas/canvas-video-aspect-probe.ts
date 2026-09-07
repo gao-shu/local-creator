@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { VIDEO_ASPECT_OPTIONS } from '@/lib/workflow/storyboard-video-presets'
 

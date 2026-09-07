@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { PromptTemplate } from '@/types/settings'
 import { SEEDANCE_15S_STANDARD_TEMPLATE } from '@/lib/prompts/storyboard/seedance-15s-standard'

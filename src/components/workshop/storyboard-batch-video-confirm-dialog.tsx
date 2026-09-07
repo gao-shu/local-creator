@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { Fragment, useMemo } from 'react'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'

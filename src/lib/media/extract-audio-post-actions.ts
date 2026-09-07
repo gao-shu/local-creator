@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { ExtractAudioFromProjectResult } from '@/lib/media/extract-audio-from-video'
 import { revealPathInExplorer } from '@/lib/storage/fs-service'

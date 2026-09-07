@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { SelectOption } from '@/components/ui/select'
 import type { ModelConfig, ImageQuality } from '@/types/settings'

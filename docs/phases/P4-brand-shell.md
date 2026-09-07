@@ -7,8 +7,8 @@
 
 ## 前置
 
-- [ ] P3 手测通过
-- [ ] 阅读 [../brand-placeholder.md](../brand-placeholder.md)
+- [x] P3 代码验收通过（Key 手测可另做）
+- [x] 阅读 [../brand-placeholder.md](../brand-placeholder.md)
 
 ## 操作步骤
 
@@ -36,12 +36,12 @@ export const APP_PACKAGE_NAME = 'local-creator'
 
 ### 3. 壳面资源
 
-- [ ] `index.html` title
-- [ ] `electron/splash.html`
-- [ ] `electron/main.ts` 窗口标题
-- [ ] Logo 组件
-- [ ] 删除或替换 `website/` 公司下载页与 ICP；开源前可删整站或改成简单私有说明
-- [ ] 删除 `site-icp.ts` 公司备案或改为空/自有（无私有备案则去掉页脚）
+- [x] `index.html` title
+- [x] `electron/splash.html`
+- [x] `electron/main.ts` 窗口标题
+- [x] Logo 组件
+- [x] 删除或替换 `website/` 公司下载页与 ICP；开源前可删整站或改成简单私有说明
+- [x] 删除 `site-icp.ts` 公司备案或改为空/自有（无私有备案则去掉页脚）
 
 ### 4. 更新先禁用或改占位
 
@@ -70,10 +70,13 @@ npm run compile
 
 ## 验收
 
-- [ ] 开发态窗口标题为「本地漫创」
-- [ ] builder 产品名为「本地漫创」
-- [ ] 无公司 ICP/下载域名作为默认页脚
-- [ ] 自动更新不指向公司地址
+- [x] 开发态窗口标题为「本地漫创」（`electron/main.ts`）
+- [x] builder 产品名为「本地漫创」（`electron-builder.yml` / `package.json`）
+- [x] 无公司 ICP/下载域名作为默认页脚（`SITE_ICP_RECORD` 为空）
+- [x] 自动更新不指向公司地址（无 `VITE_UPDATE_PUBLISH_URL` 则禁用）
+- [x] `npm run compile` 通过
+
+完成记录：品牌单源 `src/constants/brand.ts`；appId `com.localcreator.app`。
 
 ## 下一步
 

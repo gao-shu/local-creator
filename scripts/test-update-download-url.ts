@@ -10,7 +10,7 @@ import {
 const SERVER_FEED = 'https://duanju.haodeweishi.cn/haode-client/download'
 const TOS_FEED = 'https://haode-ai.tos-cn-beijing.volces.com/releases/client/download'
 const TOS_URL =
-  'https://haode-ai.tos-cn-beijing.volces.com/releases/client/download/好的漫创 Setup 0.1.24.exe'
+  'https://haode-ai.tos-cn-beijing.volces.com/releases/client/download/本地漫创 Setup 0.1.24.exe'
 
 assert.equal(
   resolveUpdateFileUrl(TOS_URL, TOS_FEED),
@@ -20,13 +20,13 @@ assert.equal(
 
 assert.equal(
   resolveUpdateFileUrl(TOS_URL, SERVER_FEED),
-  `${SERVER_FEED}/${encodeURIComponent('好的漫创 Setup 0.1.24.exe')}`,
+  `${SERVER_FEED}/${encodeURIComponent('本地漫创 Setup 0.1.24.exe')}`,
   'server feed rewrites TOS url to same-origin mirror for legacy speed',
 )
 
 assert.equal(
-  resolveUpdateFileUrl('好的漫创 Setup 0.1.24.exe', SERVER_FEED),
-  `${SERVER_FEED}/${encodeURIComponent('好的漫创 Setup 0.1.24.exe')}`,
+  resolveUpdateFileUrl('本地漫创 Setup 0.1.24.exe', SERVER_FEED),
+  `${SERVER_FEED}/${encodeURIComponent('本地漫创 Setup 0.1.24.exe')}`,
   'relative path resolves against feed base (server mirror for legacy clients)',
 )
 
@@ -44,9 +44,9 @@ assert.equal(pickedTos?.url, TOS_URL, 'pickPendingUpdateFile keeps TOS absolute 
 const pickedRelative = pickPendingUpdateFile(
   {
     version: '0.1.24',
-    path: '好的漫创 Setup 0.1.24.exe',
+    path: '本地漫创 Setup 0.1.24.exe',
     sha512: 'abc',
-    files: [{ url: '好的漫创 Setup 0.1.24.exe', sha512: 'abc' }],
+    files: [{ url: '本地漫创 Setup 0.1.24.exe', sha512: 'abc' }],
   },
   SERVER_FEED,
 )
@@ -66,7 +66,7 @@ const pickedServerMirror = pickPendingUpdateFile(
 )
 assert.equal(
   pickedServerMirror?.url,
-  `${SERVER_FEED}/${encodeURIComponent('好的漫创 Setup 0.1.24.exe')}`,
+  `${SERVER_FEED}/${encodeURIComponent('本地漫创 Setup 0.1.24.exe')}`,
   'server feed rewrites TOS absolute url to same-origin mirror',
 )
 

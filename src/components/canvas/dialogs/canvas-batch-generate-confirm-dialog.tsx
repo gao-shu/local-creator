@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { X } from 'lucide-react'

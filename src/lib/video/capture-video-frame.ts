@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 function seekVideoToTime(video: HTMLVideoElement, time: number): Promise<void> {
   const target = Math.max(0, time)

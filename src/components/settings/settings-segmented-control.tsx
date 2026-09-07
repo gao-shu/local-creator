@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 合肥瓦士科技有限公司
+ * Copyright (c) local-creator contributors. All rights reserved.
  */
 
 import type { LucideIcon } from 'lucide-react'

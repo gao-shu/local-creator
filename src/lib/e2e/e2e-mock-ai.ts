@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** Electron E2E：preload 注入 HAODE_E2E_MOCK_AI=1 时走 mock 生图/生视频，避免联调 API */
 export function shouldUseE2eMockAi(): boolean {

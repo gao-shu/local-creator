@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useEffect, useState } from 'react'
 import { Clock, FolderKanban, ImageIcon, Loader2, Pencil, RotateCcw, Trash2 } from 'lucide-react'

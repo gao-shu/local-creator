@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { WorkflowShot } from '@/types/workflow'
 import { readSettings } from '@/lib/storage/settings-service'

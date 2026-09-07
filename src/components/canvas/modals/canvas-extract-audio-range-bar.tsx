@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { memo, useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { formatLocalMediaTimeLabel } from '@/hooks/use-local-media-player'

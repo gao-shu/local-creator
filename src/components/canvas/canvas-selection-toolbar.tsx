@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { GripVertical, Loader2, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'

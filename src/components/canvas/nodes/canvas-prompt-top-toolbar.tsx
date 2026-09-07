@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { Loader2, Upload } from 'lucide-react'
 import { supportedScriptFormatsLabel } from '@/lib/canvas/canvas-prompt-text-import'

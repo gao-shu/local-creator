@@ -1,5 +1,5 @@
-appId: com.haode.ai.client
-productName: 好的漫创
+appId: com.localcreator.app
+productName: 本地漫创
 # 使用 npm 已安装的 Electron，避免打包时再从官方发布源重复下载
 electronDist: node_modules/electron/dist
 directories:
@@ -21,11 +21,11 @@ extraResources:
       - ffprobe.exe
       - LICENSE.txt
 
-# 图标（来源：comic-generator brands/haode/icon.png）
+# 图标（临时占位；正式设计可后补）
 icon: build/icon.ico
 
 win:
-  executableName: 好的漫创
+  executableName: 本地漫创
   icon: build/icon.ico
   forceCodeSigning: false
   # normal：降低 7z 内存峰值，避免本机 OOM（maximum=mx=9）
@@ -44,7 +44,7 @@ nsis:
   include: build/installer.nsh
   artifactName: ${productName} Setup ${version}.${ext}
   # 桌面/开始菜单快捷方式：不带版本号
-  shortcutName: 好的漫创
+  shortcutName: 本地漫创
   # 「应用和功能」列表：带版本号，便于区分已装版本
   uninstallDisplayName: ${productName} ${version}
   # 升级安装时重建桌面快捷方式，避免旧版带版本号的残留名称
@@ -59,7 +59,7 @@ nsis:
 mac:
   icon: build/icon.icns
   category: public.app-category.productivity
-  artifactName: 好的漫创-${version}-${arch}.${ext}
+  artifactName: ${productName}-${version}-${arch}.${ext}
   target:
     - dmg
     - zip
@@ -68,6 +68,6 @@ mac:
   gatekeeperAssess: false
   hardenedRuntime: false
 dmg:
-  title: 好的漫创 ${version}
-  artifactName: 好的漫创-${version}-${arch}.dmg
-# publish.url 由 build-desktop.mjs 从 .env 的 VITE_UPDATE_PUBLISH_URL 注入
+  title: ${productName} ${version}
+  artifactName: ${productName}-${version}-${arch}.dmg
+# publish.url 由 build-desktop.mjs 从 .env 的 VITE_UPDATE_PUBLISH_URL 注入（未配置则不发版）

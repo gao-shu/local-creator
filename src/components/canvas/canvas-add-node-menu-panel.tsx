@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useRef, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'

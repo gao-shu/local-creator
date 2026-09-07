@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 图片 / 文本节点下控制台统一宽度 */
 export const CANVAS_NODE_CONSOLE_WIDTH = 648

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 可恢复轮询的远端视频任务快照（不含 API Key） */
 export type VideoRemoteJobProvider =

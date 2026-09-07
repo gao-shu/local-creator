@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { CanvasImageGridPreset } from '@/types/canvas-image-tools'
 import { CANVAS_IMAGE_GRID_PRESETS } from '@/types/canvas-image-tools'

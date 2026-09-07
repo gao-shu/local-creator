@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { toast } from 'sonner'
 import { buildCanvasEpisodeLabel } from '@/lib/canvas/canvas-episode-label'

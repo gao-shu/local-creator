@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { AppSettings } from '@/types/settings'
 import { joinPathSegments } from '@/lib/storage/storage-path-utils'

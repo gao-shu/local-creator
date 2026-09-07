@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { resolveCanvasProjectRoot } from '@/lib/canvas/canvas-project-paths'
 import { getCanvasProject } from '@/lib/storage/canvas-service'

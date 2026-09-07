@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { Loader2 } from 'lucide-react'
 import type { CanvasImageLightingConfig } from '@/types/canvas-image-tools'

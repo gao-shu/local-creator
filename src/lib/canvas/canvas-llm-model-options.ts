@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
 import { buildModelSelectOptions } from '@/lib/models/model-select-options'

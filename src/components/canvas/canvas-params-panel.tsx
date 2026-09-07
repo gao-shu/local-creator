@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useEffect, useMemo, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'

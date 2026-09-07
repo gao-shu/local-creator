@@ -14,7 +14,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const releaseDir = resolve(projectRoot, 'release')
 const versionFile = resolve(projectRoot, 'website/version.json')
 
-const PRODUCT_NAME = '好的漫创'
+const PRODUCT_NAME = '本地漫创'
 const DEFAULT_OFFICIAL_DOWNLOAD_URL =
   'https://duanju.haodeweishi.cn/haode-client/download/'
 

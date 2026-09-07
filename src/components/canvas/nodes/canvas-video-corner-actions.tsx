@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { DragEvent } from 'react'
 import { AudioLines, Download, FolderOpen, Loader2, Maximize2, Trash2 } from 'lucide-react'

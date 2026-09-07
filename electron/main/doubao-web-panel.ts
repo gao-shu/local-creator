@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * 豆包网页侧栏 BrowserView 生命周期（阶段 2.3）。

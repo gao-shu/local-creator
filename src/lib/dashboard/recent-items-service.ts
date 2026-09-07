@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { loadSyncedMaterialLibrary, type MaterialLibraryItem } from '@/lib/materials/material-library-service'
 import { listCanvasProjects } from '@/lib/storage/canvas-service'

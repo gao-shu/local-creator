@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** @deprecated 客户端已移除组织项目消耗上报 */
 export async function chargeVideoConsumptionForTask(_options: {

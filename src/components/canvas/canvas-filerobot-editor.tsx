@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { lazy, Suspense, useCallback } from 'react'
 import { Loader2 } from 'lucide-react'

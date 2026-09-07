@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 function guessImageExt(src: string, mime?: string): string {
   if (mime?.includes('jpeg') || mime?.includes('jpg') || src.startsWith('data:image/jpeg')) {

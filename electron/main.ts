@@ -70,7 +70,7 @@ function resolveAppIconPath(): string | undefined {
 
 function buildWindowTitle(): string {
   const version = app.getVersion()
-  const base = `好的漫创 v${version}`
+  const base = `本地漫创 v${version}`
   // electron-vite dev：有 VITE_DEV_SERVER_URL；打包后无此变量
   if (VITE_DEV_SERVER_URL) {
     return `${base} · 开发`

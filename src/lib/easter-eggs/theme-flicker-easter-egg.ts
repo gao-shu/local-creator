@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 5 秒内连续切换主题达到该次数则触发彩蛋 */
 export const THEME_FLICKER_WINDOW_MS = 5000

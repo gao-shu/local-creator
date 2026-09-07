@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step2「重提本集资产」：对本集做增删 diff，同名复用全库已有资产（保留 id / 生图）。

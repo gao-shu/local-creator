@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import { ExternalLink, Sparkles, X } from 'lucide-react'

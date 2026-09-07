@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 const LAST_READ_CHANGELOG_VERSION_KEY = 'haode_last_read_changelog_version'
 

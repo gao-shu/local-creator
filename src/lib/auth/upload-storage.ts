@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /** 是否为火山 TOS / 对象存储公网 URL（非本站 /uploads/） */
 export function isTosPublicUrl(url: string): boolean {

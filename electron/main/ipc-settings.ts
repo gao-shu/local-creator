@@ -358,7 +358,7 @@ export function registerSettingsIpc() {
       const parent = BrowserWindow.fromWebContents(event.sender)
       const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '')
       const folderName = path.basename(root) || 'haode-data'
-      const defaultName = `好的漫创-${folderName}-${stamp}.zip`
+      const defaultName = `本地漫创-${folderName}-${stamp}.zip`
 
       const save = await dialog.showSaveDialog({
         parent: parent && !parent.isDestroyed() ? parent : undefined,

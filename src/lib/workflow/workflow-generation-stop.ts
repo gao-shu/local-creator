@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { readWorkflowTasks } from '@/lib/storage/workflow-service'
 import { cancelImageGenerationTask } from '@/lib/workflow/image-task-service'

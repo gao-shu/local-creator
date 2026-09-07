@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { generateUUID } from '@/lib/utils'
 import { syncAssetToMaterialLibrary, isAssetSyncedToLibrary } from '@/lib/materials/material-library-service'

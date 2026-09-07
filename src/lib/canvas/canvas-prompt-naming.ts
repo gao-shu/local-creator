@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { Node } from '@xyflow/react'
 import { CANVAS_NODE_TYPES, type CanvasPromptNodeData } from '@/types/canvas-nodes'

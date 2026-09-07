@@ -1,4 +1,4 @@
-// Copyright (c) haode-ai-client. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets'
 import type { ShotVideoReferenceKind } from '@/lib/workflow/shot-video-utils'

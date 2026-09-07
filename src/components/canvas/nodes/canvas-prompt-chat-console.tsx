@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import { buildCanvasLlmModelOptions } from '@/lib/canvas/canvas-llm-model-options'
 import { CANVAS_NODE_BOTTOM_CONSOLE_ANCHOR_STYLE, CANVAS_NODE_CONSOLE_WIDTH } from '@/lib/canvas/canvas-console-layout'

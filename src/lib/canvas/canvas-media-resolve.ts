@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { CanvasMediaOwnerKind } from '@/types/canvas-nodes'
 import { resolveMaterialsLibraryRootFromSettings } from '@/lib/materials/global-materials-paths'
