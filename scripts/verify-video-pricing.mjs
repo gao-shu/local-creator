@@ -92,18 +92,12 @@ function main() {
 
   const layerA = runInherit('Layer A — test:video-pricing', 'npm', ['run', 'test:video-pricing'])
 
+  // 试用仓已移除公司 smoke:billing；Layer B 默认跳过
   let layerB = false
   if (layerA) {
-    if (process.env.PROBE_SKIP_BILLING === '1') {
-      console.log('\n── Layer B — smoke:billing ──')
-      console.log('  — (skipped，PROBE_SKIP_BILLING=1，已由 verify:full 等上游跑过)')
-      layerB = true
-    } else if (process.env.PROBE_SKIP_COMPILE === '1') {
-      layerB = runInherit('Layer B — smoke:billing (skip compile)', 'npm', ['run', 'smoke:billing'])
-    } else {
-      layerB = runInherit('Layer B — compile + smoke:billing', 'npm', ['run', 'compile']) &&
-        runInherit('Layer B — smoke:billing', 'npm', ['run', 'smoke:billing'])
-    }
+    console.log('\n── Layer B — smoke:billing ──')
+    console.log('  — (skipped，local-creator 无公司计费管道)')
+    layerB = true
   }
 
   let layerC = false

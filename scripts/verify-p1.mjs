@@ -6,9 +6,8 @@
  *   VERIFY_P1_SKIP_AUTH=1 npm run verify:p1
  *   VERIFY_P1_SKIP_CANVAS_LOGIC=1 npm run verify:p1
  *
- * 含：P1 E2E 三件套（可单独跑）、视频进度、画布模块纯逻辑、登录 verify
- * 不含：verify:ui（需 dev）、真实 API live、scan:security
- * 清单见 docs/FULL_REGRESSION_CHECKLIST.md §2
+ * 含：P1 E2E 三件套（可单独跑）、视频进度、画布模块纯逻辑
+ * 不含：verify:ui（需 dev）、真实 API live、公司登录校验（已移除）
  */
 import { spawnSync } from 'node:child_process'
 import path from 'node:path'
@@ -40,7 +39,6 @@ console.log('[verify:p1] P1 回归（专项自动化）开始…')
 console.log(`[verify:p1] 根目录: ${root}`)
 
 const skipCompile = process.env.VERIFY_P1_SKIP_COMPILE === '1'
-const skipAuth = process.env.VERIFY_P1_SKIP_AUTH === '1'
 const skipE2e = process.env.VERIFY_P1_SKIP_E2E === '1'
 const skipCanvasLogic = process.env.VERIFY_P1_SKIP_CANVAS_LOGIC === '1'
 
@@ -62,12 +60,6 @@ if (!skipCanvasLogic) {
   runStep('画布模块纯逻辑', ['run', 'test:canvas-logic-extra'])
 } else {
   console.log('[verify:p1] 跳过 canvas-logic-extra（VERIFY_P1_SKIP_CANVAS_LOGIC=1）')
-}
-
-if (!skipAuth) {
-  runStep('登录 flow + UI', ['run', 'verify:auth'])
-} else {
-  console.log('[verify:p1] 跳过 verify:auth（VERIFY_P1_SKIP_AUTH=1）')
 }
 
 const failed = results.filter((r) => !r.ok)

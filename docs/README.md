@@ -18,7 +18,7 @@
 | — | [user-quickstart.md](user-quickstart.md) | 熟人私发：安装与填 Key 一页 |
 | — | [release-private.md](release-private.md) | 私有发版：升版 / 打包 / 网盘 / 更新预留 |
 | 8 | [appendix-open-source.md](appendix-open-source.md) | 开源发布前清单（后期） |
-| 9 | [appendix-commercial.md](appendix-commercial.md) | 商业版备注（后期，另仓或分支策略） |
+| — | [phases/W2b-repo-declutter.md](phases/W2b-repo-declutter.md) | 试用仓减负：去掉 deploy/website/计费探针等 |
 
 ## 阶段文件
 

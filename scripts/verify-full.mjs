@@ -6,8 +6,8 @@
  *   VERIFY_FULL_SKIP_PRICING=1 npm run verify:full
  *
  * 不含：verify:ui（需 dev）、真实 API、scan:security、verify:ffmpeg-win-pack（打包专项）
- * 计价：共用一次 smoke:billing + 图片/视频 Layer A（PROBE_SKIP_BILLING）
- * 清单见 docs/FULL_REGRESSION_CHECKLIST.md
+ * 计价：图片/视频 Layer A（跳过已移除的公司 billing smoke）
+ * 清单见 docs/（试用仓已精简）
  */
 import { spawnSync } from 'node:child_process'
 import path from 'node:path'
@@ -59,11 +59,10 @@ if (!skipPricing) {
   const pricingEnv = {
     PROBE_SKIP_COMPILE: '1',
     PROBE_SKIP_BACKEND: '1',
+    PROBE_SKIP_BILLING: '1',
   }
-  runStep('smoke:billing（计价 Layer B 共用）', ['run', 'smoke:billing'], pricingEnv)
-  const pricingWithSkipBilling = { ...pricingEnv, PROBE_SKIP_BILLING: '1' }
-  runStep('图片分档计价 Layer A', ['run', 'verify:image-pricing'], pricingWithSkipBilling)
-  runStep('视频分档计价 Layer A', ['run', 'verify:video-pricing'], pricingWithSkipBilling)
+  runStep('图片分档计价 Layer A', ['run', 'verify:image-pricing'], pricingEnv)
+  runStep('视频分档计价 Layer A', ['run', 'verify:video-pricing'], pricingEnv)
 } else {
   console.log('[verify:full] 跳过计价（VERIFY_FULL_SKIP_PRICING=1）')
 }
@@ -76,7 +75,7 @@ for (const r of results) {
 
 if (failed.length > 0) {
   console.error(`\n[verify:full] ✗ 失败 ${failed.length}/${results.length}：${failed.map((f) => f.label).join('、')}`)
-  console.error('[verify:full] 手工项见 docs/FULL_REGRESSION_CHECKLIST.md §4')
+  console.error('[verify:full] 手工项见 docs/user-quickstart.md')
   process.exit(1)
 }
 
