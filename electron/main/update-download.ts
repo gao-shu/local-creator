@@ -52,7 +52,7 @@ export async function downloadUpdateViaSession(
   file: PendingUpdateFile,
   onProgress: (progress: UpdateDownloadProgress) => void,
 ): Promise<string> {
-  const saveDir = path.join(app.getPath('temp'), 'haode-updates')
+  const saveDir = path.join(app.getPath('temp'), 'lc-updates')
   mkdirSync(saveDir, { recursive: true })
   const savePath = path.join(saveDir, file.fileName)
 

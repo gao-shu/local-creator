@@ -14,7 +14,7 @@ export interface ExternalVideoReferenceItem {
 export const EXTERNAL_VIDEO_MULTIMODAL_MAX_IMAGES = 7
 
 /**
- * 非微视视频 API（智谱 / OpenAI 兼容 / Grok）参考图选取。
+ * 视频 API（智谱 / OpenAI 兼容 / Grok）参考图选取。
  * - first_frame：1 张（分镜优先）
  * - multimodal：多张去重（上限 EXTERNAL_VIDEO_MULTIMODAL_MAX_IMAGES）
  * - first_last_frame：首尾各 1

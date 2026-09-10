@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 5 验收：MediaAPI / IPC payload 类型契约（不启动 Electron）。

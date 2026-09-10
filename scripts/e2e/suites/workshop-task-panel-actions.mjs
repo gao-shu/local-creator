@@ -27,7 +27,7 @@ export const workshopTaskPanelActionsSuite = {
   name: 'workshop-task-panel-actions',
   description: '任务浮层：终止进行中生视频、删除已完成生图任务',
   prepareWorkspace: prepareWorkshopE2eWorkspace,
-  launchEnv: { HAODE_E2E_MOCK_DELAY_MS: '12000' },
+  launchEnv: { LC_E2E_MOCK_DELAY_MS: '12000' },
   async run(session) {
     const { page, workspace, assert } = session
     const shotId = E2E_SHOT_IDS[0]

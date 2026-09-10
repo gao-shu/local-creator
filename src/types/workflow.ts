@@ -177,10 +177,6 @@ export interface WorkflowAsset {
   generatedImagePaths?: string[]
   /** 角色卡/场景图主图索引（对应 generatedImagePaths） */
   primaryGeneratedImageIndex?: number
-  /** 微视审核通过后的 assetId */
-  weishiAssetId?: string
-  weishiAssetUrl?: string
-  weishiAssetStatus?: string
   /** 即梦审核 assetId（后续接入） */
   jimengAssetId?: string
   jimengAssetStatus?: string
@@ -196,14 +192,6 @@ export interface WorkflowAsset {
   updatedAt: number
 }
 
-/** 分镜本地图已上传微视后的缓存（写入 data.json，跨重启免重复 /v1/assets） */
-export interface WeishiShotMediaEntry {
-  localPath: string
-  weishiAssetId: string
-  weishiAssetUrl: string
-  /** 上传时使用的微视 endpoint，换 API 地址后旧缓存失效 */
-  endpoint?: string
-}
 
 export type AssetListKey = 'characters' | 'scenes' | 'props'
 
@@ -259,7 +247,5 @@ export interface WorkflowShot {
   videoStatus?: ShotStatus
   /** 视频是否已过审 */
   videoValidated?: boolean
-  /** 本地参考图/分镜图 → 微视 asset（生视频复用） */
-  weishiUploadedMedia?: WeishiShotMediaEntry[]
   updatedAt: number
 }

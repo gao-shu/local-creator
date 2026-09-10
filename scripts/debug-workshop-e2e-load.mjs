@@ -39,7 +39,7 @@ try {
   console.log(JSON.stringify(snapshot, null, 2))
 } finally {
   await closeElectronApp(electronApp)
-  if (process.env.HAODE_E2E_KEEP !== '1') {
+  if (process.env.LC_E2E_KEEP !== '1') {
     await workspace.cleanup()
   } else {
     console.log('保留目录:', workspace.root)

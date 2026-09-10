@@ -16,7 +16,7 @@ export interface LlmPresetDefinition {
   defaultName: string
 }
 
-/** 对齐 haode-ai-client Settings LLM 四项预设（无「完全自定义」） */
+/** 对齐上游实现 Settings LLM 四项预设（无「完全自定义」） */
 export const LLM_MODEL_PRESETS: Record<LlmPresetKey, LlmPresetDefinition> = {
   openai: {
     key: 'openai',

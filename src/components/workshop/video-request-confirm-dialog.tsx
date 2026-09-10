@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Copy, Play, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import {
   VIDEO_CONFIRM_BILLING_SECTION_TITLE,
   VIDEO_CONFIRM_PARAMS_SECTION_TITLE,
@@ -15,9 +15,9 @@ import {
 import { useSettingsStore } from '@/stores/settings-store'
 import type { ModelConfig } from '@/types/settings'
 
-interface WeishiVideoConfirmDialogProps {
+interface VideoRequestConfirmDialogProps {
   open: boolean
-  preview: WeishiVideoRequestPreview | null
+  preview: VideoRequestPreview | null
   /** 不传则从已选视频模型列表按 upstream model 匹配 */
   videoModel?: ModelConfig | null
   /** 仅禁用「确认生成」，不影响取消与关闭 */
@@ -27,7 +27,7 @@ interface WeishiVideoConfirmDialogProps {
 }
 
 function resolveVideoModelFromPreview(
-  preview: WeishiVideoRequestPreview | null | undefined,
+  preview: VideoRequestPreview | null | undefined,
   videoModel: ModelConfig | null | undefined,
   getMergedModels: (kind: 'video') => ModelConfig[],
 ): ModelConfig | null {
@@ -43,7 +43,7 @@ function resolveVideoModelFromPreview(
   return byName ?? null
 }
 
-function formatPreviewPayload(preview: WeishiVideoRequestPreview): string {
+function formatPreviewPayload(preview: VideoRequestPreview): string {
   return JSON.stringify(
     {
       method: preview.method,
@@ -56,14 +56,14 @@ function formatPreviewPayload(preview: WeishiVideoRequestPreview): string {
   )
 }
 
-export function WeishiVideoConfirmDialog({
+export function VideoRequestConfirmDialog({
   open,
   preview,
   videoModel,
   confirmDisabled = false,
   onClose,
   onConfirm,
-}: WeishiVideoConfirmDialogProps) {
+}: VideoRequestConfirmDialogProps) {
   const [copied, setCopied] = useState(false)
   const settings = useSettingsStore((state) => state.settings)
   const getMergedModels = useSettingsStore((state) => state.getMergedModels)
@@ -290,8 +290,6 @@ export function WeishiVideoConfirmDialog({
                         key={line.kind}
                         className={cn(
                           'text-xs rounded-lg px-3 py-2 border',
-                          line.kind === 'cost' &&
-                            'text-amber-600/95 dark:text-amber-400/95 bg-amber-500/10 border-amber-500/20',
                           line.kind === 'project' &&
                             'text-cyan-600/95 dark:text-cyan-400/95 bg-cyan-500/10 border-cyan-500/20',
                           line.kind === 'info' &&

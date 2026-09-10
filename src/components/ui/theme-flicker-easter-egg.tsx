@@ -31,7 +31,7 @@ export function maybeTriggerThemeFlickerEasterEgg() {
   if (!recordThemeToggleForEasterEgg()) return
 
   toast.message('导演在对光？', { description: '光影雨过一遍，先选定影调吧。' })
-  window.dispatchEvent(new CustomEvent('haode:theme-flicker-easter-egg'))
+  window.dispatchEvent(new CustomEvent('lc:theme-flicker-easter-egg'))
 }
 
 export function ThemeFlickerEasterEggHost() {
@@ -54,8 +54,8 @@ export function ThemeFlickerEasterEggHost() {
       setVisible(true)
       window.setTimeout(() => setVisible(false), RAIN_MS)
     }
-    window.addEventListener('haode:theme-flicker-easter-egg', onTrigger)
-    return () => window.removeEventListener('haode:theme-flicker-easter-egg', onTrigger)
+    window.addEventListener('lc:theme-flicker-easter-egg', onTrigger)
+    return () => window.removeEventListener('lc:theme-flicker-easter-egg', onTrigger)
   }, [])
 
   if (!visible || typeof document === 'undefined') return null

@@ -23,8 +23,6 @@ import {
 } from '@/lib/canvas/canvas-video-task-service'
 import { hasCanvasVideoLocalOutput } from '@/lib/canvas/canvas-video-drag-items'
 import { resolveCanvasVideoGenerateInput } from '@/lib/canvas/canvas-video-generate-preview'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
-import { composeWeishiVideoPrompt } from '@/lib/workflow/weishi-video-prompt'
 import {
   ensureCanvasNodeRunAttemptForResume,
   finishCanvasNodeRunAttempt,
@@ -96,20 +94,6 @@ export async function resumeCanvasVideoFromNode(options: {
   )
 
   let prompt = input.prompt
-  if (isWeishiApiModel(model)) {
-    prompt = composeWeishiVideoPrompt({
-      shotBody: input.prompt,
-      imageItems:
-        input.referenceMode !== 'text_to_video'
-          ? input.referenceImageItems.map((item) => ({
-              label: item.label,
-              path: item.path,
-              kind: item.kind,
-            }))
-          : [],
-      audioItems: input.referenceAudioItems,
-    })
-  }
 
   const onProgress = async (update: { message: string }) => {
     options.onProgress?.(update)
@@ -132,7 +116,6 @@ export async function resumeCanvasVideoFromNode(options: {
         label: item.label,
         path: item.path,
         kind: item.kind,
-        weishiAssetUrl: item.weishiAssetUrl,
       })),
       referenceAudioPaths: input.referenceAudioPaths.length ? input.referenceAudioPaths : undefined,
       referenceMode: input.referenceMode,

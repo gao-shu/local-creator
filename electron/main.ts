@@ -163,7 +163,7 @@ function createWindow() {
   bindWindowCloseGuard(win, () => win)
 }
 
-const isE2eRun = process.env.HAODE_E2E === '1'
+const isE2eRun = process.env.LC_E2E === '1'
 
 app.whenReady().then(() => {
   registerLocalImageProtocol()

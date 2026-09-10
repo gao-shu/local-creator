@@ -20,8 +20,8 @@ function isRemoteHttpsUrl(value: string): boolean {
 }
 
 /**
- * 非微视视频 API：本地路径 → data URL / https。
- * 公司后台上传已移除；若 API 强制 https，请改用微视。
+ * 视频 API：本地路径 → data URL / https。
+ * 公司后台上传已移除；若 API 强制 https，请提供 https 参考图或改用支持本地/data URL 的模型。
  */
 export async function resolveVideoApiImageUrl(
   imagePath: string,
@@ -33,7 +33,7 @@ export async function resolveVideoApiImageUrl(
   if (isBackendUploadPathUrl(trimmed)) {
     const url = toPublicFileUrl(trimmed, options?.apiBaseUrl)
     if (isRemoteHttpsUrl(url)) return url
-    throw new Error('公司后台上传已移除，请改用微视 API 或提供 https 参考图')
+    throw new Error('公司后台上传已移除，请改用支持本地/data URL 的模型或提供 https 参考图')
   }
   if (isRemoteHttpsUrl(trimmed)) return trimmed
 
@@ -75,7 +75,7 @@ export async function resolveVideoApiAudioUrl(
   if (isBackendUploadPathUrl(trimmed)) {
     const url = toPublicFileUrl(trimmed, options?.apiBaseUrl)
     if (isRemoteHttpsUrl(url)) return url
-    throw new Error('公司后台上传已移除，请改用微视 API 或提供 https 参考音频')
+    throw new Error('公司后台上传已移除，请改用支持本地/data URL 的模型或提供 https 参考音频')
   }
   if (isRemoteHttpsUrl(trimmed)) return trimmed
 

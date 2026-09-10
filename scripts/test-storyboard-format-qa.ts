@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * 7.6 步骤 3：Seedance 分镜 Format QA 单测

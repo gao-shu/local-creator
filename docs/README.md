@@ -12,6 +12,7 @@
 | 3 | [02-phases-overview.md](02-phases-overview.md) | 阶段总览与依赖 |
 | 4 | [AGENT.md](AGENT.md) | AI 执行规范（禁止事项、验收、对照只读） |
 | 5 | [delete-inventory.md](delete-inventory.md) | 须删除的公司耦合清单（开源前必清） |
+| 5b | [weishi-delete-inventory.md](weishi-delete-inventory.md) | **微视整域删除**清单（W0～W5；废止「微视可保留」） |
 | 6 | [brand-placeholder.md](brand-placeholder.md) | 占位品牌与正式改名检查表 |
 | 7 | [phases/](phases/) | **分阶段细操作步骤**（主战场） |
 | — | [user-quickstart.md](user-quickstart.md) | 熟人私发：安装与填 Key 一页 |
@@ -30,6 +31,8 @@
 | P4 | [phases/P4-brand-shell.md](phases/P4-brand-shell.md) | 占位换名/图标/壳（不对外） |
 | P5 | [phases/P5-package-smoke.md](phases/P5-package-smoke.md) | 打包与自测 / 熟人私发 |
 | P6 | [phases/P6-private-git.md](phases/P6-private-git.md) | 私有 Gitee + 日后网盘更新预留 |
+| W1 | [phases/W1-weishi-product-surface.md](phases/W1-weishi-product-surface.md) | 去微视产品面（已完成） |
+| W1+ | 见 [weishi-delete-inventory.md](weishi-delete-inventory.md) §5 | W2 删运行时 → W3～W5 |
 
 **不在 L2 范围（二期）**：即梦本地桥、完全离线大模型、对外公开开源上线（见附录）。
 

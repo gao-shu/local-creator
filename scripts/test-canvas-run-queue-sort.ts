@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * 运行队列排序（纯时间）
  * 运行：npx --yes tsx scripts/test-canvas-run-queue-sort.ts

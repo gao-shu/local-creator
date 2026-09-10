@@ -35,8 +35,8 @@ import { generateUUID } from '@/lib/utils'
 
 export const CANVAS_PROMPT_AI_HANG_MS = 10 * 60 * 1000
 
-const CANVAS_EXTRACT_SESSION_PREFIX = 'haode:canvas:extract:'
-const CANVAS_STORYBOARD_SESSION_PREFIX = 'haode:canvas:storyboard:'
+const CANVAS_EXTRACT_SESSION_PREFIX = 'lc:canvas:extract:'
+const CANVAS_STORYBOARD_SESSION_PREFIX = 'lc:canvas:storyboard:'
 
 export interface CanvasPromptAiTaskEntry {
   projectId: string

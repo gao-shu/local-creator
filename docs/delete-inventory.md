@@ -67,12 +67,13 @@ VITE_LOGIN_REQUIRED|wechat-auth|/client/auth|offline-local-token
 | 即梦审核 | `jimeng-asset-service.ts` 及 step3/画布「到即梦审核」 |
 | 参考上传 backend_https | 设置项与分支删除，仅保留直连第三方或本地 |
 
-微视 **用户自备 Key 直连**可保留（非公司服务器）。
+**微视：** 旧说「用户自备可保留」**已废止**。整域删除见 [weishi-delete-inventory.md](weishi-delete-inventory.md)。
 
 **验收 rg：**
 
 ```text
 jimeng-assets|client-file-service|/client/files|到即梦审核
+微视|weishi_api|weishiAsset
 ```
 
 ## E. 公司品牌 / 站点 / 更新

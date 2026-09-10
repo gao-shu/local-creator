@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * P0：分镜模板可用性 / 空壳回落 / Seedance prompt 回归。

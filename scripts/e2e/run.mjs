@@ -8,7 +8,7 @@
  *
  * 环境变量：
  *   E2E_SUITE=smoke,workshop-flow   指定套件（逗号分隔）
- *   HAODE_E2E_KEEP=1                失败/成功后保留临时数据目录
+ *   LC_E2E_KEEP=1                失败/成功后保留临时数据目录
  *
  * 前置：npm run compile
  */

@@ -1,6 +1,6 @@
 // Copyright (c) local-creator contributors. All rights reserved.
 
-const CANVAS_IMAGE_AUTO_MENTION_KEY = 'haode-canvas-image-auto-mention'
+const CANVAS_IMAGE_AUTO_MENTION_KEY = 'lc-canvas-image-auto-mention'
 
 /**
  * 画布图片节点「自动@资产」开关（全局，与参考条 UI 一致）。

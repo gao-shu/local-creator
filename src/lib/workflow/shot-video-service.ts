@@ -1,5 +1,7 @@
+// Copyright (c) Local Creator. All rights reserved.
+
 import type { AppSettings } from '@/types/settings'
-import type { WorkflowAsset, WorkflowShot } from '@/types/workflow'
+import type { WorkflowShot } from '@/types/workflow'
 import { shouldUseE2eMockAi, getE2eMockDelayMs, shouldE2eMockFail, createE2eMockFailError } from '@/lib/e2e/e2e-mock-ai'
 import { isWorkflowApiAvailable } from '@/lib/storage/workflow-service'
 import { saveGeneratedVideoFromUrl } from '@/lib/storage/fs-service'
@@ -7,17 +9,6 @@ import { resolveProjectMediaDir, resolveProjectRoot } from '@/lib/storage/projec
 import { toProjectRelativeMediaPath } from '@/lib/storage/media-path-resolver'
 import { pickMergedVideoModel } from '@/lib/models/merged-model-picker'
 import { generateVideoRemoteUrl } from '@/lib/video/video-client'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
-import { resolveEffectiveWeishiReferenceMediaUploadMode } from '@/lib/models/weishi-model-presets'
-import {
-  collectWeishiReferences,
-  resolveWeishiCreateUrl,
-  type WeishiVideoReferenceItem,
-} from '@/lib/models/weishi-video-client'
-import {
-  buildWeishiUploadPersistPatches,
-  type WeishiUploadPersistRefItem,
-} from '@/lib/models/weishi-shot-media-cache'
 import type { MentionCandidate } from '@/lib/workflow/mention-utils'
 import {
   buildShotVideoReferenceAudioPaths,
@@ -31,15 +22,12 @@ import {
   resolveVideoReferenceContext,
   resolveVideoReferenceItems,
 } from '@/lib/workflow/shot-video-utils'
-import { VIDEO_PROGRESS_UPLOADING, type VideoProgressCallback } from '@/lib/video/video-progress'
+import type { VideoProgressCallback } from '@/lib/video/video-progress'
 import {
   normalizeVideoReferenceMode,
   type VideoReferenceMode,
 } from '@/lib/workflow/storyboard-video-presets'
 import { applyPromptAffix } from '@/lib/workflow/prompt-affix-utils'
-import {
-  composeWeishiVideoPrompt,
-} from '@/lib/workflow/weishi-video-prompt'
 import { assertNotAborted, delayWithAbort } from '@/lib/video/video-generation-abort'
 import {
   extractVideoIdFromApiContentUrl,
@@ -47,15 +35,7 @@ import {
   resolveVideoDownloadHeaders,
   shouldAllowPrivateVideoContentFetch,
 } from '@/lib/video/video-content-download'
-
-export interface WeishiUploadPersistPatches {
-  shotPatch: Partial<WorkflowShot>
-  dataPatch: Partial<{
-    characters: WorkflowAsset[]
-    scenes: WorkflowAsset[]
-    props: WorkflowAsset[]
-  }>
-}
+import type { WorkflowAsset } from '@/types/workflow'
 
 export interface ShotVideoGenerateOptions {
   settings?: AppSettings
@@ -78,9 +58,6 @@ export interface ShotVideoGenerateOptions {
   /** 用户确认后跳过「分镜图已审核」校验 */
   skipImageValidation?: boolean
   onProgress?: VideoProgressCallback
-  weishiPreparedReferences?: WeishiVideoReferenceItem[]
-  /** 微视参考图上传完成后回写 data.json（分镜 + 资产双写） */
-  onWeishiPersist?: (patches: WeishiUploadPersistPatches) => void | Promise<void>
   onRemoteJobCreated?: (job: import('@/types/video-remote-job').VideoRemoteJobSnapshot) => void | Promise<void>
   resumeJob?: import('@/types/video-remote-job').VideoRemoteJobSnapshot
   abortSignal?: AbortSignal
@@ -93,17 +70,6 @@ async function resolveSettingsContext(settings?: AppSettings) {
     settings: settings ?? res.data,
     appDataDir: res.appDataDir,
   }
-}
-
-function toWeishiPersistRefItems(
-  items: ReturnType<typeof resolveVideoReferenceItems>,
-): WeishiUploadPersistRefItem[] {
-  return items.map((item) => ({
-    path: item.path,
-    kind: item.kind,
-    sourceAssetId: item.sourceAssetId,
-    weishiAssetUrl: item.weishiAssetUrl,
-  }))
 }
 
 export async function generateShotVideo(
@@ -143,7 +109,6 @@ export async function generateShotVideo(
         characters: options?.characters,
         scenes: options?.scenes,
         props: options?.props,
-        weishiEndpoint: model.endpoint,
       },
     )
     referenceAudioPaths = buildShotVideoReferenceAudioPaths(shot, {
@@ -163,7 +128,6 @@ export async function generateShotVideo(
       characters: options?.characters,
       scenes: options?.scenes,
       props: options?.props,
-      weishiEndpoint: model.endpoint,
     })
     referenceImagePaths = referenceImageItems.map((item) => item.path)
     if (!referenceImagePaths.length) {
@@ -200,28 +164,12 @@ export async function generateShotVideo(
 
   const apiPrompt =
     referenceMode !== 'text_to_video' && referenceImageItems.length > 0
-      ? isWeishiApiModel(model)
-        ? composeWeishiVideoPrompt({
-            shotBody,
-            imageItems: referenceImageItems,
-            audioItems: referenceAudioItems,
-            prefix: promptPrefix,
-            suffix: promptSuffix,
-          })
-        : applyPromptAffix(
-            enrichVideoPromptWithReferenceImageHints(shotBody, referenceImageItems),
-            promptPrefix,
-            promptSuffix,
-          )
-      : isWeishiApiModel(model)
-        ? composeWeishiVideoPrompt({
-            shotBody,
-            imageItems: [],
-            audioItems: referenceAudioItems,
-            prefix: promptPrefix,
-            suffix: promptSuffix,
-          })
-        : applyPromptAffix(shotBody, promptPrefix, promptSuffix)
+      ? applyPromptAffix(
+          enrichVideoPromptWithReferenceImageHints(shotBody, referenceImageItems),
+          promptPrefix,
+          promptSuffix,
+        )
+      : applyPromptAffix(shotBody, promptPrefix, promptSuffix)
 
   const finalPrompt = apiPrompt
 
@@ -231,43 +179,6 @@ export async function generateShotVideo(
       throw createE2eMockFailError('shot-video')
     }
     return `preview:video:${shot.id}:${Date.now()}`
-  }
-
-  let weishiPreparedReferences = options?.weishiPreparedReferences
-  const persistRefItems = toWeishiPersistRefItems(referenceImageItems)
-
-  if (
-    isWeishiApiModel(model) &&
-    referenceMode !== 'text_to_video' &&
-    !weishiPreparedReferences?.length
-  ) {
-    options?.onProgress?.(VIDEO_PROGRESS_UPLOADING)
-    assertNotAborted(options?.abortSignal)
-    const collected = await collectWeishiReferences({
-      model,
-      prompt: finalPrompt,
-      durationSec,
-      aspectRatio,
-      referenceImagePath: referenceImagePaths[0] ?? null,
-      referenceImagePaths,
-      referenceImageItems: referenceImageItems.map((item) => ({
-        label: item.label,
-        path: item.path,
-        kind: item.kind,
-        weishiAssetUrl: item.weishiAssetUrl,
-      })),
-      referenceAudioPaths,
-      referenceMode,
-      projectRoot,
-      apiBaseUrl: settings.apiBaseUrl,
-      referenceMediaUploadMode: resolveEffectiveWeishiReferenceMediaUploadMode(
-        settings.weishiReferenceMediaUploadMode,
-        model,
-      ),
-      abortSignal: options?.abortSignal,
-    })
-    assertNotAborted(options?.abortSignal)
-    weishiPreparedReferences = collected.references
   }
 
   const remoteUrl = await generateVideoRemoteUrl({
@@ -282,43 +193,18 @@ export async function generateShotVideo(
       label: item.label,
       path: item.path,
       kind: item.kind,
-      weishiAssetUrl: item.weishiAssetUrl,
     })),
     referenceAudioPaths,
     referenceMode,
     projectRoot,
     apiBaseUrl: settings.apiBaseUrl,
-    referenceMediaUploadMode: resolveEffectiveWeishiReferenceMediaUploadMode(
-      settings.weishiReferenceMediaUploadMode,
-      model,
-    ),
     onProgress: options?.onProgress,
-    weishiPreparedReferences,
     onRemoteJobCreated: options?.onRemoteJobCreated,
     resumeJob: options?.resumeJob,
     abortSignal: options?.abortSignal,
   })
 
   assertNotAborted(options?.abortSignal)
-
-  if (
-    isWeishiApiModel(model) &&
-    referenceMode !== 'text_to_video' &&
-    weishiPreparedReferences?.length &&
-    options?.onWeishiPersist
-  ) {
-    await options.onWeishiPersist(
-      buildWeishiUploadPersistPatches({
-        shot,
-        refItems: persistRefItems,
-        preparedReferences: weishiPreparedReferences,
-        endpoint: model.endpoint,
-        characters: options.characters ?? [],
-        scenes: options.scenes ?? [],
-        props: options.props ?? [],
-      }),
-    )
-  }
 
   const saveDir = options?.projectId
     ? resolveProjectMediaDir(settings, options.appDataDir || appDataDir, options.projectId, 'video')

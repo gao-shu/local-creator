@@ -1,5 +1,26 @@
 // Copyright (c) local-creator contributors. All rights reserved.
 
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  AudioLines,
+  BrushCleaning,
+  ClipboardList,
+  Copy,
+  Grid2X2,
+  ImageIcon,
+  LayoutGrid,
+  Loader2,
+  MessageCircleMore,
+  SendHorizontal,
+  Sparkles,
+  Video,
+  X,
+} from 'lucide-react'
+import { toast } from 'sonner'
+import { useCanvasEditor } from '@/components/canvas/canvas-editor-context'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Select } from '@/components/ui/select'
 import { buildCanvasVideoModelSwitchPatch } from '@/lib/canvas/canvas-video-params-sync'
 import { buildModelSelectOptions } from '@/lib/models/model-select-options'
 import { CanvasAgentReferenceChip } from '@/components/canvas/canvas-agent-reference-chip'

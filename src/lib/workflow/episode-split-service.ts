@@ -214,7 +214,7 @@ export function getActiveEpisodeSplitTask(
   return running.find((t) => t.id === sessionId) ?? null
 }
 
-const EPISODE_SPLIT_SESSION_PREFIX = 'haode:episode-split:'
+const EPISODE_SPLIT_SESSION_PREFIX = 'lc:episode-split:'
 export const EPISODE_SPLIT_HANG_MS = 10 * 60 * 1000
 
 function getEpisodeSplitSessionTaskId(projectId: string) {

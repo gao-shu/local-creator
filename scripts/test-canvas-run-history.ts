@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * 画布运行队列：执行历史不覆盖 + 按时间排序
  * 运行：npx --yes tsx scripts/test-canvas-run-history.ts

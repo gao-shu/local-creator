@@ -47,7 +47,7 @@ export const workshopGenerationStopSuite = {
   name: 'workshop-generation-stop',
   description: 'Step4：停止 mock 生图与生视频，任务标记为 failed/已终止',
   prepareWorkspace: prepareWorkshopE2eWorkspace,
-  launchEnv: { HAODE_E2E_MOCK_DELAY_MS: '8000' },
+  launchEnv: { LC_E2E_MOCK_DELAY_MS: '8000' },
   async run(session) {
     const { page, workspace, assert } = session
     const imageShotId = E2E_SHOT_IDS[0]

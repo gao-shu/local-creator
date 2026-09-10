@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step2 重提本集资产：本集 diff（复用 / 新增 / 解绑 / 删除）回归。

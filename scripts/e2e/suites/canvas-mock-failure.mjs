@@ -18,9 +18,9 @@ import {
 
 export const canvasMockFailureSuite = {
   name: 'canvas-mock-failure',
-  description: 'HAODE_E2E_MOCK_FAIL=asset-image：画布生图失败、节点 error、按钮可重试',
+  description: 'LC_E2E_MOCK_FAIL=asset-image：画布生图失败、节点 error、按钮可重试',
   prepareWorkspace: prepareCanvasMockFailureWorkspace,
-  launchEnv: { HAODE_E2E_MOCK_FAIL: 'asset-image' },
+  launchEnv: { LC_E2E_MOCK_FAIL: 'asset-image' },
   async run(session) {
     const { page, workspace, assert } = session
 

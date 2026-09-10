@@ -1,4 +1,4 @@
-// Copyright (c) local-creator contributors. All rights reserved.
+// Copyright (c) Local Creator. All rights reserved.
 
 import type { Edge, Node } from '@xyflow/react'
 import { resolveCanvasProjectRoot } from '@/lib/canvas/canvas-project-paths'
@@ -15,22 +15,13 @@ import {
 import { readCanvasVideoAutoMentionEnabled } from '@/lib/canvas/canvas-video-auto-mention'
 import {
   buildCanvasVideoReferenceItems,
-  ensureCanvasWeishiCharacterWhitelist,
   resolveCanvasVideoReferenceItems,
-  resolveWeishiAssetUrlForCanvasPath,
-} from '@/lib/canvas/canvas-weishi-video-utils'
+} from '@/lib/canvas/canvas-video-reference-utils'
 import { appendMissingCharacterRefImages } from '@/lib/workflow/shot-video-utils'
 import type { ShotVideoReferenceAudioItem } from '@/lib/workflow/shot-audio-reference-utils'
 import type { ShotVideoReferenceItem } from '@/lib/workflow/shot-video-utils'
-import { isWeishiApiModel, resolveEffectiveWeishiReferenceMediaUploadMode } from '@/lib/models/weishi-model-presets'
-import {
-  prepareWeishiVideoRequestPreview,
-  resolveWeishiCreateUrl,
-  type WeishiVideoReferenceItem,
-} from '@/lib/models/weishi-video-client'
 import { pickVideoModel } from '@/lib/video/video-client'
 import { readSettings } from '@/lib/storage/settings-service'
-import { composeWeishiVideoPrompt } from '@/lib/workflow/weishi-video-prompt'
 import {
   normalizeVideoReferenceMode,
   VIDEO_REFERENCE_MODE_LABELS,
@@ -46,9 +37,9 @@ import {
 import { prepareOpenAiVideoRequestPreview } from '@/lib/video/openai-video-client'
 import { resolveVideoProviderKind } from '@/lib/video/video-provider'
 import { listVoiceLibraryEntries } from '@/lib/voice/voice-library-service'
-import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import type { ModelConfig } from '@/types/settings'
-import type { CanvasImageNodeData, CanvasVideoNodeData } from '@/types/canvas-nodes'
+import type { CanvasVideoNodeData } from '@/types/canvas-nodes'
 import { useSettingsStore } from '@/stores/settings-store'
 import { mergeModelsForKind } from '@/lib/models/model-merge'
 
@@ -56,7 +47,6 @@ export interface CanvasVideoGenerateContext {
   projectId: string
   nodes: Node[]
   edges: Edge[]
-  onImageNodePatch?: (nodeId: string, patch: Partial<CanvasImageNodeData>) => void
 }
 
 export interface ResolvedCanvasVideoGenerateInput {
@@ -72,10 +62,6 @@ export interface ResolvedCanvasVideoGenerateInput {
   durationSec: number
   aspectRatio: string
   resolution: string
-}
-
-function resolveWeishiAssetUrlForPath(path: string, nodes: Node[]): string | undefined {
-  return resolveWeishiAssetUrlForCanvasPath(path, nodes)
 }
 
 export async function resolveCanvasVideoGenerateInput(
@@ -125,7 +111,6 @@ export async function resolveCanvasVideoGenerateInput(
     videoNodeId: node.id,
     edges: ctx.edges,
     consoleReferenceImagePaths: data.consoleReferenceImagePaths,
-    resolveWeishiAssetUrl: (path) => resolveWeishiAssetUrlForPath(path, ctx.nodes),
   })
 
   const canvasProjectRoot = resolveCanvasProjectRoot(settings, appDataDir, ctx.projectId)
@@ -177,11 +162,7 @@ export async function resolveCanvasVideoGenerateInput(
     if (provider === 'zhipu' || provider === 'openai_compatible' || provider === 'system') {
       effectiveReferenceMode = 'text_to_video'
     } else {
-      throw new Error(
-        provider === 'weishi'
-          ? '当前为「全能多参」模式，请先连接参考图/生图节点，或在描述中 @ 已生成图片的节点'
-          : '请先连接参考图或生图节点',
-      )
+      throw new Error('请先连接参考图或生图节点')
     }
   }
 
@@ -202,11 +183,10 @@ export async function resolveCanvasVideoGenerateInput(
 }
 
 export interface PreparedCanvasVideoRequestPreview {
-  preview: WeishiVideoRequestPreview
-  preparedReferences: WeishiVideoReferenceItem[]
+  preview: VideoRequestPreview
 }
 
-/** 对齐创作工坊：上传参考素材并构建确认弹窗预览 */
+/** 对齐创作工坊：构建确认弹窗预览（智谱 / Grok / OpenAI 兼容） */
 export async function prepareCanvasVideoGeneratePreview(
   node: Node,
   ctx: CanvasVideoGenerateContext,
@@ -216,57 +196,6 @@ export async function prepareCanvasVideoGeneratePreview(
   const settings = settingsRes.data
   const referenceModeLabel =
     VIDEO_REFERENCE_MODE_LABELS[input.referenceMode] ?? input.referenceMode
-
-  if (isWeishiApiModel(input.model)) {
-    const referenceImageItems =
-      input.referenceMode !== 'text_to_video'
-        ? await ensureCanvasWeishiCharacterWhitelist({
-            referenceImageItems: input.referenceImageItems,
-            nodes: ctx.nodes,
-            model: input.model,
-            canvasProjectId: ctx.projectId,
-            settings,
-            appDataDir: settingsRes.appDataDir,
-            fallbackProjectRoot: input.canvasProjectRoot,
-            apiBaseUrl: settings.apiBaseUrl,
-            onImageNodePatch: ctx.onImageNodePatch,
-          })
-        : input.referenceImageItems
-
-    const videoPrompt = composeWeishiVideoPrompt({
-      shotBody: input.prompt,
-      imageItems:
-        input.referenceMode !== 'text_to_video'
-          ? referenceImageItems.map((item) => ({
-              label: item.label,
-              path: item.path,
-              kind: item.kind,
-            }))
-          : [],
-      audioItems: input.referenceAudioItems,
-    })
-
-    return prepareWeishiVideoRequestPreview({
-      model: input.model,
-      prompt: videoPrompt,
-      durationSec: input.durationSec,
-      aspectRatio: input.aspectRatio,
-      resolution: input.resolution,
-      referenceImagePath: input.referenceImagePaths[0] ?? null,
-      referenceImagePaths: input.referenceImagePaths,
-      referenceImageItems,
-      referenceAudioPaths: input.referenceAudioPaths,
-      referenceAudioItems: input.referenceAudioItems,
-      projectRoot: input.videoProjectRoot,
-      apiBaseUrl: settings.apiBaseUrl,
-      referenceMediaUploadMode: resolveEffectiveWeishiReferenceMediaUploadMode(
-        settings.weishiReferenceMediaUploadMode,
-        input.model,
-      ),
-      referenceMode: input.referenceMode,
-      referenceModeLabel,
-    })
-  }
 
   if (isZhipuVideoModel(input.model.model || '', input.model.endpoint, input.model.apiFormat)) {
     const prepared = await prepareZhipuVideoRequestPreview({
@@ -283,7 +212,7 @@ export async function prepareCanvasVideoGeneratePreview(
       apiBaseUrl: settings.apiBaseUrl,
       referenceModeLabel,
     })
-    return { preview: prepared.preview, preparedReferences: [] }
+    return { preview: prepared.preview }
   }
 
   if (isGrokVideoModel(input.model)) {
@@ -301,7 +230,7 @@ export async function prepareCanvasVideoGeneratePreview(
       apiBaseUrl: settings.apiBaseUrl,
       referenceModeLabel,
     })
-    return { preview: prepared.preview, preparedReferences: [] }
+    return { preview: prepared.preview }
   }
 
   if (shouldUseOpenAiVideoClient(input.model)) {
@@ -319,7 +248,7 @@ export async function prepareCanvasVideoGeneratePreview(
       apiBaseUrl: settings.apiBaseUrl,
       referenceModeLabel,
     })
-    return { preview: prepared.preview, preparedReferences: [] }
+    return { preview: prepared.preview }
   }
 
   return null

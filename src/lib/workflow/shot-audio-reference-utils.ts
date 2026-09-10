@@ -229,7 +229,7 @@ export interface ShotVideoReferenceAudioItem {
   label: string
   path: string
   source: 'upload' | 'character_voice'
-  /** 角色 @ 引用名（绑定音色时用于 UI 与微视占位关联） */
+  /** 角色 @ 引用名（绑定音色时用于 UI 关联） */
   mentionName?: string
 }
 

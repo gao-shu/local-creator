@@ -339,7 +339,7 @@ export function AssetDetailPanel({
     patchImages(refPaths, genPaths, clearPatch, index)
     setGeneratedPreviewIndex(index)
     if (Object.keys(clearPatch).length) {
-      toast.message('主图已更换，微视/即梦审核已清除，请重新同步')
+      toast.message('主图已更换，审核状态已清除，请重新同步')
     } else {
       toast.success('已设为主图')
     }

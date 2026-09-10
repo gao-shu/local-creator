@@ -5,8 +5,6 @@ import {
   buildVideoEndpointFromBaseUrl,
   supportsSimpleVideoEndpoint,
 } from '@/lib/models/video-model-utils'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
-import { WeishiModelConfigFields } from '@/components/settings/weishi-model-config-fields'
 
 const inputClass = cn(
   'w-full px-3.5 py-2.5 rounded-xl text-sm',
@@ -49,10 +47,6 @@ function ConfigModeToggle({
 }
 
 export function VideoModelExtraFields({ form, onPatch }: VideoModelExtraFieldsProps) {
-  if (isWeishiApiModel(form)) {
-    return <WeishiModelConfigFields form={form} onPatch={onPatch} showApiKey={false} />
-  }
-
   const showSimpleMode = supportsSimpleVideoEndpoint(form)
   const configMode = form.configMode === 'simple' && showSimpleMode ? 'simple' : 'advanced'
   const computedEndpoint =
@@ -95,7 +89,7 @@ export function VideoModelExtraFields({ form, onPatch }: VideoModelExtraFieldsPr
                 endpoint: buildVideoEndpointFromBaseUrl(baseUrl, form),
               })
             }}
-            placeholder="http://115.191.9.56:3011"
+            placeholder="https://your-video-api-host"
             className={inputClass}
           />
           <p className="text-xs text-muted-foreground">填写服务商域名，系统自动拼接完整地址</p>
@@ -118,13 +112,6 @@ export function VideoModelExtraFields({ form, onPatch }: VideoModelExtraFieldsPr
           <VideoDurationTagField
             tags={form.durations ?? []}
             onChange={(durations) => onPatch({ durations })}
-          />
-
-          <VideoModelTagField
-            label="分辨率"
-            placeholder="输入分辨率后回车，如 360P、720P 或 1080P"
-            tags={form.resolutions ?? []}
-            onChange={(resolutions) => onPatch({ resolutions })}
           />
         </div>
       </div>

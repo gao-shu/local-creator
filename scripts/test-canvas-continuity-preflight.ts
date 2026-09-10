@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * P0 B4：导出文戏预检 + compose 冒烟（不启 Electron）
  *   npx --yes tsx scripts/test-canvas-continuity-preflight.ts

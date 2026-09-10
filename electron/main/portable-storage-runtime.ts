@@ -23,7 +23,7 @@ function resolveDocumentsPath(): string {
 }
 
 export function getLauncherAppDir(): string {
-  const override = process.env.HAODE_E2E_LAUNCHER_DIR?.trim()
+  const override = process.env.LC_E2E_LAUNCHER_DIR?.trim()
   if (override) return override
   return getLauncherDir(resolveDocumentsPath())
 }

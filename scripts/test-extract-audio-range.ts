@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 10 / R0 验收：抽音起止秒校验 + 滑条选区同步。

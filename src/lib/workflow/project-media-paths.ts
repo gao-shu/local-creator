@@ -99,14 +99,6 @@ function remapShotPaths(
   projectRoot: string,
   mode: 'read' | 'write',
 ): WorkflowShot {
-  const weishiUploadedMedia = shot.weishiUploadedMedia?.length
-    ? shot.weishiUploadedMedia.map((entry) => ({
-        ...entry,
-        localPath:
-          remapStringPath(entry.localPath, projectRoot, mode) ?? entry.localPath,
-      }))
-    : shot.weishiUploadedMedia
-
   return {
     ...shot,
     referenceImagePath: remapStringPath(shot.referenceImagePath, projectRoot, mode),
@@ -124,7 +116,6 @@ function remapShotPaths(
     generatedVideoPaths: remapStringList(shot.generatedVideoPaths, projectRoot, mode),
     validatedImagePath: remapStringPath(shot.validatedImagePath, projectRoot, mode),
     validatedImagePaths: remapStringList(shot.validatedImagePaths, projectRoot, mode),
-    weishiUploadedMedia,
   }
 }
 
@@ -175,12 +166,6 @@ export function repairProjectDataMediaPaths(data: WorkflowProjectData): {
       generatedImagePaths: repairList(shot.generatedImagePaths),
       generatedVideoPath: repair(shot.generatedVideoPath),
       generatedVideoPaths: repairList(shot.generatedVideoPaths),
-      weishiUploadedMedia: shot.weishiUploadedMedia?.length
-        ? shot.weishiUploadedMedia.map((entry) => ({
-            ...entry,
-            localPath: repair(entry.localPath)!,
-          }))
-        : shot.weishiUploadedMedia,
     }
   }
 

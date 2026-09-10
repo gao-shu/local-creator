@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 3 验收：probeVideoAudioAtPath — 有音轨 / 无音轨各 1 段（ffmpeg 生成夹具）。

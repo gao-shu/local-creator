@@ -39,7 +39,7 @@ export const workshopStepNavDuringGenerationSuite = {
   name: 'workshop-step-nav-during-generation',
   description: 'Step4 mock 生图进行中切 Step1/3，返回后任务完成并落盘',
   prepareWorkspace: prepareWorkshopE2eWorkspace,
-  launchEnv: { HAODE_E2E_MOCK_DELAY_MS: '10000' },
+  launchEnv: { LC_E2E_MOCK_DELAY_MS: '10000' },
   async run(session) {
     const { page, workspace, assert } = session
     const shotId = E2E_SHOT_IDS[0]

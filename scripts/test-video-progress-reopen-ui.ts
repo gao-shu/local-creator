@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * 生视频重开占位文案
  *   npx --yes tsx scripts/test-video-progress-reopen-ui.ts

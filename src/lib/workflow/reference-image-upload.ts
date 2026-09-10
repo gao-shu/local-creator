@@ -31,7 +31,7 @@ export async function uploadReferenceImageForGeneration(
 
   if (isBackendUploadPathUrl(trimmed) || shouldReuseRemoteUploadUrl(trimmed)) {
     if (/^https?:\/\//i.test(trimmed)) return trimmed
-    throw new Error('公司后台上传已移除，请使用本地文件或微视 /v1/assets')
+    throw new Error('公司后台上传已移除，请使用本地文件或 https 参考图')
   }
   if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('data:')) {
     return trimmed

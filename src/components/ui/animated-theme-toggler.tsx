@@ -38,8 +38,8 @@ export const AnimatedThemeToggler = ({ className }: AnimatedThemeTogglerProps) =
       setEasterRing(true)
       window.setTimeout(() => setEasterRing(false), 900)
     }
-    window.addEventListener("haode:theme-flicker-easter-egg", handler)
-    return () => window.removeEventListener("haode:theme-flicker-easter-egg", handler)
+    window.addEventListener("lc:theme-flicker-easter-egg", handler)
+    return () => window.removeEventListener("lc:theme-flicker-easter-egg", handler)
   }, [])
 
   const onToggle = useCallback(async () => {

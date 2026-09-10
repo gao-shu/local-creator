@@ -1,4 +1,5 @@
-import { isWeishiAssetFailed, isWeishiAssetReady } from '@/lib/models/weishi-asset-service'
+// Copyright (c) local-creator contributors. All rights reserved.
+
 import {
   collectAssetPreviewPaths,
   isAssetReviewValidForImage,
@@ -42,9 +43,16 @@ function normalizeReviewStatus(raw?: string): string {
   return s
 }
 
-/** 从资产字段推断审核通道（对齐 haode-ai-client resolveReviewProviderFromAsset） */
+function isJimengAssetReady(status: string): boolean {
+  return status === 'active' || status === 'approved' || status === 'success'
+}
+
+function isJimengAssetFailed(status: string): boolean {
+  return status === 'failed' || status === 'error' || status === 'rejected'
+}
+
+/** 从资产字段推断审核通道（仅保留即梦遗留字段） */
 export function resolveAssetReviewProvider(asset: WorkflowAsset): ReviewProvider | null {
-  if (asset.weishiAssetId?.trim() || asset.weishiAssetStatus?.trim()) return 'weishi'
   if (asset.jimengAssetId?.trim() || asset.jimengAssetStatus?.trim()) return 'jimeng'
   return null
 }
@@ -59,18 +67,12 @@ export function getAssetReviewSnapshot(
   const provider = resolveAssetReviewProvider(asset)
   if (!provider) return EMPTY_SNAPSHOT
 
-  const providerLabel = provider === 'weishi' ? '微视' : '即梦'
-  const assetId =
-    (provider === 'weishi' ? asset.weishiAssetId : asset.jimengAssetId)?.trim() || ''
-  const status = normalizeReviewStatus(
-    provider === 'weishi' ? asset.weishiAssetStatus : asset.jimengAssetStatus,
-  )
+  const providerLabel = '即梦'
+  const assetId = asset.jimengAssetId?.trim() || ''
+  const status = normalizeReviewStatus(asset.jimengAssetStatus)
 
-  const isReady = isWeishiAssetReady
-  const isFailed = isWeishiAssetFailed
-
-  const isApproved = Boolean(assetId) && isReady(status)
-  const failed = isFailed(status)
+  const isApproved = Boolean(assetId) && isJimengAssetReady(status)
+  const failed = isJimengAssetFailed(status)
   const hasSynced = Boolean(assetId)
 
   let visualState: AssetReviewVisualState = 'none'

@@ -10,7 +10,7 @@ const RESERVED_ROOT_ENTRIES = new Set([
   'canvas',
   'settings.json',
   'projects.json',
-  'haode-settings-backup.json',
+  'lc-settings-backup.json',
 ])
 
 async function pathExists(targetPath: string): Promise<boolean> {

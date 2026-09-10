@@ -1,7 +1,6 @@
 // Copyright (c) local-creator. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
 import { shouldUseOpenAiVideoClient } from '@/lib/video/openai-video-client'
 import { isGrokVideoModel } from '@/lib/video/grok-video-client'
 import { isZhipuVideoModel } from '@/lib/video/zhipu-video-client'
@@ -15,7 +14,6 @@ import { assertNotAborted } from '@/lib/video/video-generation-abort'
 import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets'
 
 export type VideoProviderKind =
-  | 'weishi'
   | 'zhipu'
   | 'grok'
   | 'agnes_video_25'
@@ -23,7 +21,6 @@ export type VideoProviderKind =
   | 'unsupported'
 
 export function resolveVideoProviderKind(model: ModelConfig): VideoProviderKind {
-  if (isWeishiApiModel(model)) return 'weishi'
   if (isAgnesVideo25Model(model)) return 'agnes_video_25'
   if (isGrokVideoModel(model)) return 'grok'
   if (isZhipuVideoModel(model.model || '', model.endpoint, model.apiFormat)) return 'zhipu'
@@ -42,7 +39,7 @@ export interface PrepareExternalVideoRefsOptions {
   abortSignal?: AbortSignal
 }
 
-/** 非微视模型：按参考模式选图 → 上传/解析 → 返回可用 URL 列表 */
+/** 外部视频模型：按参考模式选图 → 上传/解析 → 返回可用 URL 列表 */
 export async function prepareExternalVideoReferenceUrls(
   options: PrepareExternalVideoRefsOptions,
 ): Promise<string[]> {

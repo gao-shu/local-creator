@@ -5,7 +5,7 @@ import type { WorkflowShot } from '@/types/workflow'
 export function resolveShotValidateDisabledHint(shot: WorkflowShot, validating: boolean): string | null {
   if (isStoryboardImageValidated(shot)) return '分镜图已审核'
   if (validating) return '审核进行中'
-  if (shot.status !== 'done') return '多数流程可跳过；需审核微视参考图时请先完成分镜图'
+  if (shot.status !== 'done') return '多数流程可跳过；请先完成分镜图后再生成视频'
   return null
 }
 

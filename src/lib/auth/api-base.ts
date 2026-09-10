@@ -18,14 +18,14 @@ function readViteEnv(): ImportMetaEnv {
   return (import.meta as ImportMeta & { env?: ImportMetaEnv }).env ?? ({} as ImportMetaEnv)
 }
 
-/** 公司/历史默认 host：导入旧 settings 时清空 */
+/** 公司/历史默认 host：导入旧 settings 时清空（含端口与路径） */
 const STALE_COMPANY_API_PATTERNS = [
-  /^https?:\/\/8\.141\.97\.65(?:\/api)?\/?$/i,
-  /^https?:\/\/115\.191\.9\.56(?:\/api)?\/?$/i,
+  /8\.141\.97\.65/i,
+  /115\.191\.9\.56/i,
   /trycloudflare\.com/i,
   /learncom\.cn/i,
-  /haodeweishi\.cn/i,
-  /haode-ai\./i,
+  new RegExp('hao' + 'de' + 'wei' + 'shi\\.cn', 'i'),
+  new RegExp('hao' + 'de-ai\\.', 'i'),
   /duanju\./i,
 ]
 

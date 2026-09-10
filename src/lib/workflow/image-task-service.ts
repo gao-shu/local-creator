@@ -8,7 +8,7 @@ import { useTaskStore } from '@/stores/task-store'
 
 export const IMAGE_HANG_MS = 30 * 60 * 1000
 
-const IMAGE_SESSION_PREFIX = 'haode:image:'
+const IMAGE_SESSION_PREFIX = 'lc:image:'
 
 export interface InflightImageSession {
   taskId: string

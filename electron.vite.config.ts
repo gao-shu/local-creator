@@ -73,7 +73,7 @@ export default defineConfig(({ mode }) => {
         'process.env.VITE_UPLOAD_ORIGIN': JSON.stringify(env.VITE_UPLOAD_ORIGIN ?? ''),
         'process.env.VITE_UPDATE_PUBLISH_URL': JSON.stringify(env.VITE_UPDATE_PUBLISH_URL ?? ''),
         'process.env.VITE_UPDATE_ORIGIN': JSON.stringify(env.VITE_UPDATE_ORIGIN ?? ''),
-        'process.env.HAODE_UPDATE_PUBLISH_URL': JSON.stringify(env.HAODE_UPDATE_PUBLISH_URL ?? ''),
+        'process.env.LC_UPDATE_PUBLISH_URL': JSON.stringify(env.LC_UPDATE_PUBLISH_URL ?? ''),
       },
       ...cjsEntry('electron/main.ts'),
     },
@@ -87,7 +87,7 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': src,
-          '@haode/ai-core': path.resolve(src, './packages/ai-core/index.ts'),
+          '@local-creator/ai-core': path.resolve(src, './packages/ai-core/index.ts'),
         },
       },
       plugins: [react()],

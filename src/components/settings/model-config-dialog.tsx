@@ -30,13 +30,6 @@ import {
   VIDEO_MODEL_PRESETS,
   type VideoPresetKey,
 } from '@/lib/models/video-model-presets'
-import { isWeishiApiModel, WEISHI_API_PRESET } from '@/lib/models/weishi-model-presets'
-import {
-  buildWeishiCustomModelPatchFromCatalog,
-  resolveDefaultWeishiUpstreamModelId,
-} from '@/lib/models/weishi-model-catalog'
-import { useSettingsStore } from '@/stores/settings-store'
-import { isWeishiModelCatalogReady } from '@/components/settings/weishi-model-config-fields'
 import {
   extractBaseUrlFromEndpoint,
   normalizeVideoModelConfig,
@@ -49,7 +42,6 @@ import {
   SettingsToggleField,
 } from '@/components/settings/model-config-dialog-shared'
 import { VideoModelExtraFields } from '@/components/settings/video-model-extra-fields'
-import { WeishiModelConfigFields } from '@/components/settings/weishi-model-config-fields'
 
 interface ModelConfigDialogProps {
   open: boolean
@@ -77,7 +69,6 @@ export function ModelConfigDialog({
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
-  const videoModels = useSettingsStore((state) => state.settings?.videoModels ?? [])
 
   useEffect(() => {
     if (!open) return
@@ -91,24 +82,9 @@ export function ModelConfigDialog({
                 extractBaseUrlFromEndpoint(initial.endpoint || '', initial),
             })
           : initial
-      if (kind === 'video' && isWeishiApiModel(base)) {
-        const configured = useSettingsStore.getState().settings?.videoModels ?? []
-        const modelId = base.model?.trim() || resolveDefaultWeishiUpstreamModelId(configured)
-        const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, configured)
-        setForm({ ...base, ...catalogPatch, model: modelId, autoAppendV1: base.autoAppendV1 !== false })
-      } else {
-        setForm({ ...base, autoAppendV1: base.autoAppendV1 !== false })
-      }
+      setForm({ ...base, autoAppendV1: base.autoAppendV1 !== false })
     } else {
-      const empty = createEmptyModel(kind)
-      if (kind === 'video' && isWeishiApiModel(empty)) {
-        const configured = useSettingsStore.getState().settings?.videoModels ?? []
-        const modelId = empty.model?.trim() || resolveDefaultWeishiUpstreamModelId(configured)
-        const catalogPatch = buildWeishiCustomModelPatchFromCatalog(modelId, configured)
-        setForm({ ...empty, ...catalogPatch, model: modelId })
-      } else {
-        setForm(empty)
-      }
+      setForm(createEmptyModel(kind))
     }
     setError('')
     setShowKey(false)
@@ -130,25 +106,6 @@ export function ModelConfigDialog({
       toast.error(message)
       return false
     }
-    const isWeishiVideo = kind === 'video' && isWeishiApiModel(form)
-
-    if (isWeishiVideo) {
-      if (!isWeishiModelCatalogReady(videoModels)) {
-        return fail('暂无可用的微视模型列表，无法保存')
-      }
-      if (!form.model?.trim()) {
-        return fail('请选择模型')
-      }
-      const catalogPatch = buildWeishiCustomModelPatchFromCatalog(form.model, videoModels)
-      if (!catalogPatch.endpoint?.trim()) {
-        return fail('所选模型缺少接口地址，请检查预设或手动填写')
-      }
-      if (!form.apiKey?.trim()) {
-        return fail('请填写 API 密钥')
-      }
-      return true
-    }
-
     if (!form.name.trim()) {
       return fail('请填写配置名称')
     }
@@ -211,19 +168,7 @@ export function ModelConfigDialog({
     setSaving(true)
     setError('')
     try {
-      const isWeishiVideo = kind === 'video' && isWeishiApiModel(form)
-      const weishiCatalogPatch =
-        isWeishiVideo && form.model?.trim()
-          ? buildWeishiCustomModelPatchFromCatalog(form.model, videoModels)
-          : {}
-      const mergedForm = isWeishiVideo
-        ? {
-            ...form,
-            ...weishiCatalogPatch,
-            name: form.name.trim() || WEISHI_API_PRESET.name,
-            remark: form.remark?.trim() || WEISHI_API_PRESET.remark,
-          }
-        : form
+      const mergedForm = form
 
       const payload =
         kind === 'video'
@@ -267,14 +212,6 @@ export function ModelConfigDialog({
         : kind === 'video' && videoPresetKey
           ? apiFormatOptions.find((o) => o.value === videoPresetKey) ?? apiFormatOptions[0]
           : apiFormatOptions[0]
-  const showWeishiSimpleEndpoint =
-    kind === 'video' &&
-    isWeishiApiModel(form) &&
-    form.configMode === 'simple'
-  const hideModelIdField = kind === 'video' && isWeishiApiModel(form)
-  const hideApiFormatPicker = kind === 'video' && isWeishiApiModel(form)
-  const isWeishiVideo = kind === 'video' && isWeishiApiModel(form)
-  const weishiCatalogReady = !isWeishiVideo || isWeishiModelCatalogReady(videoModels)
   const showAutoAppendV1 =
     kind === 'llm'
       ? llmPresetKey === 'openai_compatible'
@@ -350,7 +287,7 @@ export function ModelConfigDialog({
               transition={{ duration: 0.2 }}
               className={cn(
                 'pointer-events-auto w-full max-h-[90vh] flex flex-col',
-                isWeishiVideo ? 'max-w-lg' : kind === 'video' ? 'max-w-2xl' : 'max-w-lg',
+                kind === 'video' ? 'max-w-2xl' : 'max-w-lg',
               )}
             >
             <div
@@ -363,18 +300,10 @@ export function ModelConfigDialog({
               <div className="flex items-start justify-between px-6 pt-6 pb-4 shrink-0">
                 <div>
                   <h2 className="text-lg font-semibold">
-                    {isWeishiVideo
-                      ? isEdit
-                        ? '编辑微视API'
-                        : '微视API'
-                      : isEdit
-                        ? '编辑 API 配置'
-                        : '新建 API 配置'}
+                    {isEdit ? '编辑 API 配置' : '新建 API 配置'}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {isWeishiVideo
-                      ? '模型与接口由平台配置；生视频参数在分镜 Step4 选择'
-                      : `配置外部 ${MODEL_KIND_LABEL[kind]} 服务的 API 接入信息`}
+                    {`配置外部 ${MODEL_KIND_LABEL[kind]} 服务的 API 接入信息`}
                   </p>
                 </div>
                 <button
@@ -387,8 +316,7 @@ export function ModelConfigDialog({
               </div>
 
               <div className="px-6 space-y-4 pb-2 overflow-y-auto flex-1">
-                {!isWeishiVideo ? (
-                <div>
+                                <div>
                   <label className="block text-sm font-medium mb-1.5">配置名称</label>
                   <input
                     type="text"
@@ -399,74 +327,64 @@ export function ModelConfigDialog({
                     autoFocus
                   />
                 </div>
-                ) : null}
 
-                {!isWeishiVideo ? (
                 <div className="relative">
                   <label className="block text-sm font-medium mb-1.5">API 格式</label>
-                  {hideApiFormatPicker ? (
-                    <div className={cn(inputClass, 'flex items-center text-muted-foreground')}>
-                      微视API
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => setApiFormatOpen((v) => !v)}
-                        className={cn(inputClass, 'flex items-center justify-between text-left')}
-                      >
-                        <span>{selectedApiFormat?.label ?? 'OpenAI'}</span>
-                        <ChevronDown
-                          className={cn(
-                            'h-4 w-4 text-muted-foreground transition-transform',
-                            apiFormatOpen && 'rotate-180',
-                          )}
-                        />
-                      </button>
-                      {apiFormatOpen ? (
-                        <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-xl border border-border/40 bg-card shadow-lg max-h-52 overflow-y-auto">
-                          {apiFormatOptions.map((option) => (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() => {
-                                if (kind === 'llm') {
-                                  applyLlmPresetFields(option.value as LlmPresetKey)
-                                } else if (kind === 'image') {
-                                  applyImagePresetFields(option.value as ImagePresetKey)
-                                } else {
-                                  applyVideoPresetFields(option.value as VideoPresetKey)
-                                }
-                                setApiFormatOpen(false)
-                              }}
-                              className={cn(
-                                'w-full px-3 py-2.5 text-left hover:bg-muted/60 transition-colors',
-                                isApiFormatSelected(option.value) ? 'bg-primary/5' : '',
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setApiFormatOpen((v) => !v)}
+                      className={cn(inputClass, 'flex items-center justify-between text-left')}
+                    >
+                      <span>{selectedApiFormat?.label ?? 'OpenAI'}</span>
+                      <ChevronDown
+                        className={cn(
+                          'h-4 w-4 text-muted-foreground transition-transform',
+                          apiFormatOpen && 'rotate-180',
+                        )}
+                      />
+                    </button>
+                    {apiFormatOpen ? (
+                      <div className="absolute left-0 right-0 top-full mt-1 z-10 rounded-xl border border-border/40 bg-card shadow-lg max-h-52 overflow-y-auto">
+                        {apiFormatOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              if (kind === 'llm') {
+                                applyLlmPresetFields(option.value as LlmPresetKey)
+                              } else if (kind === 'image') {
+                                applyImagePresetFields(option.value as ImagePresetKey)
+                              } else {
+                                applyVideoPresetFields(option.value as VideoPresetKey)
+                              }
+                              setApiFormatOpen(false)
+                            }}
+                            className={cn(
+                              'w-full px-3 py-2.5 text-left hover:bg-muted/60 transition-colors',
+                              isApiFormatSelected(option.value) ? 'bg-primary/5' : '',
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              {isApiFormatSelected(option.value) ? (
+                                <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                              ) : (
+                                <span className="w-3.5 shrink-0" />
                               )}
-                            >
-                              <div className="flex items-center gap-2">
-                                {isApiFormatSelected(option.value) ? (
-                                  <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                                ) : (
-                                  <span className="w-3.5 shrink-0" />
-                                )}
-                                <span className="text-sm font-medium">{option.label}</span>
-                              </div>
-                              {option.description ? (
-                                <p className="text-xs text-muted-foreground mt-0.5 pl-5">
-                                  {option.description}
-                                </p>
-                              ) : null}
-                            </button>
-                          ))}
-                        </div>
-                      ) : null}
-                    </>
-                  )}
+                              <span className="text-sm font-medium">{option.label}</span>
+                            </div>
+                            {option.description ? (
+                              <p className="text-xs text-muted-foreground mt-0.5 pl-5">
+                                {option.description}
+                              </p>
+                            ) : null}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </>
                 </div>
-                ) : null}
 
-                {!isWeishiVideo && !showWeishiSimpleEndpoint ? (
                 <div>
                   <label className="block text-sm font-medium mb-1.5">API 地址</label>
                   <input
@@ -501,10 +419,8 @@ export function ModelConfigDialog({
                     </p>
                   ) : null}
                 </div>
-                ) : null}
 
-                {!isWeishiVideo && !hideModelIdField ? (
-                <div>
+                                <div>
                   <label className="block text-sm font-medium mb-1.5">模型 ID</label>
                   <input
                     type="text"
@@ -525,9 +441,8 @@ export function ModelConfigDialog({
                     </p>
                   ) : null}
                 </div>
-                ) : null}
 
-                {form.platform !== 'ollama' && !isWeishiVideo ? (
+                {form.platform !== 'ollama' ? (
                   <div>
                     <label className="block text-sm font-medium mb-1.5">API 密钥</label>
                     <div className="relative">
@@ -553,19 +468,11 @@ export function ModelConfigDialog({
                   </div>
                 ) : null}
 
-                {isWeishiVideo ? (
-                  <WeishiModelConfigFields
-                    form={form}
-                    onPatch={patch}
-                    showApiKey
-                    showKey={showKey}
-                    onToggleShowKey={() => setShowKey((value) => !value)}
-                  />
-                ) : kind === 'video' ? (
+                {kind === 'video' ? (
                   <VideoModelExtraFields form={form} onPatch={patch} />
                 ) : null}
 
-                {!isWeishiVideo && showAutoAppendV1 ? (
+                {showAutoAppendV1 ? (
                   <SettingsToggleField
                     label="自动补充 /v1 路径"
                     description={
@@ -591,8 +498,7 @@ export function ModelConfigDialog({
                 >
                   取消
                 </button>
-                {!isWeishiVideo ? (
-                <button
+                                <button
                   type="button"
                   onClick={() => void handleTest()}
                   disabled={testing || saving}
@@ -611,11 +517,10 @@ export function ModelConfigDialog({
                     '测试连接'
                   )}
                 </button>
-                ) : null}
                 <button
                   type="button"
                   onClick={() => void handleSubmit()}
-                  disabled={saving || testing || !weishiCatalogReady}
+                  disabled={saving || testing}
                   className={cn(
                     'px-5 py-2 rounded-xl text-sm font-medium',
                     'bg-primary text-primary-foreground',

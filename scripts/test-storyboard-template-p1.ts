@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * P1：分镜模板解析器
  *   npm run test:storyboard-template-p1

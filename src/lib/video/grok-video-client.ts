@@ -11,7 +11,7 @@
  */
 
 import type { ModelConfig } from '@/types/settings'
-import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import { normalizeApiBase, resolveOpenAiPath } from '@/lib/models/model-endpoint'
 import {
   pickFirstDuration,
@@ -47,6 +47,23 @@ import {
   resolveAbsoluteApiMediaUrlFromBases,
 } from '@/lib/video/video-content-download'
 import { VIDEO_POLL_INTERVAL_MS } from '@/constants/batch-concurrency'
+
+/** 生视频确认弹窗请求预览（与厂商无关的最小结构） */
+export interface GrokVideoRequestPreview {
+  method: 'POST'
+  url: string
+  headers: Record<string, string>
+  body: Record<string, unknown>
+  context: {
+    modelName: string
+    modelId: string
+    shotNumber?: number
+    referenceMode?: string
+    referenceModeLabel?: string
+    batchCount?: number
+    referenceNote?: string
+  }
+}
 
 const POLL_TIMEOUT_MS = 30 * 60 * 1000
 
@@ -634,7 +651,7 @@ export async function prepareGrokVideoRequestPreview(
     batchCount?: number
   },
   onProgress?: VideoProgressCallback,
-): Promise<{ preview: WeishiVideoRequestPreview; resolvedImageUrls: string[] }> {
+): Promise<{ preview: VideoRequestPreview; resolvedImageUrls: string[] }> {
   const referenceMode = input.referenceMode ?? 'first_frame'
   const needsReferenceImage = referenceMode !== 'text_to_video'
 

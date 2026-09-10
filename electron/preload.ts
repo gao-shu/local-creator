@@ -1,25 +1,25 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { AppSettings } from '../src/types/settings'
 
-if (process.env.HAODE_E2E_MOCK_AI === '1') {
-  contextBridge.exposeInMainWorld('__HAODE_E2E_MOCK_AI__', true)
+if (process.env.LC_E2E_MOCK_AI === '1') {
+  contextBridge.exposeInMainWorld('__LC_E2E_MOCK_AI__', true)
 }
 
-const e2eMockDelayRaw = process.env.HAODE_E2E_MOCK_DELAY_MS?.trim()
+const e2eMockDelayRaw = process.env.LC_E2E_MOCK_DELAY_MS?.trim()
 if (e2eMockDelayRaw) {
   const parsed = Number(e2eMockDelayRaw)
   if (Number.isFinite(parsed) && parsed > 0) {
-    contextBridge.exposeInMainWorld('__HAODE_E2E_MOCK_DELAY_MS__', parsed)
+    contextBridge.exposeInMainWorld('__LC_E2E_MOCK_DELAY_MS__', parsed)
   }
 }
 
-const e2eMockFailRaw = process.env.HAODE_E2E_MOCK_FAIL?.trim()
+const e2eMockFailRaw = process.env.LC_E2E_MOCK_FAIL?.trim()
 if (e2eMockFailRaw) {
-  contextBridge.exposeInMainWorld('__HAODE_E2E_MOCK_FAIL__', e2eMockFailRaw)
+  contextBridge.exposeInMainWorld('__LC_E2E_MOCK_FAIL__', e2eMockFailRaw)
 }
 
-if (process.env.HAODE_E2E === '1') {
-  contextBridge.exposeInMainWorld('__HAODE_E2E__', true)
+if (process.env.LC_E2E === '1') {
+  contextBridge.exposeInMainWorld('__LC_E2E__', true)
 }
 
 contextBridge.exposeInMainWorld('settingsAPI', {

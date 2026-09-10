@@ -1,6 +1,4 @@
 import type { ModelConfig, ModelKind } from '@/types/settings'
-import { isWeishiApiModel, pickWeishiVideoDurationSec } from '@/lib/models/weishi-model-presets'
-import { buildWeishiVideoCreateBody } from '@/lib/models/weishi-video-client'
 import {
   pickFirstDuration,
   pickFirstRatio,
@@ -75,34 +73,6 @@ function classifyHttpResult(
     success: false,
     message: `${resourceLabel}接口检测失败 (${status})${detail ? `：${detail}` : ''}`,
   }
-}
-
-async function testWeishiVideoEndpoint(model: ModelConfig): Promise<ModelTestResult> {
-  const url = normalizeApiBase(model.endpoint)
-  if (!url) throw new Error('请填写 API 地址')
-
-  const body = buildWeishiVideoCreateBody({
-    model: model.model,
-    prompt: '连接测试',
-    duration: pickWeishiVideoDurationSec(),
-    ratio: pickFirstRatio(model),
-  })
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${model.apiKey}`,
-    },
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    const detail = await readErrorDetail(response)
-    return classifyHttpResult(response.status, detail, '视频')
-  }
-
-  return { success: true, message: '连接成功，微视视频接口可用' }
 }
 
 async function testGrokVideoEndpoint(model: ModelConfig): Promise<ModelTestResult> {
@@ -309,9 +279,6 @@ export async function testModelConnection(
   }
 
   if (kind === 'video') {
-    if (isWeishiApiModel(model)) {
-      return testWeishiVideoEndpoint(model)
-    }
     if (isGrokVideoModel(model)) {
       return testGrokVideoEndpoint(model)
     }

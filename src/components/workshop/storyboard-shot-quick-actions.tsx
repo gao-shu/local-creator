@@ -86,7 +86,7 @@ export function StoryboardShotQuickActions({
       variant="outline"
       data-testid={resolveTestId(testIdScope, shot.id, 'generate-image')}
       disabled={!promptReady}
-      title={promptReady ? '可选：需要分镜预览图或微视审核时再生成' : '请先填写分镜提示词'}
+      title={promptReady ? '可选：需要分镜预览图时再生成' : '请先填写分镜提示词'}
       className="h-8 text-[11px] px-2"
       onClick={onGenerate}
     >
@@ -113,7 +113,7 @@ export function StoryboardShotQuickActions({
       className="h-8 text-[11px] px-2"
       data-testid={resolveTestId(testIdScope, shot.id, 'validate')}
       disabled={validateDisabled}
-      title={validateHint ?? '审核分镜图并写入微视参考（多数流程可跳过）'}
+      title={validateHint ?? '审核分镜图并写入参考（多数流程可跳过）'}
       onClick={onValidate}
     >
       {validating ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}

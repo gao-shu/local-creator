@@ -91,13 +91,13 @@ declare global {
     /** 画布豆包网页侧栏（仅豆包；主进程 BrowserView） */
     doubaoWebPanelAPI?: DoubaoWebPanelAPI
     /** Electron E2E：由 preload 注入，开启 mock 生图/生视频 */
-    __HAODE_E2E_MOCK_AI__?: boolean
+    __LC_E2E_MOCK_AI__?: boolean
     /** Electron E2E：mock 生图/生视频延迟（ms） */
-    __HAODE_E2E_MOCK_DELAY_MS__?: number
+    __LC_E2E_MOCK_DELAY_MS__?: number
     /** Electron E2E：mock 失败注入 shot-image | shot-video | asset-image | all */
-    __HAODE_E2E_MOCK_FAIL__?: string
+    __LC_E2E_MOCK_FAIL__?: string
     /** Electron E2E：由 preload 注入，跳过登录走本地 Session */
-    __HAODE_E2E__?: boolean
+    __LC_E2E__?: boolean
   }
 }
 

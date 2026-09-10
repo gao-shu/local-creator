@@ -35,7 +35,7 @@ export default defineConfig(function (_a) {
                 'process.env.VITE_UPLOAD_ORIGIN': JSON.stringify((_b = env.VITE_UPLOAD_ORIGIN) !== null && _b !== void 0 ? _b : ''),
                 'process.env.VITE_UPDATE_PUBLISH_URL': JSON.stringify((_c = env.VITE_UPDATE_PUBLISH_URL) !== null && _c !== void 0 ? _c : ''),
                 'process.env.VITE_UPDATE_ORIGIN': JSON.stringify((_d = env.VITE_UPDATE_ORIGIN) !== null && _d !== void 0 ? _d : ''),
-                'process.env.HAODE_UPDATE_PUBLISH_URL': JSON.stringify((_e = env.HAODE_UPDATE_PUBLISH_URL) !== null && _e !== void 0 ? _e : ''),
+                'process.env.LC_UPDATE_PUBLISH_URL': JSON.stringify((_e = env.LC_UPDATE_PUBLISH_URL) !== null && _e !== void 0 ? _e : ''),
             } }, cjsEntry('electron/main.ts')),
         preload: cjsEntry('electron/preload.ts'),
         renderer: {
@@ -47,7 +47,7 @@ export default defineConfig(function (_a) {
             resolve: {
                 alias: {
                     '@': src,
-                    '@haode/ai-core': path.resolve(src, './packages/ai-core/index.ts'),
+                    '@local-creator/ai-core': path.resolve(src, './packages/ai-core/index.ts'),
                 },
             },
             plugins: [react()],

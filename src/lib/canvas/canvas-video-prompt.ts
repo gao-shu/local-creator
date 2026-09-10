@@ -11,7 +11,7 @@
  * P0 红线 DoD（C）：
  * 1. 不新增第二份 spatial / validate system prompt；复用 `lib/workflow/storyboard-prompt`。
  * 2. continuity issues 类型复用 `ParsedValidateIssue`，禁止本地再定义一份 interface。
- * 3. 微视 / 计费生视频路径不 fork；只在 shotBody 层 compose。
+ * 3. 计费生视频路径不 fork；只在 shotBody 层 compose。
  */
 export function composeCanvasVideoShotBody(data: {
   spatialAnchor?: string | null

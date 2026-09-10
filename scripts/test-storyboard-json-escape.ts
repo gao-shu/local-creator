@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step4 推理分镜：LLM 回包含 Markdown 非法 JSON 转义时的解析回归。

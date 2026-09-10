@@ -16,7 +16,7 @@ import {
   resolveProjectMediaPath,
 } from '../../src/lib/storage/media-path-resolver'
 
-const DRAG_DIR_NAME = 'haode-capcut-drag'
+const DRAG_DIR_NAME = 'lc-capcut-drag'
 
 function sanitizeDragFilename(filename: string): string {
   const base = path.basename(String(filename || '').trim()) || 'video'

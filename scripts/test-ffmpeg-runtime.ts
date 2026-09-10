@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 2 验收：直接调用 electron/main/ffmpeg-runtime（executablePath 注入，不启动 Electron）。

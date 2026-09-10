@@ -33,8 +33,7 @@ import { prepareCanvasVideoGeneratePreview } from '@/lib/canvas/canvas-video-gen
 import { runCanvasBatchVideoGenerate } from '@/lib/canvas/canvas-batch-video-generate'
 import { isPendingCanvasVideoNode } from '@/lib/canvas/canvas-shot-utils'
 import { VIDEO_BATCH_CONCURRENCY } from '@/constants/batch-concurrency'
-import type { WeishiVideoReferenceItem } from '@/lib/models/weishi-video-client'
-import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useCanvasProjectStore } from '@/stores/canvas-project-store'
 import {
@@ -246,7 +245,7 @@ interface CanvasEditorContextValue {
   runNode: (nodeId: string, options?: CanvasRunOptions & { silent?: boolean }) => Promise<void>
   /** 远端成片已出、本地落盘失败时仅重试下载 */
   retryVideoDownload: (nodeId: string) => Promise<boolean>
-  /** 批量生成分镜视频（含 debug 微视确认后接续） */
+  /** 批量生成分镜视频（含确认弹窗后接续） */
   requestBatchStoryboardVideos: (nodeIds: string[]) => Promise<void>
   batchVideoGenerating: boolean
   stopNode: (nodeId: string) => boolean
@@ -313,14 +312,14 @@ interface CanvasEditorContextValue {
     defaultKind?: CanvasImageAssetRole,
   ) => void
   closeMaterialLibrary: () => void
-  pendingWeishiVideo: {
+  pendingVideoConfirm: {
     nodeId: string
-    preview: WeishiVideoRequestPreview
+    preview: VideoRequestPreview
   } | null
-  weishiPreviewPreparing: boolean
-  weishiPreviewNodeId: string | null
-  confirmWeishiVideo: () => void
-  cancelWeishiVideo: () => void
+  videoPreviewPreparing: boolean
+  videoPreviewNodeId: string | null
+  confirmVideoRequest: () => void
+  cancelVideoRequest: () => void
   /** 画布助手面板是否打开 */
   agentPanelOpen: boolean
   setAgentPanelOpen: (open: boolean) => void
@@ -404,17 +403,16 @@ export function CanvasEditorProvider({
   const [materialLibraryOpen, setMaterialLibraryOpen] = useState(false)
   const [materialLibraryRequest, setMaterialLibraryRequest] =
     useState<CanvasMaterialLibraryRequest | null>(null)
-  const [pendingWeishiVideo, setPendingWeishiVideo] = useState<{
+  const [pendingVideoConfirm, setPendingVideoConfirm] = useState<{
     nodeId: string
     options?: CanvasRunOptions & { silent?: boolean }
-    preview: WeishiVideoRequestPreview
-    preparedReferences: WeishiVideoReferenceItem[]
+    preview: VideoRequestPreview
     batchNodeIds?: string[]
   } | null>(null)
   const [batchVideoGenerating, setBatchVideoGenerating] = useState(false)
   const batchVideoGeneratingRef = useRef(false)
-  const [weishiPreviewPreparing, setWeishiPreviewPreparing] = useState(false)
-  const [weishiPreviewNodeId, setWeishiPreviewNodeId] = useState<string | null>(null)
+  const [videoPreviewPreparing, setVideoPreviewPreparing] = useState(false)
+  const [videoPreviewNodeId, setVideoPreviewNodeId] = useState<string | null>(null)
   const [agentPanelOpen, setAgentPanelOpen] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<{
     removeIds: string[]
@@ -1714,7 +1712,6 @@ export function CanvasEditorProvider({
               ? {
                   toolPrompt: options.toolPrompt,
                   useSelfReference: options.useSelfReference,
-                  weishiPreparedReferences: options.weishiPreparedReferences,
                 }
               : undefined,
             onProgress: (message) => {
@@ -1889,7 +1886,7 @@ export function CanvasEditorProvider({
       const node = nodesRef.current.find((item) => item.id === nodeId)
       const debugEnabled = useSettingsStore.getState().settings?.debugEnabled
       if (node?.type === CANVAS_NODE_TYPES.storyVideo && debugEnabled) {
-        if (pendingWeishiVideo) {
+        if (pendingVideoConfirm) {
           toast.info('请先确认或取消当前视频生成弹窗')
           return
         }
@@ -1904,36 +1901,34 @@ export function CanvasEditorProvider({
           toast.info('该节点任务进行中，请稍候')
           return
         }
-        setWeishiPreviewPreparing(true)
-        setWeishiPreviewNodeId(nodeId)
+        setVideoPreviewPreparing(true)
+        setVideoPreviewNodeId(nodeId)
         try {
           const prepared = await prepareCanvasVideoGeneratePreview(node, {
             projectId,
             nodes: nodesRef.current,
             edges: edgesRef.current,
-            onImageNodePatch: (imageNodeId, patch) => updateNodeData(imageNodeId, patch),
-          })
+                      })
           if (prepared) {
-            setPendingWeishiVideo({
+            setPendingVideoConfirm({
               nodeId,
               options,
               preview: prepared.preview,
-              preparedReferences: prepared.preparedReferences,
-            })
+                          })
             return
           }
         } catch (error: unknown) {
           toast.error((error as Error).message || '准备视频参数失败')
           return
         } finally {
-          setWeishiPreviewPreparing(false)
-          setWeishiPreviewNodeId(null)
+          setVideoPreviewPreparing(false)
+          setVideoPreviewNodeId(null)
         }
       }
       const ok = await executeNode(nodeId, options)
       flushPersist()
     },
-    [executeNode, flushPersist, markNodeIdle, pendingWeishiVideo, projectId, updateNodeData],
+    [executeNode, flushPersist, markNodeIdle, pendingVideoConfirm, projectId, updateNodeData],
   )
 
   const retryVideoDownload = useCallback(
@@ -2097,7 +2092,7 @@ export function CanvasEditorProvider({
         toast.info('批量生成进行中…')
         return
       }
-      if (pendingWeishiVideo) {
+      if (pendingVideoConfirm) {
         toast.info('请先确认或取消当前视频生成弹窗')
         return
       }
@@ -2148,7 +2143,7 @@ export function CanvasEditorProvider({
         setBatchVideoGenerating(false)
       }
     },
-    [executeNode, flushPersist, pendingWeishiVideo, projectId],
+    [executeNode, flushPersist, pendingVideoConfirm, projectId],
   )
 
   const requestBatchStoryboardVideos = useCallback(
@@ -2159,29 +2154,19 @@ export function CanvasEditorProvider({
     [runBatchStoryboardVideosInternal],
   )
 
-  const confirmWeishiVideo = useCallback(() => {
-    if (!pendingWeishiVideo) return
-    const { nodeId, options, preparedReferences, batchNodeIds } = pendingWeishiVideo
-    setPendingWeishiVideo(null)
+  const confirmVideoRequest = useCallback(() => {
+    if (!pendingVideoConfirm) return
+    const { nodeId, options, batchNodeIds } = pendingVideoConfirm
+    setPendingVideoConfirm(null)
     if (batchNodeIds?.length) {
-      void runBatchStoryboardVideosInternal(batchNodeIds, {
-        ...options,
-        weishiPreparedReferences: preparedReferences,
-        silent: true,
-      })
+      void runBatchStoryboardVideosInternal(batchNodeIds)
       return
     }
-    void (async () => {
-      await executeNode(nodeId, {
-        ...options,
-        weishiPreparedReferences: preparedReferences,
-      })
-      flushPersist()
-    })()
-  }, [executeNode, flushPersist, pendingWeishiVideo, runBatchStoryboardVideosInternal])
+    void executeNode(nodeId, options).then(() => flushPersist())
+  }, [executeNode, flushPersist, pendingVideoConfirm, runBatchStoryboardVideosInternal])
 
-  const cancelWeishiVideo = useCallback(() => {
-    setPendingWeishiVideo(null)
+  const cancelVideoRequest = useCallback(() => {
+    setPendingVideoConfirm(null)
   }, [])
 
   const copySelection = useCallback(() => {
@@ -2816,13 +2801,13 @@ export function CanvasEditorProvider({
       openMaterialLibrary,
       openMaterialLibraryForNode,
       closeMaterialLibrary,
-      pendingWeishiVideo: pendingWeishiVideo
-        ? { nodeId: pendingWeishiVideo.nodeId, preview: pendingWeishiVideo.preview }
+      pendingVideoConfirm: pendingVideoConfirm
+        ? { nodeId: pendingVideoConfirm.nodeId, preview: pendingVideoConfirm.preview }
         : null,
-      weishiPreviewPreparing,
-      weishiPreviewNodeId,
-      confirmWeishiVideo,
-      cancelWeishiVideo,
+      videoPreviewPreparing,
+      videoPreviewNodeId,
+      confirmVideoRequest,
+      cancelVideoRequest,
       agentPanelOpen,
       setAgentPanelOpen,
       agentReferencedNodeIds,
@@ -2902,11 +2887,11 @@ export function CanvasEditorProvider({
       openMaterialLibrary,
       openMaterialLibraryForNode,
       closeMaterialLibrary,
-      pendingWeishiVideo,
-      weishiPreviewPreparing,
-      weishiPreviewNodeId,
-      confirmWeishiVideo,
-      cancelWeishiVideo,
+      pendingVideoConfirm,
+      videoPreviewPreparing,
+      videoPreviewNodeId,
+      confirmVideoRequest,
+      cancelVideoRequest,
       agentPanelOpen,
       setAgentPanelOpen,
       agentReferencedNodeIds,

@@ -67,11 +67,11 @@ export function SystemTab() {
 
         <SettingsSection
           title="调试与开发"
-          description="面向排障；开启后微视生视频可弹出请求参数确认。"
+          description="面向排障；开启后部分生成流程可弹出请求参数确认。"
         >
           <SettingsToggleField
             label="开启调试"
-            description="开启后，使用微视 API 生成视频时会弹出请求参数确认窗口；关闭则直接创建视频任务。"
+            description="开启后，生成视频时如遇需确认的请求参数，会弹出确认窗口；关闭则尽量直接创建任务。"
             checked={debugEnabled}
             onCheckedChange={(checked) => updateSettings({ debugEnabled: checked })}
           />

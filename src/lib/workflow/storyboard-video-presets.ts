@@ -7,10 +7,6 @@ import {
   OPENAI_COMPAT_VIDEO_DURATIONS,
 } from '@/lib/models/video-model-presets'
 import {
-  isWeishiApiModel,
-  WEISHI_VIDEO_DURATION_OPTIONS,
-} from '@/lib/models/weishi-model-presets'
-import {
   normalizeVideoResolutionValue as normalizeTierVideoResolution,
   resolveVideoResolutionOptions as resolveTierVideoResolutionOptions,
   shouldShowVideoResolutionSelector,
@@ -77,7 +73,7 @@ export const VIDEO_DURATION_OPTIONS = DEFAULT_CUSTOM_VIDEO_DURATIONS.map((sec) =
   label: `${sec}秒`,
 }))
 
-/** 读兜底：旧模型无 durations（对齐 capability §5.2；非微视） */
+/** 读兜底：旧模型无 durations（对齐 capability §5.2） */
 const VIDEO_DURATION_READ_FALLBACK = [5] as const
 
 /** 读兜底：旧模型无 ratios（对齐 capability §5.2） */
@@ -91,7 +87,6 @@ export function isOpenAiCompatDurationSliderModel(
     .trim()
     .toLowerCase()
   if (
-    fmt === 'weishi_api' ||
     fmt === 'zhipu' ||
     fmt === 'seedance_2' ||
     fmt === 'grok'
@@ -111,18 +106,17 @@ const OPENAI_COMPAT_VIDEO_DURATION_OPTIONS: Array<{ value: string; label: string
     label: `${sec}秒`,
   }))
 
-/** 是否用时长滑轨（微视 4–15 / OpenAI 兼容 1–30 / 其它选项数 > 5） */
+/** 是否用时长滑轨（OpenAI 兼容 1–30 / 其它选项数 > 5） */
 export function shouldUseVideoDurationSlider(
   model?: Pick<ModelConfig, 'apiFormat' | 'platform' | 'durations'> | null,
 ): boolean {
   return resolveVideoDurationOptions(model).length > 5
 }
 
-/** 分镜生视频时长下拉：微视 / OpenAI 兼容固定滑轨列表；其它模型优先读后台 model.durations */
+/** 分镜生视频时长下拉：OpenAI 兼容固定滑轨列表；其它模型优先读后台 model.durations */
 export function resolveVideoDurationOptions(
   model?: Pick<ModelConfig, 'apiFormat' | 'platform' | 'durations'> | null,
 ): Array<{ value: string; label: string }> {
-  if (isWeishiApiModel(model)) return WEISHI_VIDEO_DURATION_OPTIONS
   if (isOpenAiCompatDurationSliderModel(model)) return OPENAI_COMPAT_VIDEO_DURATION_OPTIONS
   const fromModel = Array.isArray(model?.durations)
     ? model.durations

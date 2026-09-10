@@ -11,37 +11,37 @@ const EXT = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'])
 /** @type {Array<{ id: string; severity: 'ERROR' | 'WARNING'; message: string; test: (line: string, file: string) => boolean }>} */
 export const RULES = [
   {
-    id: 'haode-expose-ipc-renderer',
+    id: 'lc-expose-ipc-renderer',
     severity: 'ERROR',
     message: '禁止向渲染进程暴露完整 ipcRenderer',
     test: (line) => /exposeInMainWorld\s*\(\s*['"]ipcRenderer['"]/.test(line),
   },
   {
-    id: 'haode-node-integration-enabled',
+    id: 'lc-node-integration-enabled',
     severity: 'ERROR',
     message: 'nodeIntegration 必须保持 false',
     test: (line) => /nodeIntegration\s*:\s*true\b/.test(line),
   },
   {
-    id: 'haode-context-isolation-disabled',
+    id: 'lc-context-isolation-disabled',
     severity: 'ERROR',
     message: 'contextIsolation 必须保持 true',
     test: (line) => /contextIsolation\s*:\s*false\b/.test(line),
   },
   {
-    id: 'haode-dangerously-set-inner-html',
+    id: 'lc-dangerously-set-inner-html',
     severity: 'WARNING',
     message: '避免 dangerouslySetInnerHTML（Electron XSS 风险）',
     test: (line) => /dangerouslySetInnerHTML/.test(line),
   },
   {
-    id: 'haode-openai-sk-key-literal',
+    id: 'lc-openai-sk-key-literal',
     severity: 'ERROR',
     message: '疑似硬编码 sk- API Key',
     test: (line) => /sk-[a-zA-Z0-9]{20,}/.test(line),
   },
   {
-    id: 'haode-eval-usage',
+    id: 'lc-eval-usage',
     severity: 'ERROR',
     message: '避免 eval / new Function',
     test: (line) => /\beval\s*\(|new\s+Function\s*\(/.test(line),

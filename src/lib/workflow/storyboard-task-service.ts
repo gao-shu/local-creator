@@ -9,7 +9,7 @@ import { useTaskStore } from '@/stores/task-store'
 export const STORYBOARD_POLL_MS = 2000
 export const STORYBOARD_HANG_MS = 10 * 60 * 1000
 
-const STORYBOARD_SESSION_PREFIX = 'haode:storyboard:'
+const STORYBOARD_SESSION_PREFIX = 'lc:storyboard:'
 
 const inflight = new Map<string, Promise<InferEpisodeStoryboardResult>>()
 

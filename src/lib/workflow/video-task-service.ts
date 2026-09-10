@@ -18,7 +18,7 @@ import { useWorkflowSessionStore } from '@/stores/workflow-session-store'
 export const VIDEO_POLL_MS = 2000
 export const VIDEO_HANG_MS = 30 * 60 * 1000
 
-const VIDEO_SESSION_PREFIX = 'haode:video:'
+const VIDEO_SESSION_PREFIX = 'lc:video:'
 
 export interface InflightVideoSession {
   taskId: string

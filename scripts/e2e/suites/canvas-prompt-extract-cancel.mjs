@@ -54,8 +54,8 @@ export const canvasPromptExtractCancelSuite = {
   description: '画布提取资产：取消不落盘，之后智能分镜可再跑（F3）',
   prepareWorkspace: prepareCanvasPromptExtractCancelWorkspace,
   launchEnv: {
-    HAODE_E2E_MOCK_AI: '1',
-    HAODE_E2E_MOCK_DELAY_MS: '8000',
+    LC_E2E_MOCK_AI: '1',
+    LC_E2E_MOCK_DELAY_MS: '8000',
   },
   async run(session) {
     const { page, workspace, assert } = session
@@ -83,7 +83,7 @@ export const canvasPromptExtractCancelSuite = {
     await clickPromptAiCancel(page, cancelTestId)
     await pollUntil(page, () => page.getByTestId(cancelTestId).count(), 0, 20_000)
 
-    // 等待 mock 迟到结果窗口（略长于 HAODE_E2E_MOCK_DELAY_MS）
+    // 等待 mock 迟到结果窗口（略长于 LC_E2E_MOCK_DELAY_MS）
     await page.waitForTimeout(9000)
 
     const afterCancel = await readCanvasProjectData(workspace.dataRoot, projectId)

@@ -1,13 +1,11 @@
 import type { ModelConfig } from '@/types/settings'
 import { generateUUID } from '@/lib/utils'
-import { WEISHI_API_PRESET } from '@/lib/models/weishi-model-presets'
 
 export type VideoPresetKey =
   | 'zhipu'
   | 'grok'
   | 'openai_videos'
   | 'seedance_2'
-  | 'weishi_api'
   | 'openai_compatible'
   | 'agnes_video_25_flash'
 
@@ -30,7 +28,6 @@ export interface VideoPresetDefinition {
   referenceModes?: string[]
   defaultReferenceMode?: string
   uploadByUrl?: boolean
-  weishiAssetWhitelistEnabled?: boolean
 }
 
 const SEEDANCE_2_ENDPOINT = 'https://ark.cn-beijing.volces.com/api/v3/contents/generations/tasks'
@@ -52,7 +49,7 @@ export const OPENAI_COMPAT_VIDEO_DURATIONS: number[] = Array.from(
   (_, index) => OPENAI_COMPAT_VIDEO_DURATION_SEC_MIN + index,
 )
 
-/** 对齐 haode-ai-client Settings 视频六项预设（无 Cool / fjyw 等） */
+/** 对齐上游实现 Settings 视频预设（无 Cool / fjyw 等） */
 export const VIDEO_MODEL_PRESETS: Record<VideoPresetKey, VideoPresetDefinition> = {
   zhipu: {
     key: 'zhipu',
@@ -118,25 +115,6 @@ export const VIDEO_MODEL_PRESETS: Record<VideoPresetKey, VideoPresetDefinition> 
     resolutions: ['480P', '720P', '1080P'],
     defaultName: '官方seedance2.0 api',
   },
-  weishi_api: {
-    key: 'weishi_api',
-    label: '微视API',
-    hint: 'Seedance 多参数封装',
-    description: WEISHI_API_PRESET.endpoint || '',
-    apiFormat: 'weishi_api',
-    platform: 'openai_compatible',
-    endpoint: WEISHI_API_PRESET.endpoint || '',
-    baseUrl: WEISHI_API_PRESET.baseUrl,
-    model: WEISHI_API_PRESET.model || 'seedance-2.0',
-    autoAppendV1: false,
-    configMode: 'simple',
-    ratios: [...(WEISHI_API_PRESET.ratios ?? [])],
-    durations: [...(WEISHI_API_PRESET.durations ?? [])],
-    resolutions: [...(WEISHI_API_PRESET.resolutions ?? [])],
-    uploadByUrl: WEISHI_API_PRESET.uploadByUrl,
-    weishiAssetWhitelistEnabled: WEISHI_API_PRESET.weishiAssetWhitelistEnabled,
-    defaultName: WEISHI_API_PRESET.name,
-  },
   openai_compatible: {
     key: 'openai_compatible',
     label: 'OpenAI 兼容（中转站）',
@@ -176,8 +154,8 @@ export const VIDEO_MODEL_PRESETS: Record<VideoPresetKey, VideoPresetDefinition> 
 
 export const VIDEO_PRESET_LIST = Object.values(VIDEO_MODEL_PRESETS)
 
-/** 添加模型弹窗可选预设（微视 API 由外部独立入口创建） */
-export const VIDEO_PRESET_PICKER_LIST = VIDEO_PRESET_LIST.filter((preset) => preset.key !== 'weishi_api')
+/** 添加模型弹窗可选预设 */
+export const VIDEO_PRESET_PICKER_LIST = VIDEO_PRESET_LIST
 
 export function resolveVideoPresetKey(
   model?: Pick<ModelConfig, 'apiFormat' | 'platform' | 'endpoint' | 'model' | 'name'> | null,
@@ -185,7 +163,6 @@ export function resolveVideoPresetKey(
   const apiFormat = String(model?.apiFormat || '').trim().toLowerCase()
   if (apiFormat === 'zhipu') return 'zhipu'
   if (apiFormat === 'grok') return 'grok'
-  if (apiFormat === 'weishi_api') return 'weishi_api'
   if (apiFormat === 'openai_videos' || apiFormat === 'openai_generations') return 'openai_videos'
   if (apiFormat === 'seedance_2') return 'seedance_2'
   if (apiFormat === 'agnes_video_25' || apiFormat === 'agnes_video_25_flash') {
@@ -239,7 +216,6 @@ export function buildVideoPresetPatch(
       ? [...preset.resolutions]
       : [...DEFAULT_CUSTOM_VIDEO_RESOLUTIONS],
     uploadByUrl: preset.uploadByUrl,
-    weishiAssetWhitelistEnabled: preset.weishiAssetWhitelistEnabled,
     referenceModes: preset.referenceModes?.length ? [...preset.referenceModes] : undefined,
     defaultReferenceMode: preset.defaultReferenceMode,
     name: options?.keepName ? options.name : options?.name || preset.defaultName,
@@ -269,7 +245,6 @@ export function createVideoPresetModel(key: VideoPresetKey, options?: { name?: s
       ? [...preset.resolutions]
       : [...DEFAULT_CUSTOM_VIDEO_RESOLUTIONS],
     uploadByUrl: preset.uploadByUrl,
-    weishiAssetWhitelistEnabled: preset.weishiAssetWhitelistEnabled,
     referenceModes: preset.referenceModes?.length ? [...preset.referenceModes] : undefined,
     defaultReferenceMode: preset.defaultReferenceMode,
     ...(isOpenAiCompat

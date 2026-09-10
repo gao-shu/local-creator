@@ -113,8 +113,6 @@ export function getImagePresetLabel(
   model?: Pick<ModelConfig, 'apiFormat' | 'platform' | 'endpoint' | 'name' | 'model' | 'baseUrl'> | null,
 ): string {
   if (!model) return 'OpenAI 官方'
-  const apiFormat = String(model.apiFormat || '').trim().toLowerCase()
-  if (apiFormat === 'weishi_api') return '微视API'
   return IMAGE_MODEL_PRESETS[resolveImagePresetKey(model)]?.label ?? model.name ?? 'OpenAI 官方'
 }
 

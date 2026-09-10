@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 1 验收：检查 vendor/ffmpeg/win 是否就绪（不依赖 Electron app）。

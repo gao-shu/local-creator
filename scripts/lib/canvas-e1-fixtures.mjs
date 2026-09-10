@@ -2,7 +2,7 @@
 
 export const PROJECT_ID = 'cv_dev_preview'
 export const NODE_ID = 'import_video_preview_1'
-export const STORAGE_PREFIX = 'haode:dev:canvas:data:'
+export const STORAGE_PREFIX = 'lc:dev:canvas:data:'
 export const VIDEO_REMOTE_JOB_HANG_MS = 30 * 60 * 1000
 export const E1_PROGRESS_MESSAGE = 'E1验收：视频生成中…'
 export const E1_API_TASK_ID = 'verify-e1-task-id'

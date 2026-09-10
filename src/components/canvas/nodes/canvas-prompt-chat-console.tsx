@@ -1,5 +1,9 @@
 // Copyright (c) local-creator contributors. All rights reserved.
 
+import { useMemo } from 'react'
+import { Clapperboard, FileStack, Loader2, Wand2 } from 'lucide-react'
+import { Select } from '@/components/ui/select'
+import { CanvasGeneratePill } from '@/components/canvas/canvas-generate-pill'
 import { buildCanvasLlmModelOptions } from '@/lib/canvas/canvas-llm-model-options'
 import { CANVAS_NODE_BOTTOM_CONSOLE_ANCHOR_STYLE, CANVAS_NODE_CONSOLE_WIDTH } from '@/lib/canvas/canvas-console-layout'
 import { assessStoryboardTemplateLikeness } from '@/lib/canvas/canvas-storyboard-template-parse'

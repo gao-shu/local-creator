@@ -17,7 +17,7 @@ import { formatZhipuImageUrlField } from '@/lib/video/video-api-reference'
 import { resolveVideoApiImageUrl } from '@/lib/video/video-media-resolve'
 import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets'
 import type { ShotVideoReferenceKind } from '@/lib/workflow/shot-video-utils'
-import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import { prepareExternalVideoReferenceUrls } from '@/lib/video/video-provider'
 import { VIDEO_POLL_INTERVAL_MS } from '@/constants/batch-concurrency'
 
@@ -255,7 +255,7 @@ export interface PrepareZhipuVideoRequestPreviewInput {
 /** 上传参考图后构建智谱确认弹窗预览（展示真实 POST body） */
 export async function prepareZhipuVideoRequestPreview(
   input: PrepareZhipuVideoRequestPreviewInput,
-): Promise<{ preview: WeishiVideoRequestPreview; resolvedImageUrls: string[] }> {
+): Promise<{ preview: VideoRequestPreview; resolvedImageUrls: string[] }> {
   const referenceMode = input.referenceMode ?? 'first_frame'
   const needsReferenceImage = referenceMode !== 'text_to_video'
   const resolvedImageUrls = needsReferenceImage
@@ -329,7 +329,7 @@ export async function createZhipuVideoTask(
   const body = await buildZhipuCreateBody(input)
 
   if (typeof window !== 'undefined') {
-    ;(window as unknown as { __HAODE_LAST_ZHIPU_VIDEO_CREATE__?: unknown }).__HAODE_LAST_ZHIPU_VIDEO_CREATE__ =
+    ;(window as unknown as { __LC_LAST_ZHIPU_VIDEO_CREATE__?: unknown }).__LC_LAST_ZHIPU_VIDEO_CREATE__ =
       {
         url,
         body,

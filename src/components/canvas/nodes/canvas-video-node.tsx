@@ -1,5 +1,33 @@
 // Copyright (c) local-creator contributors. All rights reserved.
 
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type PointerEvent,
+  type SyntheticEvent,
+} from 'react'
+import type { NodeProps } from '@xyflow/react'
+import { useUpdateNodeInternals } from '@xyflow/react'
+import { Video as VideoIcon, AudioLines } from 'lucide-react'
+import { toast } from 'sonner'
+import { Select } from '@/components/ui/select'
+import { CanvasGeneratePill } from '@/components/canvas/canvas-generate-pill'
+import { CanvasVideoParamsPopover } from '@/components/canvas/nodes/canvas-video-params-popover'
+import { CanvasNodeConnector } from '@/components/canvas/nodes/canvas-node-connector'
+import { CanvasVideoCornerActions } from '@/components/canvas/nodes/canvas-video-corner-actions'
+import { CanvasVideoGeneratingOverlay } from '@/components/canvas/nodes/canvas-video-generating-overlay'
+import { CanvasImageNameEditor } from '@/components/canvas/nodes/canvas-image-name-editor'
+import { CanvasVideoTopToolbar } from '@/components/canvas/nodes/canvas-video-top-toolbar'
+import {
+  CanvasNodeContextMenu,
+  type CanvasNodeContextMenuAnchor,
+} from '@/components/canvas/nodes/canvas-node-context-menu'
+import { MentionTextarea } from '@/components/workshop/mention-textarea'
 import { normalizeVideoGenerationTierParams } from '@/lib/models/video-generation-tier-params'
 import { useSettingsStore } from '@/stores/settings-store'
 import { useAuthStore } from '@/stores/auth-store'
@@ -148,8 +176,8 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     retryVideoDownload,
     stopNode,
     isNodeRunning,
-    weishiPreviewNodeId,
-    pendingWeishiVideo,
+    videoPreviewNodeId,
+    pendingVideoConfirm,
     videoConsoleNodeId,
     closeVideoConsole,
     activateVideoConsole,
@@ -254,8 +282,8 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     const hasActiveRemoteJob = hasPendingRemoteJob
     const hasLiveSession =
       hasCanvasInflightRun(projectId, id) ||
-      weishiPreviewNodeId === id ||
-      pendingWeishiVideo?.nodeId === id
+      videoPreviewNodeId === id ||
+      pendingVideoConfirm?.nodeId === id
 
     // 已有可播成片且无真实会话：残留 status=running / remoteJob 不当作生成中（落盘成功未收尾）
     if (isPlayableLocalVideo && !hasLiveSession) {
@@ -291,8 +319,8 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     hasPendingRemoteJob,
     previewSrc,
     projectId,
-    weishiPreviewNodeId,
-    pendingWeishiVideo?.nodeId,
+    videoPreviewNodeId,
+    pendingVideoConfirm?.nodeId,
   ])
 
   const generationStartedAt = useMemo(
@@ -412,7 +440,7 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     if (!isStuckCanvasVideoNodeWithOutput(nodeData)) return
     // 真实会话进行中（含「保留旧片重新生成」）：勿强制 success
     if (hasCanvasInflightRun(projectId, id)) return
-    if (weishiPreviewNodeId === id || pendingWeishiVideo?.nodeId === id) return
+    if (videoPreviewNodeId === id || pendingVideoConfirm?.nodeId === id) return
     if (isNodeRunning(id)) stopNode(id)
     handlePatch({
       status: 'success',
@@ -430,10 +458,10 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     nodeData.status,
     nodeData.remoteJob,
     nodeData.progressMessage,
-    pendingWeishiVideo?.nodeId,
+    pendingVideoConfirm?.nodeId,
     projectId,
     stopNode,
-    weishiPreviewNodeId,
+    videoPreviewNodeId,
   ])
 
   // 已成功可播却残留 pendingDownloadUrl（历史 401 后修好下载等）→ 清掉，避免误显「重新下载」
@@ -442,7 +470,7 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     if (nodeData.status === 'error') return
     if (!String(nodeData.pendingDownloadUrl || '').trim()) return
     if (hasCanvasInflightRun(projectId, id)) return
-    if (weishiPreviewNodeId === id || pendingWeishiVideo?.nodeId === id) return
+    if (videoPreviewNodeId === id || pendingVideoConfirm?.nodeId === id) return
     handlePatch({ pendingDownloadUrl: undefined })
   }, [
     handlePatch,
@@ -450,9 +478,9 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     isPlayableLocalVideo,
     nodeData.pendingDownloadUrl,
     nodeData.status,
-    pendingWeishiVideo?.nodeId,
+    pendingVideoConfirm?.nodeId,
     projectId,
-    weishiPreviewNodeId,
+    videoPreviewNodeId,
   ])
 
   // 失败节点上残留 remoteJob / running 标记时自动清理，避免无法重新生成
@@ -1009,7 +1037,7 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     if (isNodeRunning(id)) {
       stopNode(id)
     }
-    if (pendingWeishiVideo) {
+    if (pendingVideoConfirm) {
       toast.info('请先确认或取消当前视频生成弹窗')
       return
     }
@@ -1020,7 +1048,7 @@ function CanvasVideoNodeComponent({ id, data, selected }: NodeProps) {
     id,
     isNodeRunning,
     nodeData.status,
-    pendingWeishiVideo,
+    pendingVideoConfirm,
     projectId,
     referenceMode,
     runNode,

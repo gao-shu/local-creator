@@ -211,7 +211,7 @@ async function exportEpisodeToCapcutDraftE2eMock(
 export async function exportEpisodeToCapcutDraft(
   payload: CapcutExportEpisodePayload,
 ): Promise<CapcutExportEpisodeResult> {
-  if (process.env.HAODE_E2E === '1') {
+  if (process.env.LC_E2E === '1') {
     return exportEpisodeToCapcutDraftE2eMock(payload)
   }
 

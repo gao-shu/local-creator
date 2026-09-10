@@ -32,7 +32,7 @@ interface AssetImageGalleryProps {
   onActiveIndexChange?: (index: number) => void
   /** 项目根目录，用于读取 Roles/Scenes 等相对路径生图结果 */
   projectRoot?: string
-  /** 角色图审核盾牌（同步微视/即梦后显示） */
+  /** 角色图审核盾牌（同步审核通道后显示） */
   reviewShield?: {
     state: AssetReviewVisualState
     title?: string

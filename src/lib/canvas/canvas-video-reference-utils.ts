@@ -1,24 +1,14 @@
-// Copyright (c) local-creator contributors. All rights reserved.
+// Copyright (c) Local Creator. All rights reserved.
 
 import type { Edge, Node } from '@xyflow/react'
-import {
-  collectCanvasVideoReferenceBarAssets,
-} from '@/lib/canvas/canvas-mention-utils'
+import { collectCanvasVideoReferenceBarAssets } from '@/lib/canvas/canvas-mention-utils'
 import type { CanvasUpstreamReferenceAsset } from '@/lib/canvas/canvas-graph-utils'
-import { resolveCanvasMediaProjectRootSync } from '@/lib/canvas/canvas-media-resolve'
-import { canvasImageNodeToReviewAsset } from '@/lib/canvas/canvas-image-character'
-import type { ModelConfig } from '@/types/settings'
-import { resolveWeishiAssetReferenceUrl } from '@/lib/models/weishi-asset-service'
-import { syncCharacterToReview } from '@/lib/workflow/character-review-service'
 import {
   mentionKindLabel,
   type MentionCandidate,
 } from '@/lib/workflow/mention-utils'
 import { type ShotVideoReferenceItem } from '@/lib/workflow/shot-video-utils'
-import { isCharacterRefItem } from '@/lib/workflow/shot-video-utils'
 import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets'
-import { CANVAS_NODE_TYPES } from '@/types/canvas-nodes'
-import type { CanvasImageNodeData } from '@/types/canvas-nodes'
 
 function normalizePathKey(path: string): string {
   return path.replace(/\\/g, '/').toLowerCase()
@@ -27,7 +17,6 @@ function normalizePathKey(path: string): string {
 function mapBarAssetToReferenceItem(
   asset: CanvasUpstreamReferenceAsset,
   candidates: MentionCandidate[],
-  resolveWeishiAssetUrl?: (path: string) => string | undefined,
 ): ShotVideoReferenceItem | null {
   const path = String(asset.path || '').trim()
   if (!path) return null
@@ -42,14 +31,11 @@ function mapBarAssetToReferenceItem(
         )
       : undefined)
 
-  const weishiAssetUrl = resolveWeishiAssetUrl?.(path)
-
   if (asset.source === 'mention' && mention) {
     return {
       kind: 'mention',
       label: `@${mention.mentionName}（${mentionKindLabel(mention.kind)}）`,
       path,
-      weishiAssetUrl,
       sourceAssetId: mention.id,
       allowDuplicatePath: mention.kind === 'character',
     } as ShotVideoReferenceItem & { allowDuplicatePath?: boolean }
@@ -60,7 +46,6 @@ function mapBarAssetToReferenceItem(
       kind: 'mention',
       label: `@${mention.mentionName}（${mentionKindLabel(mention.kind)}）`,
       path,
-      weishiAssetUrl,
       sourceAssetId: mention.id,
       allowDuplicatePath: mention.kind === 'character',
     } as ShotVideoReferenceItem & { allowDuplicatePath?: boolean }
@@ -70,7 +55,6 @@ function mapBarAssetToReferenceItem(
     kind: 'shot_reference',
     label: asset.label || '参考图',
     path,
-    weishiAssetUrl,
   }
 }
 
@@ -82,7 +66,6 @@ export function buildCanvasVideoReferenceItems(options: {
   videoNodeId: string
   edges: Edge[]
   consoleReferenceImagePaths?: string[]
-  resolveWeishiAssetUrl?: (path: string) => string | undefined
 }): ShotVideoReferenceItem[] {
   const barAssets = collectCanvasVideoReferenceBarAssets({
     videoNodeId: options.videoNodeId,
@@ -98,7 +81,7 @@ export function buildCanvasVideoReferenceItems(options: {
   const seenPaths = new Set<string>()
 
   for (const asset of barAssets) {
-    const mapped = mapBarAssetToReferenceItem(asset, options.candidates, options.resolveWeishiAssetUrl)
+    const mapped = mapBarAssetToReferenceItem(asset, options.candidates)
     if (!mapped) continue
 
     const pathKey = normalizePathKey(mapped.path)
@@ -156,90 +139,4 @@ export function resolveCanvasVideoReferenceItems(
   }
 
   return items
-}
-
-export function resolveWeishiAssetUrlForCanvasPath(path: string, nodes: Node[]): string | undefined {
-  const normalized = normalizePathKey(path)
-  for (const node of nodes) {
-    if (node.type !== CANVAS_NODE_TYPES.imageNode) continue
-    const data = node.data as CanvasImageNodeData
-    const outputPath = String(data.outputPath || '').trim()
-    if (!outputPath || normalizePathKey(outputPath) !== normalized) continue
-    const asset = canvasImageNodeToReviewAsset(node.id, data)
-    return resolveWeishiAssetReferenceUrl(asset, outputPath) ?? undefined
-  }
-  return undefined
-}
-
-function findCanvasImageNodeByPath(nodes: Node[], path: string): Node | undefined {
-  const key = normalizePathKey(path)
-  return nodes.find((node) => {
-    if (node.type !== CANVAS_NODE_TYPES.imageNode) return false
-    const outputPath = String((node.data as CanvasImageNodeData).outputPath || '').trim()
-    return outputPath && normalizePathKey(outputPath) === key
-  })
-}
-
-/** 角色参考图开白：对齐工坊 Step3，生视频前确保 asset:// 可用 */
-export async function ensureCanvasWeishiCharacterWhitelist(options: {
-  referenceImageItems: ShotVideoReferenceItem[]
-  nodes: Node[]
-  model: ModelConfig
-  canvasProjectId: string
-  settings: { dataRootPath?: string }
-  appDataDir: string
-  fallbackProjectRoot: string
-  apiBaseUrl?: string
-  onImageNodePatch?: (nodeId: string, patch: Partial<CanvasImageNodeData>) => void
-}): Promise<ShotVideoReferenceItem[]> {
-
-  const next: ShotVideoReferenceItem[] = []
-
-  for (const item of options.referenceImageItems) {
-    if (!isCharacterRefItem(item)) {
-      next.push(item)
-      continue
-    }
-
-    const imageNode = findCanvasImageNodeByPath(options.nodes, item.path)
-    if (!imageNode) {
-      next.push(item)
-      continue
-    }
-
-    const data = imageNode.data as CanvasImageNodeData
-    const asset = canvasImageNodeToReviewAsset(imageNode.id, data)
-    let weishiAssetUrl = resolveWeishiAssetReferenceUrl(asset, item.path) ?? item.weishiAssetUrl
-
-    if (!weishiAssetUrl) {
-      const projectRoot = await resolveCanvasMediaProjectRootSync(
-        options.canvasProjectId,
-        options.settings,
-        options.appDataDir,
-        {
-          ownerKind: data.outputOwnerKind,
-          ownerProjectId: data.outputOwnerProjectId,
-        },
-      )
-      const result = await syncCharacterToReview(asset, options.model, {
-        projectRoot,
-        apiBaseUrl: options.apiBaseUrl,
-      })
-      const patch: Partial<CanvasImageNodeData> = {
-        weishiAssetId: result.weishiAssetId,
-        weishiAssetUrl: result.weishiAssetUrl,
-        weishiAssetStatus: result.weishiAssetStatus,
-        reviewImagePath: result.reviewImagePath,
-      }
-      options.onImageNodePatch?.(imageNode.id, patch)
-      weishiAssetUrl = result.weishiAssetUrl
-    }
-
-    next.push({
-      ...item,
-      weishiAssetUrl: weishiAssetUrl?.trim() || item.weishiAssetUrl,
-    })
-  }
-
-  return next
 }

@@ -154,7 +154,7 @@ export function isVideoTaskFailed(status: string): boolean {
   )
 }
 
-/** 从轮询 JSON 解析 status / progress / error（兼容微视、智谱、OpenAI 兼容、Agnes 格式） */
+/** 从轮询 JSON 解析 status / progress / error（兼容智谱、OpenAI 兼容、Agnes 格式） */
 export function parseVideoPollPayload(payload: Record<string, unknown>): {
   status: string
   progress?: number

@@ -104,7 +104,7 @@ export function CanvasVideoParamsPopover({
   const { rootRef, menuRef, menuStyle } = useCanvasParamsPopoverPosition(open, 300)
 
   const durationValue = String(durationSec)
-  // 微视 4–15、OpenAI 兼容 1–30：选项数 > 5 时用滑轨
+  // 时长选项数 > 5 时用滑轨（如 4–15、1–30）
   const useDurationSlider = durationOptions.length > 5
   const durationMin = useDurationSlider ? Number(durationOptions[0]?.value) || 1 : undefined
   const durationMax = useDurationSlider

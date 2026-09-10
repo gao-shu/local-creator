@@ -65,9 +65,7 @@ export interface ModelConfig {
   modelKey?: string
   /** @deprecated */
   isBackendModel?: boolean
-  /** 微视 API：提交角色图到 /v1/assets 审核（对齐 haode-ai-client） */
-  weishiAssetWhitelistEnabled?: boolean
-  /** 微视：先上传本地素材改 URL 请求，避免 base64 过大 */
+  /** 先上传本地素材改 URL 请求，避免 base64 过大 */
   uploadByUrl?: boolean
   /** 视频：简单模式填 baseUrl，系统自动拼接 endpoint */
   configMode?: 'simple' | 'advanced'
@@ -163,14 +161,10 @@ export interface AppSettings {
   extractTemplates: PromptTemplate[]
   styleTemplates: PromptTemplate[]
   layoutTemplates: PromptTemplate[]
-  /** 开启后微视 API 生视频前展示请求参数确认弹窗 */
+  /** 开启后生视频前展示请求参数确认弹窗 */
   debugEnabled?: boolean
   /** 开机时自动启动应用（默认 true；仅打包版写入系统登录项） */
   openAtLogin?: boolean
-  /**
-   * 微视参考素材上传方式（开源版仅微视 /v1/assets）。
-   */
-  weishiReferenceMediaUploadMode?: 'weishi_asset'
   /** 最近一次在创作流程中选用的 LLM 配置 id */
   lastUsedLlmModelId?: string
   /** Step2 分集规划上次选用的 LLM id */
@@ -195,7 +189,7 @@ export interface AppSettings {
   lastUsedAssetImageModelId?: string
   /** Step4 分镜生图上次选用的图片模型 id */
   lastUsedStoryboardImageModelId?: string
-  /** Step4 生视频上次选用的视频模型 id（同时决定资产同步审核走微视/即梦） */
+  /** Step4 生视频上次选用的视频模型 id（同时记住上次选用的视频模型） */
   lastUsedStoryboardVideoModelId?: string
   /** Step4 生视频上次选用的参考模式 */
   lastUsedStoryboardVideoReferenceMode?: string

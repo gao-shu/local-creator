@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 6 验收：本地视频路径校验 + 与 Step 7 落盘约定联调（不启动 Electron / IPC）。
@@ -15,8 +15,8 @@ import {
 import { toProjectRelativeVoicePath } from '../src/lib/voice/project-voice-library-paths'
 
 const projectRoot = resolveCanvasProjectRoot(
-  { dataRootPath: 'D:/haode-data' },
-  'D:/haode-data',
+  { dataRootPath: 'D:/lc-data' },
+  'D:/lc-data',
   'cv_test',
 )
 
@@ -30,7 +30,7 @@ function testBuildExtractVoiceRelativePath() {
 
 function testResolveExtractVoiceOutputDir() {
   const dir = resolveProjectVoiceExtractOutputDir(projectRoot, 42)
-  assert.equal(dir.replace(/\\/g, '/'), 'D:/haode-data/canvas/cv_test/voices/extract_42')
+  assert.equal(dir.replace(/\\/g, '/'), 'D:/lc-data/canvas/cv_test/voices/extract_42')
   console.log('[test:extract-audio-from-video] resolveProjectVoiceExtractOutputDir: OK')
 }
 

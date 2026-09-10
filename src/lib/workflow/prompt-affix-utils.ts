@@ -54,7 +54,7 @@ export function createAffixPreset(presets: PromptAffixPreset[]): PromptAffixPres
   }
 }
 
-/** 生图/生视频时拼接前后缀（对齐 haode-ai-client） */
+/** 生图/生视频时拼接前后缀（对齐上游实现） */
 export function applyPromptAffix(
   prompt: string,
   prefix?: string,

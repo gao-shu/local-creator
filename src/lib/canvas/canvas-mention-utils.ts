@@ -397,7 +397,7 @@ function resolveCanvasVoiceTypeFromMention(
   return undefined
 }
 
-/** 从 @ 引用收集音色参考音频（含标签，供微视预览弹窗） */
+/** 从 @ 引用收集音色参考音频（含标签，供预览弹窗） */
 export function collectCanvasMentionAudioItems(
   text: string,
   candidates: MentionCandidate[],

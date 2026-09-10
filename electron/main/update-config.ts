@@ -23,7 +23,7 @@ export function resolveDesktopDownloadBase(): string {
   return resolveUpdatePublishUrl()
 }
 
-/** 仅认显式更新地址；不再回落公司 haode-client 路径 */
+/** 仅认显式更新地址；不再回落公司旧更新路径 */
 export function resolveUpdatePublishUrl(): string {
   const explicit = readEnv('VITE_UPDATE_PUBLISH_URL')
   if (explicit) return explicit

@@ -1,6 +1,79 @@
 // Copyright (c) local-creator contributors. All rights reserved.
 
 import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type DragEvent,
+  type MouseEvent,
+  type PointerEvent,
+} from 'react'
+import type { NodeProps } from '@xyflow/react'
+import { useUpdateNodeInternals } from '@xyflow/react'
+import { Image as ImageIcon } from 'lucide-react'
+import { CanvasNodeGeneratingOverlay } from '@/components/canvas/nodes/canvas-node-generating-overlay'
+import { toast } from 'sonner'
+import { Select } from '@/components/ui/select'
+import { CanvasGeneratePill } from '@/components/canvas/canvas-generate-pill'
+import { CanvasImageNameEditor } from '@/components/canvas/nodes/canvas-image-name-editor'
+import { CanvasImageCornerActions } from '@/components/canvas/nodes/canvas-image-corner-actions'
+import { CanvasImageTopToolbar } from '@/components/canvas/nodes/canvas-image-top-toolbar'
+import { CanvasImageCharacterOverlay } from '@/components/canvas/nodes/canvas-image-character-overlay'
+import { CanvasNodeConnector } from '@/components/canvas/nodes/canvas-node-connector'
+import { MentionTextarea } from '@/components/workshop/mention-textarea'
+import { CanvasVideoReferenceBar } from '@/components/canvas/nodes/canvas-video-reference-bar'
+import {
+  collectCanvasVideoPromptMentionAssets,
+  collectCanvasVideoReferenceBarAssets,
+  filterCanvasAssetMentionCandidates,
+  isTypingCanvasManualMention,
+  prepareCanvasVideoPromptContext,
+} from '@/lib/canvas/canvas-mention-utils'
+import {
+  readCanvasImageAutoMentionEnabled,
+  writeCanvasImageAutoMentionEnabled,
+} from '@/lib/canvas/canvas-image-auto-mention'
+import { useCanvasMentionCandidates } from '@/hooks/use-canvas-mention-candidates'
+import {
+  CanvasImageContextMenu,
+  type CanvasImageContextMenuAnchor,
+} from '@/components/canvas/nodes/canvas-image-context-menu'
+import { useSettingsStore } from '@/stores/settings-store'
+import { getCanvasProject } from '@/lib/storage/canvas-service'
+import { useCanvasEditor } from '@/components/canvas/canvas-editor-context'
+import type { CanvasImageAssetRole, CanvasImageNodeData } from '@/types/canvas-nodes'
+import { CANVAS_NODE_TYPES } from '@/types/canvas-nodes'
+import {
+  DEFAULT_IMAGE_SIZE,
+  normalizeImageSizePreset,
+  resolveImageSizeApiValue,
+} from '@/lib/workflow/image-size-presets'
+import { useCanvasImagePreview } from '@/hooks/use-canvas-media-preview'
+import { useAdaptiveImageFrame } from '@/hooks/use-adaptive-image-frame'
+import { useCanvasNodeQuickAdd } from '@/hooks/use-canvas-node-quick-add'
+import { useCanvasConsoleDismissOnOutsidePointerDown } from '@/hooks/use-canvas-console-dismiss'
+import {
+  pickCanvasLocalImage,
+  saveCanvasUploadedImageFromDataUrl,
+  saveCanvasUploadedImageFromFile,
+} from '@/lib/canvas/canvas-media-save'
+import {
+  collectCanvasDroppedMedia,
+  dataTransferMayContainCanvasMedia,
+  readDroppedImageDataUrl,
+} from '@/lib/canvas/canvas-file-drop'
+import {
+  endNativeVideoDragSession,
+  shouldSuppressCanvasFileDropFromNativeVideoDrag,
+} from '@/lib/canvas/canvas-native-video-drag-guard'
+import { resolveMergedPrompt } from '@/lib/canvas/canvas-graph-utils'
+import { CanvasImageParamsPopover } from '@/components/canvas/nodes/canvas-image-params-popover'
+import { buildModelSelectOptions } from '@/lib/models/model-select-options'
+import { resolveSoftwareImageModelId } from '@/lib/models/software-model-prefs'
+import {
   normalizeImageGenerationTierParams,
   resolveAssetImageTierPrefs,
   type ImageGenerationTierParams,

@@ -20,7 +20,7 @@ const devDataStore = new Map<string, CanvasProjectData>()
 const devTaskStore = new Map<string, WorkflowTask[]>()
 
 /** 浏览器 dev（无 Electron canvasAPI）时 sessionStorage 镜像，便于 F5 / E1 验收 */
-export const DEV_CANVAS_DATA_STORAGE_PREFIX = 'haode:dev:canvas:data:'
+export const DEV_CANVAS_DATA_STORAGE_PREFIX = 'lc:dev:canvas:data:'
 
 function readDevCanvasDataFromSession(projectId: string): CanvasProjectData | null {
   if (typeof window === 'undefined' || window.canvasAPI) return null

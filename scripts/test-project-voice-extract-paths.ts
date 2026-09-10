@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 7 验收：抽音落盘约定 + voice-library:add-voice sourceAudioPath 兼容。
@@ -17,8 +17,8 @@ import {
 } from '../src/lib/voice/project-voice-extract-paths'
 
 const projectRoot = resolveCanvasProjectRoot(
-  { dataRootPath: 'D:/haode-data' },
-  'D:/haode-data',
+  { dataRootPath: 'D:/lc-data' },
+  'D:/lc-data',
   'cv_test',
 )
 
@@ -34,7 +34,7 @@ function testRelativePathConvention() {
 function testAbsolutePathLayout() {
   const dir = resolveProjectVoiceExtractOutputDir(projectRoot, 42)
   const abs = resolveProjectVoiceExtractOutputAbs(projectRoot, 42)
-  assert.equal(dir.replace(/\\/g, '/'), 'D:/haode-data/canvas/cv_test/voices/extract_42')
+  assert.equal(dir.replace(/\\/g, '/'), 'D:/lc-data/canvas/cv_test/voices/extract_42')
   assert.equal(abs.replace(/\\/g, '/'), `${dir.replace(/\\/g, '/')}/${PROJECT_VOICE_EXTRACT_REFERENCE_FILENAME}`)
   console.log('[test:project-voice-extract-paths] absolute path layout: OK')
 }
@@ -42,7 +42,7 @@ function testAbsolutePathLayout() {
 function testVoiceLibraryAddVoiceCompatibility() {
   const relative = buildProjectVoiceExtractRelativePath(99)
   const abs = resolveProjectVoiceExtractAbsolutePath(projectRoot, relative)
-  assert.equal(abs.replace(/\\/g, '/'), 'D:/haode-data/canvas/cv_test/voices/extract_99/reference.mp3')
+  assert.equal(abs.replace(/\\/g, '/'), 'D:/lc-data/canvas/cv_test/voices/extract_99/reference.mp3')
   assert.equal(isVoiceLibraryAddVoiceSourceExtension(abs), true)
   assert.equal(isVoiceLibraryAddVoiceSourceExtension(join(projectRoot, 'voices/extract_99/reference.wav')), true)
   assert.equal(isVoiceLibraryAddVoiceSourceExtension(join(projectRoot, 'voices/extract_99/reference.flac')), false)

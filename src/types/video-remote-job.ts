@@ -4,14 +4,13 @@
 export type VideoRemoteJobProvider =
   | 'zhipu'
   | 'openai_compatible'
-  | 'weishi'
   | 'grok'
   | 'agnes_video_25'
 
 export interface VideoRemoteJobSnapshot {
   provider: VideoRemoteJobProvider
   apiTaskId: string
-  /** OpenAI 兼容 / 微视轮询基址 */
+  /** OpenAI 兼容等轮询基址 */
   createUrl?: string
   /** 恢复时从设置中匹配模型 */
   modelId?: string

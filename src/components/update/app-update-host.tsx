@@ -360,11 +360,11 @@ export function AppUpdateHost() {
       }
       void checkForUpdates('interactive')
     }
-    window.addEventListener('haode:check-updates', onCheck)
-    window.addEventListener('haode:open-update-dialog', onOpen)
+    window.addEventListener('lc:check-updates', onCheck)
+    window.addEventListener('lc:open-update-dialog', onOpen)
     return () => {
-      window.removeEventListener('haode:check-updates', onCheck)
-      window.removeEventListener('haode:open-update-dialog', onOpen)
+      window.removeEventListener('lc:check-updates', onCheck)
+      window.removeEventListener('lc:open-update-dialog', onOpen)
     }
   }, [checkForUpdates])
 
@@ -387,10 +387,10 @@ export function AppUpdateHost() {
 }
 
 export function requestAppUpdateCheck(): void {
-  window.dispatchEvent(new Event('haode:check-updates'))
+  window.dispatchEvent(new Event('lc:check-updates'))
 }
 
 /** 打开更新弹窗；若已检测到新版本则直接展示，否则先检查更新 */
 export function requestAppUpdateOpen(): void {
-  window.dispatchEvent(new Event('haode:open-update-dialog'))
+  window.dispatchEvent(new Event('lc:open-update-dialog'))
 }

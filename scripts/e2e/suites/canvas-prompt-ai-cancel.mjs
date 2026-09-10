@@ -20,8 +20,8 @@ export const canvasPromptAiCancelSuite = {
   description: '画布智能分镜：遮罩取消后不写入分镜节点（F1）',
   prepareWorkspace: prepareCanvasPromptAiCancelWorkspace,
   launchEnv: {
-    HAODE_E2E_MOCK_AI: '1',
-    HAODE_E2E_MOCK_DELAY_MS: '8000',
+    LC_E2E_MOCK_AI: '1',
+    LC_E2E_MOCK_DELAY_MS: '8000',
   },
   async run(session) {
     const { page, workspace, assert } = session

@@ -14,8 +14,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@haode/ai-core": ["./src/packages/ai-core/index.ts"],
-      "@haode/ai-core/*": ["./src/packages/ai-core/*"]
+      "@local-creator/ai-core": ["./src/packages/ai-core/index.ts"],
+      "@local-creator/ai-core/*": ["./src/packages/ai-core/*"]
     },
     "strict": true,
     "noImplicitAny": false,

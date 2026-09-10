@@ -1,13 +1,5 @@
 import type { ModelConfig } from '@/types/settings'
-import { type WeishiReferenceMediaUploadMode } from '@/lib/models/weishi-model-presets'
-import {
-  generateWeishiVideo,
-  resolveWeishiCreateUrl,
-  type WeishiVideoReferenceItem,
-} from '@/lib/models/weishi-video-client'
 import { normalizeVideoResolutionValue } from '@/lib/models/video-generation-tier-params'
-import { readSettings } from '@/lib/storage/settings-service'
-import { normalizeApiBase } from '@/lib/models/model-endpoint'
 import { normalizeVideoModelConfig } from '@/lib/models/video-model-utils'
 import { generateOpenAiCompatibleVideo } from '@/lib/video/openai-video-client'
 import { generateGrokVideo, prepareGrokReferenceImageUrls } from '@/lib/video/grok-video-client'
@@ -16,16 +8,14 @@ import type { VideoReferenceMode } from '@/lib/workflow/storyboard-video-presets
 import type { ShotVideoReferenceKind } from '@/lib/workflow/shot-video-utils'
 import { generateZhipuVideo, type ZhipuVideoCreateInput } from '@/lib/video/zhipu-video-client'
 import { generateAgnesVideo25 } from '@/lib/video/agnes-video-25-client'
-import { pickRemoteImageUrlForVideoApi } from '@/lib/video/remote-image-url'
 import {
   resolveVideoApiAudioUrls,
-  resolveVideoApiImageUrl,
 } from '@/lib/video/video-media-resolve'
 import {
   prepareExternalVideoReferenceUrls,
   resolveVideoProviderKind,
 } from '@/lib/video/video-provider'
-import { VIDEO_PROGRESS_UPLOADING, VIDEO_PROGRESS_SUBMITTING } from '@/lib/video/video-progress'
+import { VIDEO_PROGRESS_UPLOADING } from '@/lib/video/video-progress'
 import { assertNotAborted } from '@/lib/video/video-generation-abort'
 import type { VideoRemoteJobSnapshot } from '@/types/video-remote-job'
 import { resumeVideoRemoteJob } from '@/lib/video/video-remote-job'
@@ -54,17 +44,13 @@ export interface GenerateVideoOptions {
     label: string
     path: string
     kind?: ShotVideoReferenceKind
-    weishiAssetUrl?: string
   }>
   referenceAudioPaths?: string[]
   referenceMode?: VideoReferenceMode
   withAudio?: boolean
   projectRoot?: string
   apiBaseUrl?: string
-  referenceMediaUploadMode?: WeishiReferenceMediaUploadMode
   onProgress?: VideoProgressCallback
-  /** 微视：确认弹窗前已上传的参考图 */
-  weishiPreparedReferences?: WeishiVideoReferenceItem[]
   /** 完全无声时传 false，对应 metadata.generate_audio */
   generateAudio?: boolean
   onRemoteJobCreated?: (job: VideoRemoteJobSnapshot) => void | Promise<void>
@@ -92,53 +78,6 @@ async function generateVideoRemoteUrlInner(options: GenerateVideoOptions): Promi
   }
   if (!model.model?.trim()) {
     throw new Error(`模型「${model.name}」未配置 model 名称`)
-  }
-
-  if (provider === 'weishi') {
-    if (options.resumeJob) {
-      return resumeVideoRemoteJob(options.resumeJob, model, options.onProgress, {
-        apiBaseUrl: options.apiBaseUrl,
-        abortSignal: options.abortSignal,
-      })
-    }
-    return generateWeishiVideo(
-      {
-        model,
-        prompt,
-        durationSec,
-        aspectRatio,
-        resolution,
-        referenceImagePath: options.referenceImagePath,
-        referenceImagePaths: options.referenceImagePaths,
-        referenceImageItems: options.referenceImageItems,
-        referenceAudioPaths: options.referenceAudioPaths,
-        referenceMode: options.referenceMode,
-        projectRoot: options.projectRoot,
-        apiBaseUrl: options.apiBaseUrl,
-        referenceMediaUploadMode: options.referenceMediaUploadMode,
-        preparedReferences: options.weishiPreparedReferences,
-        generateAudio: options.generateAudio,
-        abortSignal: options.abortSignal,
-      },
-      options.onProgress,
-      {
-        onRemoteJobCreated: options.onRemoteJobCreated
-          ? async (payload) => {
-              await options.onRemoteJobCreated?.(
-                buildVideoRemoteJobSnapshot({
-                  provider: 'weishi',
-                  apiTaskId: payload.apiTaskId,
-                  createUrl: payload.createUrl,
-                  model,
-                  durationSec,
-                  resolution,
-                }),
-              )
-            }
-          : undefined,
-      },
-      options.abortSignal,
-    )
   }
 
   const referenceMode = options.referenceMode ?? 'first_frame'
@@ -380,6 +319,6 @@ async function generateVideoRemoteUrlInner(options: GenerateVideoOptions): Promi
 
   throw new Error(
     `暂不支持该视频模型「${model.name || model.model}」（${model.platform || model.apiFormat || 'unknown'}）。` +
-      '当前已支持：微视 API、智谱 CogVideoX、Grok Imagine Video、Agnes Video 2.5 Flash、OpenAI 兼容视频。',
+      '当前已支持：智谱 CogVideoX、Grok Imagine Video、Agnes Video 2.5 Flash、OpenAI 兼容视频。',
   )
 }

@@ -8,8 +8,6 @@ import {
   isSameAssetMediaPath,
   pickAssetReviewImagePath,
 } from '@/lib/workflow/asset-utils'
-import { resolveWeishiAssetReferenceUrl } from '@/lib/models/weishi-asset-service'
-import { resolveWeishiShotMediaUrl } from '@/lib/models/weishi-shot-media-cache'
 import type { ShotVideoReferenceAudioItem } from '@/lib/workflow/shot-audio-reference-utils'
 
 import {
@@ -254,9 +252,6 @@ export interface ShotVideoReferenceItem {
 
   path: string
 
-  /** 资产已同步微视时的 asset://，生视频时复用免上传 */
-  weishiAssetUrl?: string
-
   sourceAssetId?: string
 
 }
@@ -272,9 +267,6 @@ export interface BuildShotVideoReferencesOptions {
   scenes?: WorkflowAsset[]
 
   props?: WorkflowAsset[]
-
-  /** 微视 endpoint，用于分镜 weishiUploadedMedia 缓存匹配 */
-  weishiEndpoint?: string
 
 }
 
@@ -318,25 +310,17 @@ function pushAssetMentionReference(
     path: string | undefined,
     kind: ShotVideoReferenceKind,
     label: string,
-    extra?: Pick<ShotVideoReferenceItem, 'weishiAssetUrl' | 'sourceAssetId'> & {
+    extra?: Pick<ShotVideoReferenceItem, 'sourceAssetId'> & {
       allowDuplicatePath?: boolean
     },
   ) => void,
   mention: MentionCandidate,
   asset: WorkflowAsset | undefined,
-  shot: WorkflowShot,
-  weishiEndpoint?: string,
 ) {
   const path = resolveAssetReferenceImagePath(asset, mention)
   if (!path) return
 
-  const weishiAssetUrl =
-    (asset ? resolveWeishiAssetReferenceUrl(asset, path) : undefined) ??
-    resolveWeishiShotMediaUrl(shot, path, weishiEndpoint) ??
-    undefined
-
   push(path, 'mention', `@${mention.mentionName}（${mentionKindLabel(mention.kind)}）`, {
-    weishiAssetUrl,
     sourceAssetId: asset?.id ?? mention.id,
     allowDuplicatePath: mention.kind === 'character',
   })
@@ -354,7 +338,6 @@ export function appendMissingCharacterRefImages(
     characters?: WorkflowAsset[]
     scenes?: WorkflowAsset[]
     props?: WorkflowAsset[]
-    weishiEndpoint?: string
     /** 画布：连线到视频节点的人物设定图（含未 @ 的角色） */
     connectedCharacterMentions?: MentionCandidate[]
   },
@@ -413,16 +396,10 @@ export function appendMissingCharacterRefImages(
 
     if (assetId) seenKeys.add(assetId)
     seenPaths.add(path)
-
-    const weishiAssetUrl = resolvedAsset
-      ? resolveWeishiAssetReferenceUrl(resolvedAsset, path) ?? undefined
-      : undefined
-
     next.push({
       kind: 'mention',
       label: `@${displayName}（角色）`,
       path,
-      weishiAssetUrl,
       sourceAssetId: assetId,
     })
   }
@@ -486,7 +463,7 @@ export function buildShotVideoReferenceItems(
     path: string | undefined,
     kind: ShotVideoReferenceKind,
     label: string,
-    extra?: Pick<ShotVideoReferenceItem, 'weishiAssetUrl' | 'sourceAssetId'> & {
+    extra?: Pick<ShotVideoReferenceItem, 'sourceAssetId'> & {
       /** 角色设定图可与分镜图同路径，仍单独占位 @图N */
       allowDuplicatePath?: boolean
     },
@@ -502,17 +479,10 @@ export function buildShotVideoReferenceItems(
 
     if (assetKey) seenKeys.add(assetKey)
     seenPaths.add(trimmed)
-
-    const weishiAssetUrl =
-      extra?.weishiAssetUrl ??
-      resolveWeishiShotMediaUrl(shot, trimmed, options?.weishiEndpoint) ??
-      undefined
-
     items.push({
       kind,
       label,
       path: trimmed,
-      weishiAssetUrl,
       sourceAssetId: extra?.sourceAssetId,
     })
 
@@ -536,11 +506,11 @@ export function buildShotVideoReferenceItems(
 
   for (const mention of resolveMentionsInText(mentionText, imageCandidates)) {
     const asset = findWorkflowAssetById(mention.id, options)
-    pushAssetMentionReference(push, mention, asset, shot, options?.weishiEndpoint)
+    pushAssetMentionReference(push, mention, asset)
   }
 
   for (const mention of resolveMentionCandidatesByIds(shot.referencedAssetIds ?? [], imageCandidates)) {
-    pushAssetMentionReference(push, mention, findWorkflowAssetById(mention.id, options), shot, options?.weishiEndpoint)
+    pushAssetMentionReference(push, mention, findWorkflowAssetById(mention.id, options))
   }
 
 
@@ -702,18 +672,6 @@ export function resolveVideoReferenceImagePaths(
 
 }
 
-/** seedance content[].role：分镜图 first_frame / 尾帧 last_frame / @ 与参考槽 reference_image */
-export function resolveWeishiVideoImageRole(
-  item: Pick<ShotVideoReferenceItem, 'kind'>,
-  mode: VideoReferenceMode,
-): string {
-  if (item.kind === 'end_frame') return 'last_frame'
-  if (item.kind === 'storyboard') {
-    if (mode === 'first_frame' || mode === 'first_last_frame') return 'first_frame'
-    return 'reference_image'
-  }
-  return 'reference_image'
-}
 
 const REF_IMAGE_INDEX_CN = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'] as const
 
@@ -734,7 +692,7 @@ function mentionKindFromRefLabel(label: string): MentionCandidate['kind'] {
   return 'character'
 }
 
-/** @ 角色引用：微视生视频走 /v1/assets（asset://） */
+/** @ 角色引用判定 */
 export function isCharacterRefItem(item: Pick<ShotVideoReferenceItem, 'kind' | 'label'>): boolean {
   return item.kind === 'mention' && mentionKindFromRefLabel(item.label) === 'character'
 }

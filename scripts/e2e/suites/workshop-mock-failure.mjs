@@ -16,9 +16,9 @@ import {
 
 export const workshopMockFailureSuite = {
   name: 'workshop-mock-failure',
-  description: 'HAODE_E2E_MOCK_FAIL=shot-image：生图失败、任务 failed、按钮可重试',
+  description: 'LC_E2E_MOCK_FAIL=shot-image：生图失败、任务 failed、按钮可重试',
   prepareWorkspace: prepareWorkshopE2eWorkspace,
-  launchEnv: { HAODE_E2E_MOCK_FAIL: 'shot-image' },
+  launchEnv: { LC_E2E_MOCK_FAIL: 'shot-image' },
   async run(session) {
     const { page, workspace, assert } = session
     const shotId = E2E_SHOT_IDS[0]

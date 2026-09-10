@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * P2：分镜稿导入 → 画布节点
  * 运行：npx --yes tsx scripts/test-storyboard-template-action.ts

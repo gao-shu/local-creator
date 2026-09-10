@@ -68,12 +68,10 @@ import { readWorkflowTasks } from '@/lib/storage/workflow-service'
 import { registerWorkflowAssetImageStopHandler } from '@/lib/workflow/workflow-generation-stop'
 import { IMAGE_BATCH_CONCURRENCY, WORKSHOP_AUTO_SAVE_INTERVAL_MS } from '@/constants/batch-concurrency'
 import {
-  syncCharacterToReview,
   resolveAssetReviewModelFromVideoModel,
 } from '@/lib/workflow/character-review-service'
 import { openAssetInExplorer } from '@/lib/workflow/asset-explorer'
 import { getAssetReviewSnapshot } from '@/lib/workflow/asset-review-status'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
 import { resolveSoftwareImageModelId } from '@/lib/models/software-model-prefs'
 import { buildModelSelectOptions } from '@/lib/models/model-select-options'
 import { ImageGenerationTierField } from '@/components/models/image-generation-tier-field'
@@ -243,7 +241,7 @@ export function Step3AssetsPage() {
   }, [settings, loadSettings])
 
   const imageModels = useMemo(
-    () => getMergedModels('image').filter((m) => !isWeishiApiModel(m)),
+    () => getMergedModels('image'),
     [getMergedModels, systemModelsByKind, settings?.imageModels],
   )
 
@@ -470,7 +468,7 @@ export function Step3AssetsPage() {
   const imageModelOptions = useMemo(
     () =>
       buildModelSelectOptions(
-        getMergedModels('image').filter((m) => !isWeishiApiModel(m)),
+        getMergedModels('image'),
         'image',
       ),
     [getMergedModels, systemModelsByKind, settings?.imageModels],
@@ -1012,56 +1010,7 @@ export function Step3AssetsPage() {
   }
 
   const handleSyncReview = async () => {
-    if (!selectedAsset || !selectedReviewModel) {
-      toast.error('请先在 Step4 生视频页选择视频大模型，或在设置中配置视频/图片模型')
-      return
-    }
-    const assetId = selectedAsset.id
-    setSyncingReview(true)
-    try {
-      const result = await syncCharacterToReview(selectedAsset, selectedReviewModel, {
-        projectRoot,
-        apiBaseUrl: settings?.apiBaseUrl,
-      })
-
-      const reviewPatch: Partial<WorkflowAsset> = {
-        weishiAssetId: result.weishiAssetId,
-        weishiAssetUrl: result.weishiAssetUrl,
-        weishiAssetStatus: result.weishiAssetStatus,
-        jimengAssetId: undefined,
-        jimengAssetStatus: undefined,
-        reviewImagePath: result.reviewImagePath,
-      }
-
-      const store = useWorkflowSessionStore.getState()
-      const current = store.data
-      if (!current) return
-
-      const listKey = ASSET_LIST_KEY[selectedAsset.kind]
-      const nextList = updateAssetList(current[listKey], assetId, reviewPatch)
-      const nextData = { ...current, [listKey]: nextList }
-      store.patchData(
-        current.episodes.length > 0
-          ? syncProjectAssetEpisodeLinks(nextData)
-          : { [listKey]: nextList },
-      )
-      await store.save({ silent: true })
-
-      const label = '微视'
-      const snapshot = getAssetReviewSnapshot({
-        ...selectedAsset,
-        ...reviewPatch,
-      })
-      if (snapshot.isApproved) {
-        toast.success(`「${selectedAsset.name || '未命名角色'}」${label}审核已通过`)
-      } else {
-        toast.success(`已提交${label}审核：${selectedAsset.name || '未命名角色'}`)
-      }
-    } catch (error: unknown) {
-      toast.error((error as Error).message || '同步审核失败')
-    } finally {
-      setSyncingReview(false)
-    }
+    toast.error('角色审核通道已移除，请使用 OpenAI 兼容等视频模型')
   }
 
   const existingProjectAssetNamesByKind = useMemo(

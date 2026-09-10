@@ -22,9 +22,6 @@ export interface SyncedMaterialEntry {
   generatedImagePath?: string
   generatedImagePaths?: string[]
   primaryGeneratedImageIndex?: number
-  weishiAssetId?: string
-  weishiAssetUrl?: string
-  weishiAssetStatus?: string
   jimengAssetId?: string
   jimengAssetStatus?: string
   /** 来源项目内相对路径 */
@@ -104,9 +101,6 @@ export function syncedEntryToWorkflowAsset(entry: SyncedMaterialEntry): Workflow
     generatedImagePath: entry.generatedImagePath,
     generatedImagePaths: entry.generatedImagePaths,
     primaryGeneratedImageIndex: entry.primaryGeneratedImageIndex,
-    weishiAssetId: entry.weishiAssetId,
-    weishiAssetUrl: entry.weishiAssetUrl,
-    weishiAssetStatus: entry.weishiAssetStatus,
     jimengAssetId: entry.jimengAssetId,
     jimengAssetStatus: entry.jimengAssetStatus,
     reviewImagePath: entry.reviewImagePath,

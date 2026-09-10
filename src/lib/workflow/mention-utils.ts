@@ -289,7 +289,7 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-/** 扫描正文中的资产名并补记 @ 引用（对齐 haode-ai-client 参考二次识别） */
+/** 扫描正文中的资产名并补记 @ 引用（对齐上游实现 参考二次识别） */
 export function applySecondaryMentionRecognition(
   text: string,
   candidates: MentionCandidate[],

@@ -100,7 +100,7 @@ export class E2eSession {
     this.electronApp = null
     this.page = null
 
-    if (process.env.HAODE_E2E_KEEP === '1') {
+    if (process.env.LC_E2E_KEEP === '1') {
       console.log(`[${this.label}] 保留目录: ${this.workspace?.root}`)
       return
     }

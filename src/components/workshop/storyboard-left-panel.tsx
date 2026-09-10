@@ -51,7 +51,7 @@ interface StoryboardLeftPanelProps {
   onStopGenerateVideoShot: (shotId: string) => void
   onInsertAfter: (afterShotId: string | null) => void
   onInfer: () => void
-  /** 全集二次验证：补全局空间锚点（与单镜微视审核 onValidateShot 不同） */
+  /** 全集二次验证：补全局空间锚点（与单镜素材审核 onValidateShot 不同） */
   onValidateStoryboard: () => void
   onAdd: () => void
   onClear: () => void

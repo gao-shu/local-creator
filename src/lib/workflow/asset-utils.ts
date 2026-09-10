@@ -228,31 +228,23 @@ export function isSameAssetMediaPath(a?: string, b?: string): boolean {
 }
 
 export function hasAssetReviewSynced(
-  asset: Pick<WorkflowAsset, 'weishiAssetId' | 'jimengAssetId'>,
+  asset: Pick<WorkflowAsset, 'jimengAssetId'>,
 ): boolean {
-  return Boolean(asset.weishiAssetId?.trim() || asset.jimengAssetId?.trim())
+  return Boolean(asset.jimengAssetId?.trim())
 }
 
 export function clearAssetReviewPatch(): Pick<
   WorkflowAsset,
-  | 'weishiAssetId'
-  | 'weishiAssetUrl'
-  | 'weishiAssetStatus'
-  | 'jimengAssetId'
-  | 'jimengAssetStatus'
-  | 'reviewImagePath'
+  'jimengAssetId' | 'jimengAssetStatus' | 'reviewImagePath'
 > {
   return {
-    weishiAssetId: undefined,
-    weishiAssetUrl: undefined,
-    weishiAssetStatus: undefined,
     jimengAssetId: undefined,
     jimengAssetStatus: undefined,
     reviewImagePath: undefined,
   }
 }
 
-/** 当前预览/主图与审核绑定图不一致时清除审核（对齐 weifan-ai-ts） */
+/** 当前预览/主图与审核绑定图不一致时清除审核 */
 export function shouldClearReviewForImageChange(
   asset: WorkflowAsset,
   nextImagePath?: string,
@@ -266,7 +258,7 @@ export function shouldClearReviewForImageChange(
     return !isSameAssetMediaPath(reviewed, next)
   }
 
-  // 有 weishi 但未写 reviewImagePath：与当前主图不一致则清除
+  // 有审核 id 但未写 reviewImagePath：与当前主图不一致则清除
   const currentPrimary = pickAssetReviewImagePath(asset)
   return !isSameAssetMediaPath(currentPrimary, next)
 }
@@ -397,27 +389,10 @@ function normalizeReviewStatus(raw?: string): string | undefined {
   return status
 }
 
-/** 兼容 haode-ai-client 多种审核字段命名，读写统一为 camelCase */
+/** 兼容多种审核字段命名，读写统一为 camelCase（仅保留即梦遗留字段） */
 export function pickAssetReviewFields(
   row: Record<string, unknown>,
-): Pick<
-  WorkflowAsset,
-  'weishiAssetId' | 'weishiAssetUrl' | 'weishiAssetStatus' | 'jimengAssetId' | 'jimengAssetStatus'
-> {
-  const weishiAssetId = pickStringField(row, [
-    'weishiAssetId',
-    'assetWeishiId',
-    'weishi_asset_id',
-    'asset_weishi_id',
-  ])
-  const weishiAssetStatus =
-    normalizeReviewStatus(
-      pickStringField(row, ['weishiAssetStatus', 'weishi_asset_status']),
-    ) ||
-    (weishiAssetId
-      ? normalizeReviewStatus(pickStringField(row, ['assetStatus', 'asset_status', 'status']))
-      : undefined)
-
+): Pick<WorkflowAsset, 'jimengAssetId' | 'jimengAssetStatus'> {
   const jimengAssetId = pickStringField(row, [
     'jimengAssetId',
     'assetJimengId',
@@ -429,16 +404,13 @@ export function pickAssetReviewFields(
     normalizeReviewStatus(
       pickStringField(row, ['jimengAssetStatus', 'jimeng_asset_status']),
     ) ||
-    (jimengAssetId && !weishiAssetId
+    (jimengAssetId
       ? normalizeReviewStatus(pickStringField(row, ['assetStatus', 'asset_status', 'status']))
       : undefined)
 
   return {
-    weishiAssetId,
-    weishiAssetUrl: pickStringField(row, ['weishiAssetUrl', 'weishi_asset_url']),
-    weishiAssetStatus: weishiAssetStatus,
-    jimengAssetId: weishiAssetId ? undefined : jimengAssetId,
-    jimengAssetStatus: weishiAssetId ? undefined : jimengAssetStatus,
+    jimengAssetId,
+    jimengAssetStatus,
   }
 }
 
@@ -528,8 +500,6 @@ const ASSET_IMAGE_PERSIST_KEYS = [
   'primaryGeneratedImageIndex',
   'generatedImagePath',
   'generatedImagePaths',
-  'weishiAssetId',
-  'weishiAssetUrl',
   'reviewImagePath',
   'jimengAssetId',
 ] as const

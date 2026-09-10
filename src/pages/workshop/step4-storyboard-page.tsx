@@ -18,7 +18,7 @@ import { CanvasVideoExtractAudioDialog } from '@/components/canvas/modals/canvas
 import type { StoryboardVideoGenerateParams } from '@/components/workshop/storyboard-video-tab'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { WeishiVideoConfirmDialog } from '@/components/workshop/weishi-video-confirm-dialog'
+import { VideoRequestConfirmDialog } from '@/components/workshop/video-request-confirm-dialog'
 import { StoryboardBatchVideoConfirmDialog } from '@/components/workshop/storyboard-batch-video-confirm-dialog'
 import { StoryboardValidateConfirmDialog } from '@/components/workshop/storyboard-validate-confirm-dialog'
 import {
@@ -74,17 +74,7 @@ import {
   prepareOpenAiVideoRequestPreview,
   shouldUseOpenAiVideoClient,
 } from '@/lib/video/openai-video-client'
-import { isWeishiApiModel, resolveEffectiveWeishiReferenceMediaUploadMode } from '@/lib/models/weishi-model-presets'
-import {
-  buildWeishiUploadPersistPatches,
-  mergeShotPatchWithWeishiPrune,
-} from '@/lib/models/weishi-shot-media-cache'
-import {
-  prepareWeishiVideoRequestPreview,
-  resolveWeishiCreateUrl,
-  type WeishiVideoRequestPreview,
-  type WeishiVideoReferenceItem,
-} from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import {
   clampVideoReferenceMode,
   getUnsupportedVideoReferenceModeMessage,
@@ -93,7 +83,6 @@ import {
   resolveStoryboardVideoGeneratePrefs,
   VIDEO_REFERENCE_MODE_LABELS,
 } from '@/lib/workflow/storyboard-video-presets'
-import { syncShotStoryboardToWeishiReview } from '@/lib/workflow/shot-storyboard-review-service'
 import {
   appendShotGeneratedVideo,
   buildShotImageValidationPatch,
@@ -110,9 +99,6 @@ import {
   buildWorkflowShotExtractAudioLabel,
   resolveWorkflowShotExtractAudioAvailability,
 } from '@/lib/workflow/workflow-video-extract-audio'
-import {
-  composeWeishiVideoPrompt,
-} from '@/lib/workflow/weishi-video-prompt'
 import {
   appendShotReferenceImage,
   isShotReferencePatch,
@@ -295,7 +281,7 @@ function resolvePreviousEpisodeShot(
   return sorted[index - 1] ?? null
 }
 
-type WeishiVideoBeginResult = 'confirm' | 'direct' | 'failed'
+type VideoConfirmBeginResult = 'confirm' | 'direct' | 'failed'
 
 type ShotImageGenerationSession = {
   controller: AbortController
@@ -346,7 +332,7 @@ export function Step4StoryboardPage() {
     setRightPanelSession((n) => n + 1)
   }, [location.pathname, meta?.id])
   const [inferring, setInferring] = useState(false)
-  /** 全集文本二次验证（空间锚点），非单镜微视审核 */
+  /** 全集文本二次验证（空间锚点），非单镜素材审核 */
   const [storyboardValidating, setStoryboardValidating] = useState(false)
   /** 二次验证结果待确认：不落盘，1C 弹窗应用/取消 */
   const [pendingValidate, setPendingValidate] = useState<{
@@ -377,15 +363,14 @@ export function Step4StoryboardPage() {
   const [batchVideoTargetIds, setBatchVideoTargetIds] = useState<string[]>([])
   const [videoTaskMessage, setVideoTaskMessage] = useState('')
   const [videoProgressPercent, setVideoProgressPercent] = useState<number | undefined>()
-  const [pendingWeishiVideo, setPendingWeishiVideo] = useState<{
+  const [pendingVideoConfirm, setPendingVideoConfirm] = useState<{
     params: StoryboardVideoGenerateParams
     shot: WorkflowShot
-    preview: WeishiVideoRequestPreview
-    preparedReferences: WeishiVideoReferenceItem[]
+    preview: VideoRequestPreview
     skipImageValidation?: boolean
     batchTargets?: WorkflowShot[]
   } | null>(null)
-  const [weishiPreviewPreparing, setWeishiPreviewPreparing] = useState(false)
+  const [videoPreviewPreparing, setVideoPreviewPreparing] = useState(false)
   const [validatingShotId, setValidatingShotId] = useState<string | null>(null)
   const [voiceLibrary, setVoiceLibrary] = useState<VoiceLibraryEntry[]>([])
   const [affixPresetDialogOpen, setAffixPresetDialogOpen] = useState(false)
@@ -818,38 +803,12 @@ export function Step4StoryboardPage() {
 
   const activeVideoModel = useMemo(() => resolveActiveVideoModel(), [resolveActiveVideoModel])
 
-  const applyWeishiPersistPatches = useCallback(
-    async (shotId: string, patches: ReturnType<typeof buildWeishiUploadPersistPatches>) => {
-      const { shotPatch, dataPatch } = patches
-      const hasShotPatch = Object.keys(shotPatch).length > 0
-      const hasDataPatch = Object.keys(dataPatch).length > 0
-      if (hasShotPatch) patchShotById(shotId, shotPatch)
-      if (hasDataPatch) patchData(dataPatch)
-      if (hasShotPatch || hasDataPatch) {
-        await save({ silent: true })
-      }
-    },
-    [patchData, patchShotById, save],
-  )
-
   const patchShotMediaWithPrune = useCallback(
     (shotId: string, patch: Partial<WorkflowShot>) => {
-      const shot = getShotById(shotId)
-      if (!shot) return
-      const model = resolveActiveVideoModel()
-      const { mentionCandidates, characters, scenes, props } = shotVideoMediaContext
-      patchShotById(
-        shotId,
-        mergeShotPatchWithWeishiPrune(shot, patch, {
-          mentionCandidates,
-          characters,
-          scenes,
-          props,
-          endpoint: model?.endpoint,
-        }),
-      )
+      if (!getShotById(shotId)) return
+      patchShotById(shotId, patch)
     },
-    [getShotById, patchShotById, resolveActiveVideoModel, shotVideoMediaContext],
+    [getShotById, patchShotById],
   )
 
   const handleShotChange = useCallback(
@@ -1212,7 +1171,7 @@ export function Step4StoryboardPage() {
       setVideoGeneratingIds([])
       setBatchVideoGenerating(false)
     }
-    setWeishiPreviewPreparing(false)
+    setVideoPreviewPreparing(false)
     setVideoTaskMessage('')
     videoOperationBusyRef.current = false
     const preserveVideoShotIds = new Set(
@@ -1287,7 +1246,7 @@ export function Step4StoryboardPage() {
       const interrupted = await reconcileStaleVideoTasks(projectId)
       if (interrupted && !isVideoGenerationInflight(projectId)) {
         resetLocalVideoGeneration()
-        setPendingWeishiVideo(null)
+        setPendingVideoConfirm(null)
         toast.error(interrupted.errorMessage || '生视频失败')
       }
 
@@ -1537,9 +1496,9 @@ export function Step4StoryboardPage() {
       resolveWorkflowShotExtractAudioAvailability({
         shot: selectedShot,
         videoGenerating: Boolean(selectedShotId && isShotVideoBusy(selectedShotId)),
-        videoPreparing: weishiPreviewPreparing,
+        videoPreparing: videoPreviewPreparing,
       }),
-    [isShotVideoBusy, selectedShot, selectedShotId, weishiPreviewPreparing],
+    [isShotVideoBusy, selectedShot, selectedShotId, videoPreviewPreparing],
   )
   const extractAudioTitle = extractAudioAvailability.available
     ? '从本地视频提取 mp3 参考音频'
@@ -1560,7 +1519,7 @@ export function Step4StoryboardPage() {
         videoGenerating:
           videoGeneratingIds.length > 0 ||
           batchVideoGenerating ||
-          weishiPreviewPreparing ||
+          videoPreviewPreparing ||
           Boolean(meta?.id && isVideoGenerationInflight(meta.id)) ||
           Boolean(activeResumableVideoTask),
         videoProgressMessage: resolvedVideoProgressMessage,
@@ -1575,7 +1534,7 @@ export function Step4StoryboardPage() {
       resolvedVideoProgressMessage,
       selectedEpisode,
       videoGeneratingIds,
-      weishiPreviewPreparing,
+      videoPreviewPreparing,
     ],
   )
 
@@ -1872,8 +1831,8 @@ export function Step4StoryboardPage() {
 
       unmarkVideoGenerating(shotId)
       releaseBatchVideoTarget(shotId)
-      setPendingWeishiVideo((prev) => (prev?.shot.id === shotId ? null : prev))
-      setWeishiPreviewPreparing(false)
+      setPendingVideoConfirm((prev) => (prev?.shot.id === shotId ? null : prev))
+      setVideoPreviewPreparing(false)
 
       if (selectedShotId === shotId) {
         setVideoTaskMessage('')
@@ -1934,7 +1893,7 @@ export function Step4StoryboardPage() {
           activeVideoTaskIdRef.current === taskId || getVideoSessionTaskId(projectId) === taskId
         if (isActiveSession) {
           resetLocalVideoGeneration()
-          setPendingWeishiVideo(null)
+          setPendingVideoConfirm(null)
         }
         if (task?.type === 'image') {
           await cancelImageGenerationTask(projectId, taskId)
@@ -2029,132 +1988,6 @@ export function Step4StoryboardPage() {
       void save({ silent: true })
     },
     [patchShotMediaWithPrune, projectRoot, save, selectedShot],
-  )
-
-  const prepareWeishiVideoPreviewForShot = useCallback(
-    async (
-      shot: WorkflowShot,
-      params: StoryboardVideoGenerateParams,
-      options?: { batchCount?: number; markStoryboardValidated?: boolean },
-    ) => {
-      if (!mergedVideoModels.length) return null
-      let model
-      try {
-        model = pickVideoModel(mergedVideoModels, videoModelId || undefined)
-      } catch {
-        return null
-      }
-      if (!isWeishiApiModel(model)) return null
-
-      const videoModel = resolveActiveVideoModel()
-      const referenceMode = clampVideoReferenceMode(params.referenceMode, videoModel ?? model)
-      const referenceContext = resolveVideoReferenceContext(shot, episodeShots)
-      const { mentionCandidates, characters, scenes, props } = shotVideoMediaContext
-      let refItems = resolveVideoReferenceItems(
-        shot,
-        referenceMode,
-        referenceContext,
-        {
-          mentionCandidates,
-          characters,
-          scenes,
-          props,
-          weishiEndpoint: videoModel?.endpoint,
-        },
-      )
-      const audioItems = buildShotVideoReferenceAudioItems(shot, {
-        mentionCandidates,
-        characters,
-        scenes,
-        props,
-        voiceLibrary,
-      })
-      refItems = appendMissingCharacterRefImages(refItems, {
-        shot,
-        audioItems,
-        mentionCandidates,
-        characters,
-        scenes,
-        props,
-        weishiEndpoint: videoModel?.endpoint,
-      })
-      const refPaths = refItems.map((item) => item.path)
-      const audioPaths = audioItems.map((item) => item.path)
-      const shotBody = [shot.spatialAnchor, shot.prompt].filter(Boolean).join('\n')
-      const videoPrompt = composeWeishiVideoPrompt({
-        shotBody,
-        imageItems: referenceMode !== 'text_to_video' ? refItems : [],
-        audioItems,
-        prefix: promptPrefix,
-        suffix: promptSuffix,
-      })
-      const referenceModeLabel =
-        VIDEO_REFERENCE_MODE_LABELS[referenceMode] ?? referenceMode
-
-      return prepareWeishiVideoRequestPreview({
-        model,
-        prompt: videoPrompt,
-        durationSec: params.durationSec,
-        aspectRatio: params.aspectRatio,
-        resolution: params.resolution,
-        referenceImagePath: refPaths[0] ?? null,
-        referenceImagePaths: refPaths,
-        referenceImageItems: refItems.map((item) => ({
-          label: item.label,
-          path: item.path,
-          kind: item.kind,
-          weishiAssetUrl: item.weishiAssetUrl,
-        })),
-        referenceAudioPaths: audioPaths,
-        referenceAudioItems: audioItems.map((item) => ({ label: item.label, path: item.path })),
-        projectRoot: meta?.id ? resolveProjectRoot(settings, appDataDir, meta.id) : undefined,
-        apiBaseUrl: settings.apiBaseUrl,
-        referenceMediaUploadMode: resolveEffectiveWeishiReferenceMediaUploadMode(
-          settings.weishiReferenceMediaUploadMode,
-          model,
-        ),
-        referenceMode,
-        referenceModeLabel,
-        shotNumber: shot.shotNumber,
-        batchCount: options?.batchCount,
-      }).then(async (prepared) => {
-        const persistPatches = buildWeishiUploadPersistPatches({
-          shot,
-          refItems: refItems.map((item) => ({
-            path: item.path,
-            kind: item.kind,
-            sourceAssetId: item.sourceAssetId,
-            weishiAssetUrl: item.weishiAssetUrl,
-          })),
-          preparedReferences: prepared.preparedReferences,
-          characters,
-          scenes,
-          props,
-          endpoint: videoModel?.endpoint,
-        })
-        const validationPatch = options?.markStoryboardValidated
-          ? buildShotImageValidationPatch(shot)
-          : {}
-        await applyWeishiPersistPatches(shot.id, {
-          shotPatch: { ...persistPatches.shotPatch, ...validationPatch },
-          dataPatch: persistPatches.dataPatch,
-        })
-        return prepared
-      })
-    },
-    [
-      appDataDir,
-      applyWeishiPersistPatches,
-      episodeShots,
-      meta?.id,
-      promptPrefix,
-      promptSuffix,
-      resolveActiveVideoModel,
-      settings,
-      shotVideoMediaContext,
-      videoModelId,
-      voiceLibrary,
-    ],
   )
 
   const prepareZhipuVideoPreviewForShot = useCallback(
@@ -2370,13 +2203,13 @@ export function Step4StoryboardPage() {
     ],
   )
 
-  const beginWeishiVideoConfirm = useCallback(
+  const beginVideoConfirm = useCallback(
     async (
       params: StoryboardVideoGenerateParams,
       shot: WorkflowShot,
       options?: { skipImageValidation?: boolean; batchTargets?: WorkflowShot[] },
-    ): Promise<WeishiVideoBeginResult> => {
-      if (weishiPreviewPreparing) {
+    ): Promise<VideoConfirmBeginResult> => {
+      if (videoPreviewPreparing) {
         toast.info('视频参考素材准备中，请稍候')
         return 'failed'
       }
@@ -2388,7 +2221,6 @@ export function Step4StoryboardPage() {
         return 'direct'
       }
       if (
-        !isWeishiApiModel(model) &&
         !isZhipuVideoModel(model.model || '', model.endpoint, model.apiFormat) &&
         !isGrokVideoModel(model) &&
         !shouldUseOpenAiVideoClient(model)
@@ -2396,40 +2228,21 @@ export function Step4StoryboardPage() {
         return 'direct'
       }
       if (!settings.debugEnabled) return 'direct'
-      // 批量生成跳过调试确认弹窗，仅单条生成展示 API 预览
       if (options?.batchTargets?.length) return 'direct'
 
       videoOperationBusyRef.current = true
-      setWeishiPreviewPreparing(true)
+      setVideoPreviewPreparing(true)
       setVideoTaskMessage(`镜号 ${shot.shotNumber}：准备参考素材…`)
       try {
-        if (isWeishiApiModel(model)) {
-          const prepared = await prepareWeishiVideoPreviewForShot(shot, params, {
-            batchCount: options?.batchTargets?.length,
-            markStoryboardValidated: options?.skipImageValidation,
-          })
-          if (!prepared) return 'direct'
-          setPendingWeishiVideo({
-            params,
-            shot,
-            preview: prepared.preview,
-            preparedReferences: prepared.preparedReferences,
-            skipImageValidation: options?.skipImageValidation,
-            batchTargets: options?.batchTargets,
-          })
-          return 'confirm'
-        }
-
         if (isZhipuVideoModel(model.model || '', model.endpoint, model.apiFormat)) {
           const prepared = await prepareZhipuVideoPreviewForShot(shot, params, {
             batchCount: options?.batchTargets?.length,
           })
           if (!prepared) return 'direct'
-          setPendingWeishiVideo({
+          setPendingVideoConfirm({
             params,
             shot,
             preview: prepared.preview,
-            preparedReferences: [],
             skipImageValidation: options?.skipImageValidation,
             batchTargets: options?.batchTargets,
           })
@@ -2441,11 +2254,10 @@ export function Step4StoryboardPage() {
             batchCount: options?.batchTargets?.length,
           })
           if (!prepared) return 'direct'
-          setPendingWeishiVideo({
+          setPendingVideoConfirm({
             params,
             shot,
             preview: prepared.preview,
-            preparedReferences: [],
             skipImageValidation: options?.skipImageValidation,
             batchTargets: options?.batchTargets,
           })
@@ -2457,11 +2269,10 @@ export function Step4StoryboardPage() {
             batchCount: options?.batchTargets?.length,
           })
           if (!prepared) return 'direct'
-          setPendingWeishiVideo({
+          setPendingVideoConfirm({
             params,
             shot,
             preview: prepared.preview,
-            preparedReferences: [],
             skipImageValidation: options?.skipImageValidation,
             batchTargets: options?.batchTargets,
           })
@@ -2470,22 +2281,22 @@ export function Step4StoryboardPage() {
 
         return 'direct'
       } catch (error: unknown) {
-        toast.error((error as Error).message || '视频开白失败')
+        toast.error((error as Error).message || '视频参数准备失败')
         return 'failed'
       } finally {
-        setWeishiPreviewPreparing(false)
+        setVideoPreviewPreparing(false)
         setVideoTaskMessage('')
         videoOperationBusyRef.current = false
       }
     },
     [
-      prepareWeishiVideoPreviewForShot,
       prepareZhipuVideoPreviewForShot,
       prepareGrokVideoPreviewForShot,
       prepareOpenAiVideoPreviewForShot,
       settings?.debugEnabled,
       mergedVideoModels,
       videoModelId,
+      videoPreviewPreparing,
     ],
   )
 
@@ -2494,7 +2305,6 @@ export function Step4StoryboardPage() {
     shot = selectedShot,
     options?: {
       skipImageValidation?: boolean
-      weishiPreparedReferences?: WeishiVideoReferenceItem[]
     },
   ) => {
     if (!shot || !settings) return
@@ -2559,11 +2369,7 @@ export function Step4StoryboardPage() {
           promptPrefix,
           promptSuffix,
           skipImageValidation: options?.skipImageValidation,
-          weishiPreparedReferences: options?.weishiPreparedReferences,
           abortSignal: controller.signal,
-          onWeishiPersist: async (patches) => {
-            await applyWeishiPersistPatches(shotId, patches)
-          },
           onRemoteJobCreated: async (job) => {
             if (!projectId || !taskId) return
             await persistVideoTaskRemoteJob(
@@ -2680,7 +2486,7 @@ export function Step4StoryboardPage() {
       toast.error('请先填写分镜提示词')
       return
     }
-    if (weishiPreviewPreparing) {
+    if (videoPreviewPreparing) {
       toast.info('视频任务进行中，请稍候')
       return
     }
@@ -2698,7 +2504,7 @@ export function Step4StoryboardPage() {
         return
       }
     }
-    if (pendingWeishiVideo) {
+    if (pendingVideoConfirm) {
       toast.info('请先确认或取消当前视频生成弹窗')
       return
     }
@@ -2724,23 +2530,21 @@ export function Step4StoryboardPage() {
       return
     }
     const skipImageValidation = !isStoryboardImageValidated(shot)
-    void beginWeishiVideoConfirm(params, shot, { skipImageValidation }).then((result) => {
+    void beginVideoConfirm(params, shot, { skipImageValidation }).then((result) => {
       if (result === 'direct') void runGenerateVideoOne(params, shot, { skipImageValidation })
     })
   }
 
-  const handleConfirmWeishiVideo = () => {
-    if (!pendingWeishiVideo) return
-    const { params, shot, skipImageValidation, batchTargets, preparedReferences } =
-      pendingWeishiVideo
-    setPendingWeishiVideo(null)
+  const handleConfirmVideoRequest = () => {
+    if (!pendingVideoConfirm) return
+    const { params, shot, skipImageValidation, batchTargets } = pendingVideoConfirm
+    setPendingVideoConfirm(null)
     if (batchTargets?.length) {
       void runBatchGenerateVideos(params, batchTargets)
       return
     }
     void runGenerateVideoOne(params, shot, {
       skipImageValidation,
-      weishiPreparedReferences: preparedReferences,
     })
   }
 
@@ -2821,13 +2625,6 @@ export function Step4StoryboardPage() {
                 promptSuffix,
                 skipImageValidation,
                 abortSignal: controller.signal,
-                onWeishiPersist: async (patches) => {
-                  const validationPatch = skipImageValidation ? buildShotImageValidationPatch(shot) : {}
-                  await applyWeishiPersistPatches(shotId, {
-                    shotPatch: { ...patches.shotPatch, ...validationPatch },
-                    dataPatch: patches.dataPatch,
-                  })
-                },
                 onRemoteJobCreated: async (job) => {
                   if (!projectId || !shotTaskId) return
                   await persistVideoTaskRemoteJob(
@@ -3002,7 +2799,7 @@ export function Step4StoryboardPage() {
         await executeBatch()
       }
     },
-    [appDataDir, applyWeishiPersistPatches, episodeShots, markBatchVideoTargets, meta?.id, patchShotById, projectRoot, promptPrefix, promptSuffix, releaseBatchVideoTarget, save, selectedEpisode, selectedShotId, settings, shotVideoMediaContext, unmarkVideoGenerating, videoModelId, voiceLibrary],
+    [appDataDir, episodeShots, markBatchVideoTargets, meta?.id, patchShotById, projectRoot, promptPrefix, promptSuffix, releaseBatchVideoTarget, save, selectedEpisode, selectedShotId, settings, shotVideoMediaContext, unmarkVideoGenerating, videoModelId, voiceLibrary],
   )
 
   const buildStoryboardVideoParams = useCallback((): StoryboardVideoGenerateParams => {
@@ -3018,11 +2815,11 @@ export function Step4StoryboardPage() {
 
   const handleBatchGenerateVideos = useCallback(() => {
     if (!settings || episodeShots.length === 0) return
-    if (batchVideoGenerating || weishiPreviewPreparing) {
+    if (batchVideoGenerating || videoPreviewPreparing) {
       toast.info('视频任务进行中，请稍候')
       return
     }
-    if (pendingWeishiVideo) {
+    if (pendingVideoConfirm) {
       toast.info('请先确认或取消当前视频生成弹窗')
       return
     }
@@ -3041,22 +2838,22 @@ export function Step4StoryboardPage() {
       return
     }
     const firstTarget = targets[0]!
-    void beginWeishiVideoConfirm(params, firstTarget, {
+    void beginVideoConfirm(params, firstTarget, {
       batchTargets: targets,
       skipImageValidation: !isStoryboardImageValidated(firstTarget),
     }).then((result) => {
       if (result === 'direct') void runBatchGenerateVideos(params, targets)
     })
   }, [
-    beginWeishiVideoConfirm,
+    beginVideoConfirm,
     batchVideoGenerating,
     buildStoryboardVideoParams,
     episodeShots,
-    pendingWeishiVideo,
+    pendingVideoConfirm,
     resolveActiveVideoModel,
     runBatchGenerateVideos,
     settings,
-    weishiPreviewPreparing,
+    videoPreviewPreparing,
   ])
 
   const batchVideoTargetCount = useMemo(
@@ -3066,11 +2863,11 @@ export function Step4StoryboardPage() {
 
   const requestBatchGenerateVideos = useCallback(() => {
     if (!settings || episodeShots.length === 0) return
-    if (batchVideoGenerating || weishiPreviewPreparing) {
+    if (batchVideoGenerating || videoPreviewPreparing) {
       toast.info('视频任务进行中，请稍候')
       return
     }
-    if (pendingWeishiVideo) {
+    if (pendingVideoConfirm) {
       toast.info('请先确认或取消当前视频生成弹窗')
       return
     }
@@ -3093,10 +2890,10 @@ export function Step4StoryboardPage() {
     batchVideoTargetCount,
     buildStoryboardVideoParams,
     episodeShots.length,
-    pendingWeishiVideo,
+    pendingVideoConfirm,
     resolveActiveVideoModel,
     settings,
-    weishiPreviewPreparing,
+    videoPreviewPreparing,
   ])
 
   const batchVideoConfirmParams = useMemo(() => {
@@ -3225,28 +3022,23 @@ export function Step4StoryboardPage() {
         return
       }
 
-      const videoModel = resolveActiveVideoModel()
-      if (!videoModel || !isWeishiApiModel(videoModel)) {
-        toast.error('非微视API视频模型暂不支持审核')
-        return
-      }
-
       setValidatingShotId(shotId)
       try {
-        const patch = await syncShotStoryboardToWeishiReview(shot, videoModel, {
-          projectRoot,
-          apiBaseUrl: settings?.apiBaseUrl,
-        })
+        const patch = buildShotImageValidationPatch(shot)
+        if (!Object.keys(patch).length) {
+          toast.error('当前分镜尚无分镜图，无法审核')
+          return
+        }
         patchShotById(shotId, patch)
         await save({ silent: true })
-        toast.success('分镜图已审核，微视开白已写入参考图')
+        toast.success('分镜图已审核')
       } catch (error) {
         toast.error((error as Error).message || '分镜图审核失败')
       } finally {
         setValidatingShotId(null)
       }
     },
-    [allShots, patchShotById, projectRoot, resolveActiveVideoModel, save, settings?.apiBaseUrl],
+    [allShots, patchShotById, save],
   )
 
   const handleClearShots = async () => {
@@ -3533,7 +3325,7 @@ export function Step4StoryboardPage() {
   const videoGenerating = Boolean(
     selectedShotId &&
       (isShotVideoBusy(selectedShotId) ||
-        (weishiPreviewPreparing && pendingWeishiVideo?.shot.id === selectedShotId)),
+        (videoPreviewPreparing && pendingVideoConfirm?.shot.id === selectedShotId)),
   )
 
   return (
@@ -3620,7 +3412,7 @@ export function Step4StoryboardPage() {
           generating={generating}
           videoGenerating={videoGenerating}
           batchVideoGenerating={batchVideoGenerating || resumableBatchVideo}
-          videoPreparing={weishiPreviewPreparing}
+          videoPreparing={videoPreviewPreparing}
           videoProgressMessage={centerVideoProgressMessage}
           videoProgressPercent={centerVideoProgressPercent}
           collapsed={rightCollapsed}
@@ -3720,12 +3512,12 @@ export function Step4StoryboardPage() {
         </Button>
       </div>
 
-      <WeishiVideoConfirmDialog
-        open={Boolean(pendingWeishiVideo)}
-        preview={pendingWeishiVideo?.preview ?? null}
+      <VideoRequestConfirmDialog
+        open={Boolean(pendingVideoConfirm)}
+        preview={pendingVideoConfirm?.preview ?? null}
         videoModel={activeVideoModel}
-        onClose={() => setPendingWeishiVideo(null)}
-        onConfirm={handleConfirmWeishiVideo}
+        onClose={() => setPendingVideoConfirm(null)}
+        onConfirm={handleConfirmVideoRequest}
       />
 
       <CanvasVideoExtractAudioDialog

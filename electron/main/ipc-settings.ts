@@ -7,7 +7,6 @@ import { BrowserWindow, dialog, ipcMain } from 'electron'
 import type { AppSettings, ModelConfig } from '../../src/types/settings'
 
 import { mergeSettings } from '../../src/lib/storage/settings-defaults'
-import { shouldPersistSanitizedWeishiVideoModels } from '../../src/lib/models/weishi-capability-overlay'
 import { migrateApiBaseUrl, normalizeApiBase } from '../../src/lib/auth/api-base'
 
 import { assembleDataPaths, applyStorageRootToSettings } from '../../src/lib/storage/data-layout'
@@ -94,16 +93,13 @@ export async function readSettingsMerged(): Promise<{
     rawApiBase.length > 0 &&
     applied.apiBaseUrl !== normalizeApiBase(rawApiBase)
 
-  // mergeSettings 已在内存洗掉自定义微视假 480P；对照磁盘原文决定是否落盘
-  const weishiSanitized =
-    fileExists && shouldPersistSanitizedWeishiVideoModels(partial?.videoModels)
-
+  // mergeSettings 已在内存合并设置；对照磁盘原文决定是否因 apiBase 迁移落盘
   if (ctx.dataRoot) {
     const assembled = assembleDataPaths(applied, ctx.dataRoot)
     await migrateFlatWorkflowLayoutToSubdir(ctx.dataRoot, assembled.workflowDir)
     if (
       fileExists &&
-      (applied.workflowDataPath !== assembled.workflowDir || apiBaseMigrated || weishiSanitized)
+      (applied.workflowDataPath !== assembled.workflowDir || apiBaseMigrated)
     ) {
       const synced = applyStorageRootToSettings(applied, ctx.dataRoot)
       await writeFileAtomic(ctx.settingsPath, JSON.stringify(encryptSettingsSecrets(synced), null, 2))
@@ -111,7 +107,7 @@ export async function readSettingsMerged(): Promise<{
     }
   }
 
-  if (apiBaseMigrated || weishiSanitized) {
+  if (apiBaseMigrated) {
     await writeFileAtomic(ctx.settingsPath, JSON.stringify(encryptSettingsSecrets(applied), null, 2))
     return { data: applied, ctx, fileExists }
   }
@@ -357,7 +353,7 @@ export function registerSettingsIpc() {
 
       const parent = BrowserWindow.fromWebContents(event.sender)
       const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-      const folderName = path.basename(root) || 'haode-data'
+      const folderName = path.basename(root) || 'lc-data'
       const defaultName = `本地漫创-${folderName}-${stamp}.zip`
 
       const save = await dialog.showSaveDialog({

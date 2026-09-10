@@ -53,11 +53,7 @@ import {
   resolveCanvasMediaProjectRootSync,
   type CanvasMediaLocation,
 } from '@/lib/canvas/canvas-media-resolve'
-import type { WeishiVideoReferenceItem } from '@/lib/models/weishi-video-client'
-import { isWeishiApiModel, resolveEffectiveWeishiReferenceMediaUploadMode } from '@/lib/models/weishi-model-presets'
-import { composeWeishiVideoPrompt } from '@/lib/workflow/weishi-video-prompt'
 import { resolveCanvasVideoGenerateInput } from '@/lib/canvas/canvas-video-generate-preview'
-import { ensureCanvasWeishiCharacterWhitelist } from '@/lib/canvas/canvas-weishi-video-utils'
 import { assertNotAborted, delayWithAbort, isVideoGenerationAbortError } from '@/lib/video/video-generation-abort'
 import { VIDEO_PROGRESS_DOWNLOADING } from '@/lib/video/video-progress'
 import { generateVideoRemoteUrl } from '@/lib/video/video-client'
@@ -71,8 +67,6 @@ export interface CanvasRunOptions {
   toolPrompt?: string
   /** 将当前节点输出图作为首要参考图 */
   useSelfReference?: boolean
-  /** 微视确认弹窗预上传的参考素材 */
-  weishiPreparedReferences?: WeishiVideoReferenceItem[]
 }
 
 export interface CanvasRunContext {
@@ -321,51 +315,14 @@ export async function runCanvasVideoNode(
     projectId: ctx.projectId,
     nodes: ctx.nodes,
     edges: ctx.edges,
-    onImageNodePatch: ctx.onImageNodePatch,
   })
 
   const model = input.model
-
-  let referenceImageItems = input.referenceImageItems
-  if (
-    isWeishiApiModel(model) &&
-    input.referenceMode !== 'text_to_video' &&
-    !ctx.runOptions?.weishiPreparedReferences?.length
-  ) {
-    referenceImageItems = await ensureCanvasWeishiCharacterWhitelist({
-      referenceImageItems: input.referenceImageItems,
-      nodes: ctx.nodes,
-      model,
-      canvasProjectId: ctx.projectId,
-      settings,
-      appDataDir,
-      fallbackProjectRoot: input.canvasProjectRoot,
-      apiBaseUrl: settings.apiBaseUrl,
-      onImageNodePatch: ctx.onImageNodePatch,
-    })
-  }
-
-  let prompt = input.prompt
-  if (isWeishiApiModel(model)) {
-    prompt = composeWeishiVideoPrompt({
-      shotBody: input.prompt,
-      imageItems:
-        input.referenceMode !== 'text_to_video'
-          ? referenceImageItems.map((item) => ({
-              label: item.label,
-              path: item.path,
-              kind: item.kind,
-            }))
-          : [],
-      audioItems: input.referenceAudioItems,
-    })
-  }
-
-  const weishiReferenceImageItems = referenceImageItems.map((item) => ({
+  const prompt = input.prompt
+  const referenceImageItems = input.referenceImageItems.map((item) => ({
     label: item.label,
     path: item.path,
     kind: item.kind,
-    weishiAssetUrl: item.weishiAssetUrl,
   }))
 
   const remoteUrl = await generateVideoRemoteUrl({
@@ -376,16 +333,11 @@ export async function runCanvasVideoNode(
     resolution: input.resolution,
     referenceImagePath: input.referenceImagePaths[0] ?? null,
     referenceImagePaths: input.referenceImagePaths.length ? input.referenceImagePaths : undefined,
-    referenceImageItems: weishiReferenceImageItems.length ? weishiReferenceImageItems : undefined,
+    referenceImageItems: referenceImageItems.length ? referenceImageItems : undefined,
     referenceAudioPaths: input.referenceAudioPaths.length ? input.referenceAudioPaths : undefined,
     referenceMode: input.referenceMode,
     projectRoot: input.videoProjectRoot,
     apiBaseUrl: settings.apiBaseUrl,
-    referenceMediaUploadMode: resolveEffectiveWeishiReferenceMediaUploadMode(
-      settings.weishiReferenceMediaUploadMode,
-      model,
-    ),
-    weishiPreparedReferences: ctx.runOptions?.weishiPreparedReferences,
     onProgress: (update) => {
       ctx.onProgress?.(update.message)
     },

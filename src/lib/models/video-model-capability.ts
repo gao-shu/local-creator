@@ -1,6 +1,6 @@
 /**
  * 视频能力解析（与计价分离）
- * 契约：haode-ai-admin docs/design/video-model-capability.md · B0 / §5.2 / §9
+ * 契约：上游 admin docs/design/video-model-capability.md · B0 / §5.2 / §9
  */
 
 import type { ModelConfig } from '@/types/settings'

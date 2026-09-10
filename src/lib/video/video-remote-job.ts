@@ -5,8 +5,6 @@ import type { VideoRemoteJobSnapshot } from '@/types/video-remote-job'
 import { VIDEO_REMOTE_JOB_HANG_MS } from '@/types/video-remote-job'
 import { pollOpenAiVideoTask } from '@/lib/video/openai-video-client'
 import { pollGrokVideoTask, resolveGrokVideoCreateUrl } from '@/lib/video/grok-video-client'
-import { pollWeishiVideoTask } from '@/lib/models/weishi-video-client'
-import { resolveWeishiApiKey } from '@/lib/auth/org-weishi-key'
 import { pollZhipuVideoTask } from '@/lib/video/zhipu-video-client'
 import { pollAgnesVideo25Task } from '@/lib/video/agnes-video-25-client'
 import { resolveVideoCreateUrl } from '@/lib/models/video-model-utils'
@@ -62,13 +60,8 @@ export async function resumeVideoRemoteJob(
     throw new Error('视频生成已超时，请重新生成')
   }
 
-  let apiKey = model.apiKey?.trim()
-  if (job.provider === 'weishi') {
-    apiKey = await resolveWeishiApiKey({
-      model,
-      apiBase: options?.apiBaseUrl,
-    })
-  } else if (!apiKey) {
+  const apiKey = model.apiKey?.trim()
+  if (!apiKey) {
     throw new Error(`模型「${model.name}」未配置 API Key，无法恢复生视频`)
   }
 
@@ -76,7 +69,7 @@ export async function resumeVideoRemoteJob(
 
   if (job.provider === 'zhipu') {
     const result = await pollZhipuVideoTask(
-      apiKey!,
+      apiKey,
       job.apiTaskId,
       job.createUrl || model.endpoint,
       onProgress,
@@ -97,7 +90,7 @@ export async function resumeVideoRemoteJob(
     }
     // pollOpenAiVideoTask 完成时已切到「正在下载成片」，勿再回退「准备下载」
     return pollOpenAiVideoTask(
-      apiKey!,
+      apiKey,
       createUrl,
       job.apiTaskId,
       onProgress,
@@ -112,33 +105,17 @@ export async function resumeVideoRemoteJob(
       throw new Error(`模型「${model.name}」未配置 API 地址，无法恢复生视频`)
     }
     return pollGrokVideoTask(
-      apiKey!,
+      apiKey,
       createUrl,
       job.apiTaskId,
       onProgress,
       options?.abortSignal,
     )
-  }
-
-  if (job.provider === 'weishi') {
-    const createUrl = job.createUrl || model.endpoint || ''
-    if (!createUrl.trim()) {
-      throw new Error(`模型「${model.name}」未配置 API 地址，无法恢复生视频`)
-    }
-    const videoUrl = await pollWeishiVideoTask(
-      apiKey!,
-      createUrl,
-      job.apiTaskId,
-      onProgress,
-      options?.abortSignal,
-    )
-    onProgress?.(VIDEO_PROGRESS_COMPLETED)
-    return videoUrl
   }
 
   if (job.provider === 'agnes_video_25') {
     return pollAgnesVideo25Task(
-      apiKey!,
+      apiKey,
       model,
       job.apiTaskId,
       onProgress,
@@ -174,8 +151,6 @@ export function resolveProviderForRemoteJob(model: ModelConfig): VideoRemoteJobS
   if (kind === 'zhipu') return 'zhipu'
   if (kind === 'grok') return 'grok'
   if (kind === 'openai_compatible') return 'openai_compatible'
-  if (kind === 'weishi') return 'weishi'
   if (kind === 'agnes_video_25') return 'agnes_video_25'
-  if (kind === 'system') return 'system'
   return null
 }

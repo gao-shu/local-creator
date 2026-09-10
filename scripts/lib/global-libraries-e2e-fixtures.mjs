@@ -277,7 +277,7 @@ export async function prepareGlobalLibrariesE2eWorkspace() {
   }
 
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-e2e-global-lib-',
+    prefix: 'lc-e2e-global-lib-',
     projects: [meta],
     seedProject: {
       id: E2E_GLOBAL_MAT_PROJECT_ID,

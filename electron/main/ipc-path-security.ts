@@ -8,7 +8,7 @@ import { fromLocalImageUrl, isLocalImageUrl, resolveProjectMediaPath } from '../
 import { resolveDefaultWorkflowDir } from '../../src/lib/storage/storage-path-utils'
 import { readSettingsMerged } from './ipc-settings'
 
-const DRAG_DIR_NAME = 'haode-capcut-drag'
+const DRAG_DIR_NAME = 'lc-capcut-drag'
 
 export async function getDataRootPath(): Promise<string> {
   const { data, ctx } = await readSettingsMerged()

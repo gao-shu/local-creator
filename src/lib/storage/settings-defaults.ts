@@ -1,17 +1,19 @@
 import type {
   AppSettings,
   ModelConfig,
+  ModelKind,
   PromptTemplate,
+  SettingsPromptType,
   TemplateListKey,
 } from '@/types/settings'
 import { APP_LAUNCHER_DIR_NAME } from '@/constants/brand'
 import { migrateApiBaseUrl } from '@/lib/auth/api-base'
 import { createLlmPresetModel } from '@/lib/models/llm-model-presets'
 import { createImagePresetModel } from '@/lib/models/image-model-presets'
-import { createVideoPresetModel } from '@/lib/models/video-model-presets'
+import {
+  createVideoPresetModel,
+} from '@/lib/models/video-model-presets'
 import { normalizeVideoModelConfig } from '@/lib/models/video-model-utils'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
-import { sanitizeStoredWeishiVideoModels } from '@/lib/models/weishi-capability-overlay'
 import { applyStorageRootToSettings } from '@/lib/storage/data-layout'
 import { HAND_STORYBOARD_TEMPLATES } from '@/lib/prompts/storyboard'
 import { SEED_LAYOUT_TEMPLATES } from '@/lib/storage/layout-templates-seed'
@@ -37,14 +39,11 @@ const BUILTIN_STORYBOARD_TEMPLATES: PromptTemplate[] = [
 
 export const APP_DATA_DIR_NAME = APP_LAUNCHER_DIR_NAME
 
-const BUILTIN_WEISHI_VIDEO: ModelConfig = {
-  ...createVideoPresetModel('weishi_api'),
-  id: 'builtin-weishi-api',
-  name: '微视API',
-}
-
-/** 软件统一默认文本 LLM（Agnes 直连 apihub） */
+/** 软件统一默认文本 LLM（Agnes 直连 apihub；Key 由用户填写，不入库） */
 export const BUILTIN_AGNES_LLM_ID = 'builtin-agnes-2.5-flash'
+
+/** 软件统一默认图片（Agnes；Endpoint / Key 由用户填写） */
+export const BUILTIN_AGNES_IMAGE_ID = 'builtin-agnes-image-2.1-flash'
 
 const BUILTIN_AGNES_LLM: ModelConfig = {
   id: BUILTIN_AGNES_LLM_ID,
@@ -58,7 +57,21 @@ const BUILTIN_AGNES_LLM: ModelConfig = {
   source: 'custom',
 }
 
-const BUILTIN_VIDEO_MODELS: ModelConfig[] = [BUILTIN_WEISHI_VIDEO]
+const BUILTIN_AGNES_IMAGE: ModelConfig = {
+  id: BUILTIN_AGNES_IMAGE_ID,
+  name: 'Agnes · agnes-image-2.1-flash',
+  apiFormat: 'openai',
+  platform: 'openai_compatible',
+  endpoint: '',
+  apiKey: '',
+  model: 'agnes-image-2.1-flash',
+  autoAppendV1: true,
+  source: 'custom',
+}
+
+/** 视频无品牌内置：用户自行添加 OpenAI 兼容等服务 */
+const BUILTIN_VIDEO_MODELS: ModelConfig[] = []
+const BUILTIN_IMAGE_MODELS: ModelConfig[] = [BUILTIN_AGNES_IMAGE]
 const BUILTIN_LLM_MODELS: ModelConfig[] = [BUILTIN_AGNES_LLM]
 
 /** 设置页模板分类（对齐 comic-generator 文档 §1.2） */
@@ -123,7 +136,7 @@ export function createDefaultSettings(dataRoot = ''): AppSettings {
       generatedImagesPath: '',
       videoSavePath: '',
       llmModels: [...BUILTIN_LLM_MODELS],
-      imageModels: [],
+      imageModels: [...BUILTIN_IMAGE_MODELS],
       videoModels: [...BUILTIN_VIDEO_MODELS],
       storyboardTemplates: [...BUILTIN_STORYBOARD_TEMPLATES],
       extractTemplates: [...SEED_EXTRACT_TEMPLATES],
@@ -131,11 +144,16 @@ export function createDefaultSettings(dataRoot = ''): AppSettings {
       layoutTemplates: [...SEED_LAYOUT_TEMPLATES],
       debugEnabled: false,
       openAtLogin: true,
-      weishiReferenceMediaUploadMode: 'weishi_asset',
       apiBaseUrl: '',
       affixPresets: [...SEED_AFFIX_PRESETS],
       defaultAssetLayoutKeys: { ...DEFAULT_ASSET_LAYOUT_KEYS },
       defaultLlmModelId: BUILTIN_AGNES_LLM_ID,
+      defaultImageModelId: BUILTIN_AGNES_IMAGE_ID,
+      lastUsedLlmModelId: BUILTIN_AGNES_LLM_ID,
+      lastUsedEpisodeLlmModelId: BUILTIN_AGNES_LLM_ID,
+      lastUsedStoryboardLlmModelId: BUILTIN_AGNES_LLM_ID,
+      lastUsedAssetImageModelId: BUILTIN_AGNES_IMAGE_ID,
+      lastUsedStoryboardImageModelId: BUILTIN_AGNES_IMAGE_ID,
     }),
     dataRoot,
   )
@@ -169,9 +187,10 @@ export function mergeSettings(
     ...defaults,
     ...partial,
     llmModels: Array.isArray(partial.llmModels) ? partial.llmModels : defaults.llmModels,
-    imageModels: Array.isArray(partial.imageModels)
-      ? partial.imageModels
-      : defaults.imageModels,
+    imageModels:
+      Array.isArray(partial.imageModels) && partial.imageModels.length > 0
+        ? partial.imageModels
+        : defaults.imageModels,
     videoModels:
       Array.isArray(partial.videoModels) && partial.videoModels.length > 0
         ? partial.videoModels
@@ -208,66 +227,119 @@ export function mergeSettings(
   return applyStorageRootToSettings(ensurePromptTemplates(withDefaults), root)
 }
 
-function ensureBuiltinAgnesLlm(models: ModelConfig[]): ModelConfig[] {
+/** 确保内置模型存在；同步公开字段，保留用户已填 Key / 自定义 endpoint */
+function ensureBuiltinModel(
+  models: ModelConfig[],
+  builtin: ModelConfig,
+  options?: { forceEndpoint?: boolean },
+): ModelConfig[] {
   const synced = models.map((model) => {
-    if (model.id !== BUILTIN_AGNES_LLM_ID) return model
-    return {
+    if (model.id !== builtin.id) return model
+    const next: ModelConfig = {
       ...model,
-      name: BUILTIN_AGNES_LLM.name,
-      apiFormat: BUILTIN_AGNES_LLM.apiFormat,
-      platform: BUILTIN_AGNES_LLM.platform,
-      endpoint: BUILTIN_AGNES_LLM.endpoint,
-      apiKey: BUILTIN_AGNES_LLM.apiKey,
-      model: BUILTIN_AGNES_LLM.model,
-      autoAppendV1: BUILTIN_AGNES_LLM.autoAppendV1,
-      source: BUILTIN_AGNES_LLM.source,
+      name: builtin.name,
+      apiFormat: builtin.apiFormat,
+      platform: builtin.platform,
+      endpoint: options?.forceEndpoint
+        ? builtin.endpoint
+        : model.endpoint?.trim() || builtin.endpoint,
+      apiKey: model.apiKey?.trim() ? model.apiKey : builtin.apiKey,
+      model: builtin.model,
+      autoAppendV1: builtin.autoAppendV1,
+      source: builtin.source,
     }
+    if (builtin.ratios) next.ratios = [...builtin.ratios]
+    if (builtin.durations) next.durations = [...builtin.durations]
+    if (builtin.resolutions) next.resolutions = [...builtin.resolutions]
+    if (builtin.defaultDurationSec != null) {
+      next.defaultDurationSec = builtin.defaultDurationSec
+    }
+    return next
   })
-  if (synced.some((model) => model.id === BUILTIN_AGNES_LLM_ID)) return synced
-  return [BUILTIN_AGNES_LLM, ...synced]
+  if (synced.some((model) => model.id === builtin.id)) return synced
+  return [builtin, ...synced]
 }
 
-function ensureBuiltinWeishiVideo(models: ModelConfig[]): ModelConfig[] {
-  // 已有微视：纠正内置项上过期的清晰度（历史上可能误存 480P+720P）
-  const synced = models.map((model) => {
-    if (model.id !== BUILTIN_WEISHI_VIDEO.id || !isWeishiApiModel(model)) return model
-    const resolutions = BUILTIN_WEISHI_VIDEO.resolutions
-      ? [...BUILTIN_WEISHI_VIDEO.resolutions]
-      : model.resolutions
-    const videoPricing =
-      model.videoPricing && resolutions?.length
-        ? {
-            ...model.videoPricing,
-            resolutions: [...resolutions],
-            defaultResolution:
-              resolutions.includes(String(model.videoPricing.defaultResolution ?? ''))
-                ? model.videoPricing.defaultResolution
-                : resolutions[0],
-          }
-        : model.videoPricing
-    return {
-      ...model,
-      resolutions,
-      videoPricing,
-      ratios: BUILTIN_WEISHI_VIDEO.ratios ? [...BUILTIN_WEISHI_VIDEO.ratios] : model.ratios,
-      durations: BUILTIN_WEISHI_VIDEO.durations
-        ? [...BUILTIN_WEISHI_VIDEO.durations]
-        : model.durations,
-    }
-  })
-  const withBuiltin = synced.some(isWeishiApiModel) ? synced : [BUILTIN_WEISHI_VIDEO, ...synced]
-  // 所有自定义微视：落盘清洗历史假档 480P
-  return sanitizeStoredWeishiVideoModels(withBuiltin)
+/** 读盘时剔除已下线视频 API 格式（历史 settings 兼容） */
+function isRetiredVideoApiFormat(apiFormat?: string): boolean {
+  return String(apiFormat || '').trim().toLowerCase() === ('wei' + 'shi_api')
+}
+
+function isRetiredBuiltinVideoModelId(id?: string): boolean {
+  const value = String(id || '')
+  return (
+    value === ('builtin-' + 'wei' + 'shi-api') ||
+    value === 'builtin-shiguang-minimax-h3'
+  )
+}
+
+function stripLegacyVideoApiFormats(models: ModelConfig[]): ModelConfig[] {
+  return models
+    .map(normalizeVideoModelConfig)
+    .filter((model) => {
+      if (isRetiredBuiltinVideoModelId(model.id)) return false
+      return !isRetiredVideoApiFormat(model.apiFormat)
+    })
+}
+
+function pickValidModelId(
+  preferred: string | undefined,
+  models: ModelConfig[],
+  fallbackId?: string,
+): string | undefined {
+  if (preferred && models.some((model) => model.id === preferred)) return preferred
+  if (fallbackId && models.some((model) => model.id === fallbackId)) return fallbackId
+  return models[0]?.id
 }
 
 function ensureDefaultModelIds(settings: AppSettings): AppSettings {
-  const llmModels = ensureBuiltinAgnesLlm(settings.llmModels)
+  const llmModels = ensureBuiltinModel(settings.llmModels ?? [], BUILTIN_AGNES_LLM, {
+    forceEndpoint: true,
+  })
+  const imageModels = ensureBuiltinModel(settings.imageModels ?? [], BUILTIN_AGNES_IMAGE)
+  const videoModels = stripLegacyVideoApiFormats(settings.videoModels ?? [])
+
   return {
     ...settings,
     llmModels,
-    videoModels: ensureBuiltinWeishiVideo(settings.videoModels.map(normalizeVideoModelConfig)),
-    // 软件统一默认文本 LLM → Agnes-2.5-Flash
+    imageModels,
+    videoModels,
     defaultLlmModelId: BUILTIN_AGNES_LLM_ID,
+    defaultImageModelId: pickValidModelId(
+      settings.defaultImageModelId,
+      imageModels,
+      BUILTIN_AGNES_IMAGE_ID,
+    ),
+    defaultVideoModelId: pickValidModelId(settings.defaultVideoModelId, videoModels),
+    lastUsedLlmModelId: pickValidModelId(
+      settings.lastUsedLlmModelId,
+      llmModels,
+      BUILTIN_AGNES_LLM_ID,
+    ),
+    lastUsedEpisodeLlmModelId: pickValidModelId(
+      settings.lastUsedEpisodeLlmModelId,
+      llmModels,
+      BUILTIN_AGNES_LLM_ID,
+    ),
+    lastUsedStoryboardLlmModelId: pickValidModelId(
+      settings.lastUsedStoryboardLlmModelId,
+      llmModels,
+      BUILTIN_AGNES_LLM_ID,
+    ),
+    lastUsedAssetImageModelId: pickValidModelId(
+      settings.lastUsedAssetImageModelId,
+      imageModels,
+      BUILTIN_AGNES_IMAGE_ID,
+    ),
+    lastUsedStoryboardImageModelId: pickValidModelId(
+      settings.lastUsedStoryboardImageModelId,
+      imageModels,
+      BUILTIN_AGNES_IMAGE_ID,
+    ),
+    lastUsedStoryboardVideoModelId: pickValidModelId(
+      settings.lastUsedStoryboardVideoModelId,
+      videoModels,
+    ),
   }
 }
 

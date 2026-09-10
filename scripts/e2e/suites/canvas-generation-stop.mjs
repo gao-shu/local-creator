@@ -21,7 +21,7 @@ export const canvasGenerationStopSuite = {
   name: 'canvas-generation-stop',
   description: '画布图片节点：停止 mock 生图，节点标记 error/已停止',
   prepareWorkspace: prepareCanvasGenerationStopWorkspace,
-  launchEnv: { HAODE_E2E_MOCK_DELAY_MS: '8000' },
+  launchEnv: { LC_E2E_MOCK_DELAY_MS: '8000' },
   async run(session) {
     const { page, workspace, assert } = session
 

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * P1：分镜模板解析器单测
  * 运行：npx --yes tsx scripts/test-storyboard-template-parse.ts

@@ -97,12 +97,12 @@ async function ensureProjectLayout(projectDir) {
 
 /** 空项目列表 · 用于 smoke 套件（仅验证壳层路由） */
 export async function prepareMinimalE2eWorkspace() {
-  return createE2eWorkspace({ prefix: 'haode-e2e-smoke-' })
+  return createE2eWorkspace({ prefix: 'lc-e2e-smoke-' })
 }
 
 /** 未绑定数据根 · 用于 Phase 5-B 空目录守卫 */
 export async function prepareWorkshopMissingDataRootWorkspace() {
-  return createEmptyLauncherWorkspace({ prefix: 'haode-workshop-no-root-' })
+  return createEmptyLauncherWorkspace({ prefix: 'lc-workshop-no-root-' })
 }
 
 /** Step1 空剧本 · 用于导入文件 E2E */
@@ -118,7 +118,7 @@ export async function prepareWorkshopEmptyScriptWorkspace() {
   }
 
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-workshop-import-',
+    prefix: 'lc-workshop-import-',
     projects: [meta],
     seedProject: {
       id: E2E_PROJECT_ID,
@@ -169,7 +169,7 @@ export async function prepareWorkshopScriptOnlyWorkspace() {
   }
 
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-workshop-scratch-',
+    prefix: 'lc-workshop-scratch-',
     projects: [meta],
     seedProject: {
       id: E2E_PROJECT_ID,
@@ -198,7 +198,7 @@ export async function prepareWorkshopE2eWorkspace() {
   }
 
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-workshop-e2e-',
+    prefix: 'lc-workshop-e2e-',
     projects: [meta],
     seedProject: {
       id: E2E_PROJECT_ID,
@@ -532,7 +532,7 @@ export async function prepareWorkshopMultiEpisodeWorkspace() {
   }
 
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-workshop-multi-ep-',
+    prefix: 'lc-workshop-multi-ep-',
     projects: [meta],
     seedProject: {
       id: E2E_PROJECT_ID,
@@ -587,7 +587,7 @@ export async function prepareWorkshopBootstrapEpisodeWorkspace() {
   }
 
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-workshop-bootstrap-ep-',
+    prefix: 'lc-workshop-bootstrap-ep-',
     projects: [meta],
     seedProject: {
       id: E2E_PROJECT_ID,
@@ -658,7 +658,7 @@ export async function prepareWorkshopProjectListWorkspace() {
   const now = Date.now()
   const metas = buildListPageProjectMetas(now)
   const workspace = await createE2eWorkspace({
-    prefix: 'haode-workshop-list-',
+    prefix: 'lc-workshop-list-',
     projects: metas,
   })
 

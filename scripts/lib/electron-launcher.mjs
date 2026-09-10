@@ -15,9 +15,9 @@ export async function launchElectronApp({ launcherDir, env: envOverrides = {} })
     cwd: REPO_ROOT,
     env: {
       ...process.env,
-      HAODE_E2E: '1',
-      HAODE_E2E_MOCK_AI: '1',
-      HAODE_E2E_LAUNCHER_DIR: launcherDir,
+      LC_E2E: '1',
+      LC_E2E_MOCK_AI: '1',
+      LC_E2E_LAUNCHER_DIR: launcherDir,
       ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
       ...envOverrides,
     },

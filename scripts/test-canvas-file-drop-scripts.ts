@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 /**
  * P4：画布拖入文本文件收集
  * 运行：npx --yes tsx scripts/test-canvas-file-drop-scripts.ts

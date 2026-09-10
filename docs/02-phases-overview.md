@@ -8,9 +8,15 @@ flowchart LR
   P3 --> P4[P4 占位品牌壳]
   P4 --> P5[P5 打包冒烟]
   P5 --> P6[P6 私有 Git 与更新预留]
-  P6 --> OS[附录 开源公开]
+  P6 --> W0[W0 微视删除盘点]
+  W0 --> W1[W1 去微视产品面]
+  W1 --> W2[W2 删微视运行时]
+  W2 --> W5[W5 验证]
+  W5 --> OS[附录 开源公开]
   OS --> COM[附录 商业版]
 ```
+
+> W0～W5 细则：[weishi-delete-inventory.md](weishi-delete-inventory.md)。P0～P6 为 L2 主线；微视为开源前追加删除域。
 
 ## 阶段依赖
 
@@ -23,6 +29,11 @@ flowchart LR
 | P4 | P3 | 占位品牌替换完成 | 窗口标题/安装名/闪屏为本地漫创 |
 | P5 | P4 | Setup 安装包 | 本机安装能完成一条生成 |
 | P6 | P5 | 私有远端说明 | 推送说明就绪；更新可先禁用 |
+| W0 | P2+ | 微视删除清单 | 决策锁定；清单可勾选 |
+| W1 | W0 | 无微视产品入口 | 设置无「微视」+ compile |
+| W2 | W1 | 无 weishi 运行时 | `rg` 清零 + compile |
+| W3～W4 | W2 | 本机默认 Agnes+拾光 | settings 无 weishi 项 |
+| W5 | W4 | mock e2e + 手测 | smoke 绿；Agnes/拾光手测过 |
 
 ## 工作量粗估（有 AI 协助）
 

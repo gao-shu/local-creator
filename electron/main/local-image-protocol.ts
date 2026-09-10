@@ -52,7 +52,7 @@ const RANGE_EXTENSIONS = new Set([...VIDEO_EXTENSIONS, ...AUDIO_EXTENSIONS])
 
 
 
-/** 与 haode-ai-client 对齐：local-image://e/huajing/pictures/xxx.png */
+/** 与上游实现对齐：local-image://e/huajing/pictures/xxx.png */
 
 function extractLocalImagePath(sourceUrl: string): string {
 

@@ -7,10 +7,10 @@ import {
   resolveUpdateFileUrl,
 } from '../electron/main/update-download-resolve'
 
-const SERVER_FEED = 'https://duanju.haodeweishi.cn/haode-client/download'
-const TOS_FEED = 'https://haode-ai.tos-cn-beijing.volces.com/releases/client/download'
+const SERVER_FEED = 'https://example.invalid/legacy-client/download'
+const TOS_FEED = 'https://example.invalid/releases/client/download'
 const TOS_URL =
-  'https://haode-ai.tos-cn-beijing.volces.com/releases/client/download/本地漫创 Setup 0.1.24.exe'
+  'https://example.invalid/releases/client/download/本地漫创 Setup 0.1.24.exe'
 
 assert.equal(
   resolveUpdateFileUrl(TOS_URL, TOS_FEED),

@@ -1,10 +1,7 @@
+// Copyright (c) Local Creator. All rights reserved.
+
 import type { ModelConfig } from '@/types/settings'
-import { isWeishiApiModel } from '@/lib/models/weishi-model-presets'
 import { normalizeApiBase, resolveOpenAiPath } from '@/lib/models/model-endpoint'
-
-const WEISHI_VIDEOS_SUFFIX = '/v1/videos'
-
-export const WEISHI_VIDEO_MODELS = ['seedance-2.0', 'seedance-2.0-fast'] as const
 
 export function isFullVideoResourceEndpoint(endpoint?: string): boolean {
   const base = normalizeApiBase(endpoint)
@@ -18,7 +15,6 @@ export function isFullVideoResourceEndpoint(endpoint?: string): boolean {
 }
 
 function shouldAutoBuildVideoEndpoint(model: Pick<ModelConfig, 'apiFormat'>): boolean {
-  if (isWeishiApiModel(model)) return false
   const apiFormat = String(model.apiFormat || '').trim().toLowerCase()
   return (
     apiFormat !== 'zhipu' &&
@@ -40,13 +36,6 @@ export function resolveVideoCreateUrl(
     'endpoint' | 'baseUrl' | 'apiFormat' | 'autoAppendV1' | 'configMode'
   >,
 ): string {
-  if (isWeishiApiModel(model)) {
-    if (model.configMode === 'simple' && model.baseUrl?.trim()) {
-      return buildVideoEndpointFromBaseUrl(model.baseUrl, model)
-    }
-    return normalizeApiBase(model.endpoint)
-  }
-
   const endpoint = normalizeApiBase(model.endpoint)
   const migratedEndpoint = migrateOpenAiCompatibleVideoCreateUrl(endpoint, model)
   if (isFullVideoResourceEndpoint(migratedEndpoint)) return migratedEndpoint
@@ -64,7 +53,6 @@ export function resolveVideoCreateUrl(
 }
 
 export function normalizeVideoModelConfig(model: ModelConfig): ModelConfig {
-  const isWeishi = isWeishiApiModel(model)
   const ratios = Array.isArray(model.ratios)
     ? [...new Set(model.ratios.map((item) => String(item).trim()).filter(Boolean))]
     : []
@@ -94,9 +82,8 @@ export function normalizeVideoModelConfig(model: ModelConfig): ModelConfig {
     defaultRatio: model.defaultRatio,
     defaultDurationSec: model.defaultDurationSec,
     defaultReferenceMode: model.defaultReferenceMode,
-    configMode:
-      model.configMode || (isWeishi && model.baseUrl?.trim() ? 'simple' : 'advanced'),
-    uploadByUrl: isWeishi ? model.uploadByUrl !== false : model.uploadByUrl,
+    configMode: model.configMode || 'advanced',
+    uploadByUrl: model.uploadByUrl,
   }
 
   if (!shouldAutoBuildVideoEndpoint(normalized)) return normalized
@@ -116,25 +103,20 @@ export function normalizeVideoModelConfig(model: ModelConfig): ModelConfig {
   const root = rawEndpoint || normalizeApiBase(normalized.baseUrl)
   if (!root) return normalized
 
-  const endpoint = resolveVideoCreateUrl({ ...normalized, endpoint: root, baseUrl: root })
+  const createUrl = resolveVideoCreateUrl({ ...normalized, endpoint: root, baseUrl: root })
   return {
     ...normalized,
-    endpoint,
-    baseUrl: extractBaseUrlFromEndpoint(endpoint, normalized),
+    endpoint: createUrl,
+    baseUrl: extractBaseUrlFromEndpoint(createUrl, normalized),
   }
 }
 
-export function supportsSimpleVideoEndpoint(model: Pick<ModelConfig, 'apiFormat'>): boolean {
-  return isWeishiApiModel(model)
-}
-
-export function resolveWeishiVideosPath(): string {
-  return WEISHI_VIDEOS_SUFFIX
+export function supportsSimpleVideoEndpoint(_model?: Pick<ModelConfig, 'apiFormat'>): boolean {
+  return false
 }
 
 export function resolveVideoApiPath(model: Pick<ModelConfig, 'apiFormat'>): string {
   const apiFormat = String(model.apiFormat || '').trim().toLowerCase()
-  if (isWeishiApiModel(model)) return WEISHI_VIDEOS_SUFFIX
   // xAI Grok：仍为 POST /v1/videos/generations + GET /v1/videos/{id}（异步创建，非同步阻塞）
   if (apiFormat === 'grok') return '/v1/videos/generations'
   if (apiFormat === 'seedance_2') return ''

@@ -80,7 +80,7 @@ export function normalizeStoredMediaPath(value: string): string {
   return text
 }
 
-/** 绝对磁盘路径 → local-image://（对齐 haode-ai-client / 画境） */
+/** 绝对磁盘路径 → local-image://（对齐上游实现 / 画境） */
 export function toLocalImageUrl(absolutePath: string): string {
   const text = String(absolutePath || '').trim()
   if (!text) return ''

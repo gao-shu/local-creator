@@ -80,11 +80,10 @@ const RELEASE_COMMIT_PATHS = [
 function productionEnv() {
   return {
     ...process.env,
-    VITE_API_BASE: process.env.VITE_API_BASE || 'https://duanju.haodeweishi.cn/api',
-    VITE_UPLOAD_ORIGIN: process.env.VITE_UPLOAD_ORIGIN || 'https://duanju.haodeweishi.cn',
-    VITE_UPDATE_PUBLISH_URL:
-      process.env.VITE_UPDATE_PUBLISH_URL ||
-      'https://duanju.haodeweishi.cn/haode-client/download',
+    // 本地/开源版：无公司默认；需自建时再设环境变量
+    VITE_API_BASE: process.env.VITE_API_BASE || '',
+    VITE_UPLOAD_ORIGIN: process.env.VITE_UPLOAD_ORIGIN || '',
+    VITE_UPDATE_PUBLISH_URL: process.env.VITE_UPDATE_PUBLISH_URL || '',
     VITE_APP_ENV: 'production',
   }
 }
@@ -118,10 +117,10 @@ if (!opts.skipCommit) {
   run('git', ['add', ...RELEASE_COMMIT_PATHS])
   const gitEnv = {
     ...process.env,
-    GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME || 'haodeweishi',
-    GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL || 'haodeweishi@users.noreply.github.com',
-    GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME || 'haodeweishi',
-    GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || 'haodeweishi@users.noreply.github.com',
+    GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME || 'local-creator',
+    GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL || 'local-creator@users.noreply.github.com',
+    GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME || 'local-creator',
+    GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL || 'local-creator@users.noreply.github.com',
   }
   run(
     'git',

@@ -475,7 +475,7 @@ async function main() {
     if (skipChown) {
       console.log('[upload] 跳过远程 chown（UPLOAD_SKIP_CHOWN=1）')
     } else {
-      const chownRoot = staticRoot.replace(/\/download$/, '') || '/opt/haode-client'
+      const chownRoot = staticRoot.replace(/\/download$/, '') || '/opt/local-creator'
       console.log('[upload] 修正目录权限 …')
       try {
         await execRemote(

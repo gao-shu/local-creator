@@ -98,7 +98,7 @@ export function resolveVideoResolutionOptions(model?: ModelConfig | null | undef
   const tiered = resolveTieredVideoResolutionOptions(model)
   if (tiered.length > 0) return tiered
 
-  // 已声明档位：有什么展示什么（微视 catalog 常带 resolutions / default_resolution，但无 by_resolution）
+  // 已声明档位：有什么展示什么（catalog 常带 resolutions / default_resolution，但无 by_resolution）
   const declared = resolveConfiguredResolutionTags(model)
   if (declared.length > 0) return toResolutionSelectOptions(declared)
 

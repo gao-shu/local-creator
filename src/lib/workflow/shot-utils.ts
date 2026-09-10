@@ -110,29 +110,6 @@ export function normalizeShot(raw: unknown, episode?: WorkflowEpisode): Workflow
           })
           .filter((item): item is NonNullable<typeof item> => item != null)
       : undefined,
-    weishiUploadedMedia: Array.isArray(row.weishiUploadedMedia)
-      ? row.weishiUploadedMedia
-          .map((entry) => {
-            if (!entry || typeof entry !== 'object') return null
-            const rowEntry = entry as Record<string, unknown>
-            const localPath = String(rowEntry.localPath || rowEntry.local_path || '').trim()
-            const weishiAssetId = String(
-              rowEntry.weishiAssetId || rowEntry.weishi_asset_id || '',
-            ).trim()
-            const weishiAssetUrl = String(
-              rowEntry.weishiAssetUrl || rowEntry.weishi_asset_url || '',
-            ).trim()
-            const endpoint = String(rowEntry.endpoint || '').trim()
-            if (!localPath || (!weishiAssetId && !weishiAssetUrl)) return null
-            return {
-              localPath,
-              weishiAssetId,
-              weishiAssetUrl,
-              endpoint: endpoint || undefined,
-            }
-          })
-          .filter((item): item is NonNullable<typeof item> => item != null)
-      : undefined,
     updatedAt: Number(row.updatedAt) || Date.now(),
   }
 }

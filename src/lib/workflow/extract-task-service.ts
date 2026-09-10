@@ -4,7 +4,7 @@ import { readWorkflowTasks, writeWorkflowTasks } from '@/lib/storage/workflow-se
 export const EXTRACT_POLL_MS = 2000
 export const EXTRACT_HANG_MS = 10 * 60 * 1000
 
-const EXTRACT_SESSION_PREFIX = 'haode:extract:'
+const EXTRACT_SESSION_PREFIX = 'lc:extract:'
 
 export type ExtractSessionKind = 'replace_all' | 'episode_reextract'
 

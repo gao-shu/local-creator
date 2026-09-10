@@ -1,5 +1,5 @@
 /**
- * E2E Phase 6-A-a：Step4 导出至剪映（HAODE_E2E mock IPC，不依赖本机剪映）
+ * E2E Phase 6-A-a：Step4 导出至剪映（LC_E2E mock IPC，不依赖本机剪映）
  */
 import {
   clickTestId,

@@ -1,4 +1,4 @@
-// Copyright (c) Haode AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 /**
  * Step 11 验收：抽音成功后的路径解析（不启动 Electron）。
@@ -12,8 +12,8 @@ import {
 import { buildProjectVoiceExtractRelativePath } from '../src/lib/voice/project-voice-extract-paths'
 
 const projectRoot = resolveCanvasProjectRoot(
-  { dataRootPath: 'D:/haode-data' },
-  'D:/haode-data',
+  { dataRootPath: 'D:/lc-data' },
+  'D:/lc-data',
   'cv_test',
 )
 

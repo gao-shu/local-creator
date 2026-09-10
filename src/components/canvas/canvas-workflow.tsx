@@ -41,7 +41,7 @@ import { CanvasViewportToolbar } from '@/components/canvas/canvas-viewport-toolb
 import { CanvasAiBar } from '@/components/canvas/toolbar/canvas-ai-bar'
 import { CanvasSelectionToolbar } from '@/components/canvas/canvas-selection-toolbar'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
-import { WeishiVideoConfirmDialog } from '@/components/workshop/weishi-video-confirm-dialog'
+import { VideoRequestConfirmDialog } from '@/components/workshop/video-request-confirm-dialog'
 import { canvasNodeTypes } from '@/components/canvas/canvas-node-types'
 import { canvasEdgeTypes } from '@/components/canvas/canvas-edge-types'
 import { CanvasConnectionLine } from '@/components/canvas/canvas-connection-line'
@@ -144,9 +144,9 @@ function CanvasFlowSurface({
     importDroppedFilesAtPosition,
     clearCanvas,
     openMaterialLibrary,
-    pendingWeishiVideo,
-    confirmWeishiVideo,
-    cancelWeishiVideo,
+    pendingVideoConfirm,
+    confirmVideoRequest,
+    cancelVideoRequest,
     setAgentPanelOpen,
     setAgentSkillMode,
     deleteSelectedNodes,
@@ -800,11 +800,11 @@ function CanvasFlowSurface({
           onConfirm={confirmPendingDelete}
         />
 
-        <WeishiVideoConfirmDialog
-          open={Boolean(pendingWeishiVideo)}
-          preview={pendingWeishiVideo?.preview ?? null}
-          onClose={cancelWeishiVideo}
-          onConfirm={confirmWeishiVideo}
+        <VideoRequestConfirmDialog
+          open={Boolean(pendingVideoConfirm)}
+          preview={pendingVideoConfirm?.preview ?? null}
+          onClose={cancelVideoRequest}
+          onConfirm={confirmVideoRequest}
         />
 
         <CanvasEpisodeExportDialog

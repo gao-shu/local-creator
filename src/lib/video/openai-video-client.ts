@@ -1,7 +1,7 @@
 // Copyright (c) 2025 好的 AI. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
-import type { WeishiVideoRequestPreview } from '@/lib/models/weishi-video-client'
+import type { VideoRequestPreview } from '@/lib/video/video-request-preview'
 import {
   pickFirstDuration,
   pickFirstRatio,
@@ -259,7 +259,7 @@ export function isOpenAiCompatibleVideoModel(
   const fmt = String(model?.apiFormat || '')
     .trim()
     .toLowerCase()
-  if (fmt === 'weishi_api' || fmt === 'zhipu' || fmt === 'seedance_2' || fmt === 'grok') return false
+  if (fmt === 'zhipu' || fmt === 'seedance_2' || fmt === 'grok') return false
   if (fmt === 'agnes_video_25' || fmt === 'agnes_video_25_flash') return false
   if (fmt === 'openai' || fmt === 'openai_videos') return true
   if (model?.platform === 'openai_compatible' && fmt === 'openai') return true
@@ -437,7 +437,7 @@ export async function createOpenAiVideoTask(
   const body = await buildCreateBody(input)
 
   if (typeof window !== 'undefined') {
-    ;(window as unknown as { __HAODE_LAST_OPENAI_VIDEO_CREATE__?: unknown }).__HAODE_LAST_OPENAI_VIDEO_CREATE__ =
+    ;(window as unknown as { __LC_LAST_OPENAI_VIDEO_CREATE__?: unknown }).__LC_LAST_OPENAI_VIDEO_CREATE__ =
       {
         url: createUrl,
         body,
@@ -671,7 +671,7 @@ export interface PrepareOpenAiVideoRequestPreviewInput {
 export async function prepareOpenAiVideoRequestPreview(
   input: PrepareOpenAiVideoRequestPreviewInput,
   onProgress?: VideoProgressCallback,
-): Promise<{ preview: WeishiVideoRequestPreview; resolvedImageUrls: string[] }> {
+): Promise<{ preview: VideoRequestPreview; resolvedImageUrls: string[] }> {
   const referenceMode = input.referenceMode ?? 'first_frame'
   const needsReferenceImage = referenceMode !== 'text_to_video'
 

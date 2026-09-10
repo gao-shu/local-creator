@@ -103,10 +103,6 @@ export interface CanvasImageNodeData extends CanvasNodeDataBase, CanvasMediaOwne
   /** 人物：绑定本地音色（local:voice_xxx，对齐创作工坊） */
   voiceType?: string
   voiceName?: string
-  /** 微视/即梦审核字段（人物同步审核） */
-  weishiAssetId?: string
-  weishiAssetUrl?: string
-  weishiAssetStatus?: string
   jimengAssetId?: string
   jimengAssetStatus?: string
   reviewImagePath?: string

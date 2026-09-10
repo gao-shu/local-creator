@@ -82,7 +82,7 @@ import type { WorkflowAsset } from '@/types/workflow'
 
 
 
-const DATA_ROOT = 'D:/haode-data'
+const DATA_ROOT = 'D:/lc-data'
 
 const VOICE_ROOT = resolveGlobalVoiceLibraryRoot(DATA_ROOT)
 
@@ -154,7 +154,7 @@ console.log('\n全局素材库 / 音色库 · 纯逻辑回归\n')
 
 ok('resolveMaterialsIndexPath 指向 dataRoot 根级 materials.json', () => {
 
-  assert.equal(resolveMaterialsIndexPath(DATA_ROOT).replace(/\\/g, '/'), 'D:/haode-data/materials.json')
+  assert.equal(resolveMaterialsIndexPath(DATA_ROOT).replace(/\\/g, '/'), 'D:/lc-data/materials.json')
 
 })
 
@@ -162,7 +162,7 @@ ok('resolveMaterialsIndexPath 指向 dataRoot 根级 materials.json', () => {
 
 ok('resolveMaterialsLibraryRoot 指向 dataRoot/materials（遗留目录名）', () => {
 
-  assert.equal(resolveMaterialsLibraryRoot(DATA_ROOT).replace(/\\/g, '/'), 'D:/haode-data/materials')
+  assert.equal(resolveMaterialsLibraryRoot(DATA_ROOT).replace(/\\/g, '/'), 'D:/lc-data/materials')
 
 })
 
@@ -499,10 +499,10 @@ ok('isCanvasImageNodeSyncedToMaterialLibrary 按 canvas_asset_{nodeId} 匹配', 
 
 
 ok('resolveGlobalVoiceLibraryRoot / IndexPath', () => {
-  assert.equal(resolveGlobalVoiceLibraryRoot(DATA_ROOT).replace(/\\/g, '/'), 'D:/haode-data/voice-library')
+  assert.equal(resolveGlobalVoiceLibraryRoot(DATA_ROOT).replace(/\\/g, '/'), 'D:/lc-data/voice-library')
   assert.equal(
     resolveGlobalVoiceLibraryIndexPath(VOICE_ROOT).replace(/\\/g, '/'),
-    'D:/haode-data/voice-library/voice-library.json',
+    'D:/lc-data/voice-library/voice-library.json',
   )
 })
 

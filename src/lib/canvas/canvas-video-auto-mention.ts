@@ -1,6 +1,6 @@
 // Copyright (c) local-creator contributors. All rights reserved.
 
-const CANVAS_VIDEO_AUTO_MENTION_KEY = 'haode-canvas-video-auto-mention'
+const CANVAS_VIDEO_AUTO_MENTION_KEY = 'lc-canvas-video-auto-mention'
 
 /** 画布视频节点「自动@资产」开关（全局，与参考条 UI 一致） */
 export function readCanvasVideoAutoMentionEnabled(): boolean {

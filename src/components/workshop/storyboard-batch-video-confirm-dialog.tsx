@@ -119,7 +119,6 @@ export function StoryboardBatchVideoConfirmDialog({
                 key={line.kind}
                 className={cn(
                   'text-sm font-medium',
-                  line.kind === 'cost' && 'text-amber-600/90 dark:text-amber-400/90',
                   line.kind === 'project' && 'text-cyan-600/90 dark:text-cyan-400/90',
                   line.kind === 'info' && 'text-muted-foreground font-normal',
                 )}

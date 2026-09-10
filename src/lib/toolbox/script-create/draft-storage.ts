@@ -3,7 +3,7 @@
 import type { ScriptCreateDraft, ScriptCreateParams } from '@/lib/toolbox/script-create/types'
 import { DEFAULT_SCRIPT_CREATE_PARAMS } from '@/lib/toolbox/script-create/types'
 
-const DRAFT_KEY = 'haode.toolbox.script-create.draft.v1'
+const DRAFT_KEY = 'lc.toolbox.script-create.draft.v1'
 
 function isParams(value: unknown): value is ScriptCreateParams {
   if (!value || typeof value !== 'object') return false

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Bot, Edit2, ImageIcon, Loader2, MessageSquare, Plus, Trash2, Video, Zap } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 import type { ModelConfig, ModelKind } from '@/types/settings'
 import { useSettingsStore } from '@/stores/settings-store'
 import { Button } from '@/components/ui/button'
@@ -13,11 +12,6 @@ import { useConfirmDialog } from '@/hooks/use-confirm-dialog'
 import { getLlmPresetLabel } from '@/lib/models/llm-model-presets'
 import { getImagePresetLabel } from '@/lib/models/image-model-presets'
 import { getVideoPresetLabel } from '@/lib/models/video-model-presets'
-import {
-  buildWeishiCustomModelPatchFromCatalog,
-  resolveDefaultWeishiUpstreamModelId,
-} from '@/lib/models/weishi-model-catalog'
-import { createWeishiApiModel, isWeishiApiModel } from '@/lib/models/weishi-model-presets'
 import { testModelConnection } from '@/lib/models/model-test-service'
 
 const TABS: { id: ModelKind; label: string; description: string; icon: typeof MessageSquare }[] = [
@@ -62,28 +56,17 @@ export function ModelsTab() {
 
   if (!settings) return null
 
-  const customList =
+  const customList = (
     activeKind === 'llm'
       ? settings.llmModels.filter((m) => m.source !== 'system')
       : activeKind === 'image'
         ? settings.imageModels.filter((m) => m.source !== 'system')
         : settings.videoModels.filter((m) => m.source !== 'system')
+  )
 
   const openCreate = () => {
     setEditingModel(null)
     setDialogInitial(null)
-    setDialogOpen(true)
-  }
-
-  const openCreateWeishi = () => {
-    setEditingModel(null)
-    const defaultModelId = resolveDefaultWeishiUpstreamModelId([])
-    const catalogPatch = buildWeishiCustomModelPatchFromCatalog(defaultModelId, [])
-    setDialogInitial({
-      ...createWeishiApiModel('video'),
-      ...catalogPatch,
-      model: defaultModelId,
-    })
     setDialogOpen(true)
   }
 
@@ -149,19 +132,6 @@ export function ModelsTab() {
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground">{activeTab.description}</p>
         <div className="flex items-center gap-2 shrink-0">
-          {activeKind === 'video' ? (
-            <GradientButton
-              type="button"
-              className={cn(
-                actionButtonClass,
-                'from-orange-500 to-rose-600 shadow-orange-500/20 hover:shadow-orange-500/30',
-              )}
-              onClick={openCreateWeishi}
-            >
-              <Plus className="h-4 w-4" />
-              微视API
-            </GradientButton>
-          ) : null}
           <GradientButton type="button" className={actionButtonClass} onClick={openCreate}>
             <Plus className="h-4 w-4" />
             添加模型
@@ -181,15 +151,14 @@ export function ModelsTab() {
             </p>
             <p className="text-xs text-muted-foreground/90 leading-relaxed max-w-md mx-auto">
               {activeKind === 'llm'
-                ? '点击「添加模型」，选择 OpenAI 兼容并填写 Endpoint + API Key。'
+                ? '点击「添加模型」，选择 OpenAI 兼容并填写 Endpoint + API Key（推荐 Agnes）。'
                 : activeKind === 'image'
-                  ? '点击「添加模型」，配置生图 Endpoint + API Key。'
-                  : '可点「微视API」直连微视，或「添加模型」配置其它视频服务。'}
+                  ? '点击「添加模型」，配置生图 Endpoint + API Key（推荐 Agnes）。'
+                  : '点击「添加模型」，配置 OpenAI 兼容等视频 Endpoint + API Key。'}
             </p>
           </GlassCard>
         ) : (
           customList.map((model) => {
-            const isWeishi = isWeishiApiModel(model)
             const presetLabel =
               activeKind === 'llm'
                 ? getLlmPresetLabel(model)
@@ -218,12 +187,12 @@ export function ModelsTab() {
                       {model.model || '未指定模型名'}
                       {keySummary ? ` · ${keySummary}` : ''}
                     </p>
-                    {!isWeishi && model.endpoint ? (
+                    {model.endpoint ? (
                       <p className="text-[10px] text-muted-foreground/70 font-mono truncate">
                         {model.endpoint}
                       </p>
                     ) : null}
-                    {!isWeishi && model.remark ? (
+                    {model.remark ? (
                       <p className="text-xs text-muted-foreground/80 truncate">{model.remark}</p>
                     ) : null}
                   </div>
@@ -235,9 +204,9 @@ export function ModelsTab() {
                     variant="outline"
                     size="sm"
                     className="h-8 px-2.5 text-xs"
-                    disabled={testingId === model.id || isWeishiApiModel(model)}
+                    disabled={testingId === model.id}
                     onClick={() => void handleTest(model)}
-                    title={isWeishiApiModel(model) ? '微视 API 暂不支持连接测试' : '测试连接'}
+                    title="测试连接"
                   >
                     {testingId === model.id ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -278,11 +247,7 @@ export function ModelsTab() {
         kind={activeKind}
         initial={dialogInitial}
         isEdit={Boolean(editingModel)}
-        onClose={() => {
-          setDialogOpen(false)
-          setEditingModel(null)
-          setDialogInitial(null)
-        }}
+        onClose={() => setDialogOpen(false)}
         onSave={handleSave}
       />
       {confirmDialog}

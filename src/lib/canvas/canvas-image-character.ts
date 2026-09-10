@@ -10,7 +10,6 @@ import {
 import {
   resolveAssetReviewModelFromVideoModel,
 } from '@/lib/workflow/character-review-service'
-import { isWeishiReviewModel } from '@/lib/models/weishi-model-presets'
 import { mapCanvasAssetRoleToKind } from '@/lib/canvas/canvas-image-generate-prompt'
 
 export function isCanvasAssetImageNode(data: CanvasImageNodeData): boolean {
@@ -35,9 +34,7 @@ export function canvasImageNodeToReviewAsset(
     prompt: data.prompt?.trim() || '',
     generatedImagePaths: outputPath ? [outputPath] : [],
     primaryGeneratedImageIndex: 0,
-    weishiAssetId: data.weishiAssetId,
-    weishiAssetUrl: data.weishiAssetUrl,
-    weishiAssetStatus: data.weishiAssetStatus,
+    // 遗留字段：旧项目可能仍有，仅只读展示
     jimengAssetId: data.jimengAssetId,
     jimengAssetStatus: data.jimengAssetStatus,
     reviewImagePath: data.reviewImagePath,
@@ -53,12 +50,6 @@ export function resolveCanvasVideoReviewModel(
   videoModelId?: string,
 ): ModelConfig | null {
   return resolveAssetReviewModelFromVideoModel(videoModels, videoModelId, imageModels)
-}
-
-export function shouldShowWeishiReviewSync(
-  reviewModel: ModelConfig | null | undefined,
-): boolean {
-  return Boolean(reviewModel && isWeishiReviewModel(reviewModel))
 }
 
 export function reviewPatchForCanvasImageNode(

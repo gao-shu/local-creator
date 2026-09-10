@@ -6,7 +6,7 @@ export { uploadReferenceImageForGeneration }
 
 /**
  * 开源版：无公司后台。https/data 原样返回，本地路径转 data URL。
- * 第三方视频 API 若强制 https，调用方需改用微视 /v1/assets。
+ * 第三方视频 API 若强制 https，请提供 https 参考音频。
  */
 export async function uploadReferenceAudioForGeneration(
   audioPath: string,
@@ -17,7 +17,7 @@ export async function uploadReferenceAudioForGeneration(
 
   if (isBackendUploadPathUrl(trimmed)) {
     if (/^https?:\/\//i.test(trimmed)) return trimmed
-    throw new Error('公司后台上传已移除，请使用微视 /v1/assets 或本地 data URL')
+    throw new Error('公司后台上传已移除，请使用本地 data URL 或 https 参考音频')
   }
 
   if (trimmed.startsWith('data:') || /^https?:\/\//i.test(trimmed)) {

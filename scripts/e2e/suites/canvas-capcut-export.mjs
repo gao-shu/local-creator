@@ -1,5 +1,5 @@
 /**
- * E2E Phase 6-A-b：画布编辑器导出至剪映（HAODE_E2E mock IPC）
+ * E2E Phase 6-A-b：画布编辑器导出至剪映（LC_E2E mock IPC）
  */
 import {
   clickTestId,

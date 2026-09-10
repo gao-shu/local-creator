@@ -75,7 +75,7 @@ export function buildE2eSettings(dataRoot) {
  * @param {{ prefix?: string, projects?: unknown[], seedProject?: { id: string, meta: object, data: object } | null }} options
  */
 export async function createE2eWorkspace(options = {}) {
-  const prefix = options.prefix ?? 'haode-e2e-'
+  const prefix = options.prefix ?? 'lc-e2e-'
   const root = await fs.mkdtemp(path.join(os.tmpdir(), prefix))
   const launcherDir = joinRoot(root, 'launcher')
   const dataRoot = joinRoot(root, 'data')
@@ -138,7 +138,7 @@ export async function createE2eWorkspace(options = {}) {
  * 仅创建 launcher 目录，不写 storage-root.json（模拟未绑定便携数据根）
  */
 export async function createEmptyLauncherWorkspace(options = {}) {
-  const prefix = options.prefix ?? 'haode-e2e-no-root-'
+  const prefix = options.prefix ?? 'lc-e2e-no-root-'
   const root = await fs.mkdtemp(path.join(os.tmpdir(), prefix))
   const launcherDir = joinRoot(root, 'launcher')
   await fs.mkdir(launcherDir, { recursive: true })

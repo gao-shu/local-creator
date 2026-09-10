@@ -9,7 +9,6 @@ export type ModelSelectKind = 'llm' | 'image' | 'video'
 
 export type BuildModelSelectOptionsParams = {
   systemCatalog?: ModelConfig[]
-  showWeishiUnitPrice?: boolean
   modelPickerOnly?: boolean
 }
 
