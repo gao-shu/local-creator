@@ -244,6 +244,11 @@ export interface AppSettings {
   apiBaseUrl?: string
   /** 分镜固定前后缀预设库 */
   affixPresets?: PromptAffixPreset[]
+  /**
+   * 首次运行向导是否已完成。
+   * 缺省（旧配置）：若已有 dataRootPath 则视为已完成，避免打断老用户。
+   */
+  onboardingCompleted?: boolean
 }
 
 export type SettingsTabId = 'paths' | 'models' | 'templates' | 'system' | 'account' | 'agreement'

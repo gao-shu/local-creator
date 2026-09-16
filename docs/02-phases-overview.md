@@ -12,11 +12,14 @@ flowchart LR
   W0 --> W1[W1 去微视产品面]
   W1 --> W2[W2 删微视运行时]
   W2 --> W5[W5 验证]
-  W5 --> OS[附录 开源公开]
-  OS --> COM[附录 商业版]
+  W5 --> D[GTM 门禁 D]
+  D --> OA[OA 合法公开准备]
+  OA --> OB[OB 传播与回流]
+  OB --> OC[OC 商业挂钩]
 ```
 
-> W0～W5 细则：[weishi-delete-inventory.md](weishi-delete-inventory.md)。P0～P6 为 L2 主线；微视为开源前追加删除域。
+> W0～W5 细则：[weishi-delete-inventory.md](weishi-delete-inventory.md)。P0～P6 为 L2 主线；微视为开源前追加删除域。  
+> **开源产品化 / 引流 / 商业化**细档见 [03-oss-gtm-overview.md](03-oss-gtm-overview.md)（OA / OB / OC），勿与 L2 阶段号混淆。
 
 ## 阶段依赖
 
@@ -34,6 +37,10 @@ flowchart LR
 | W2 | W1 | 无 weishi 运行时 | `rg` 清零 + compile |
 | W3～W4 | W2 | 本机默认 Agnes+拾光 | settings 无 weishi 项 |
 | W5 | W4 | mock e2e + 手测 | smoke 绿；Agnes/拾光手测过 |
+| 门禁 D | W5+ / L2 可用 | [oss-gtm-decisions.md](oss-gtm-decisions.md) 锁定 | D1～D5 已填 |
+| OA | 门禁 D | 许可证/清残留/向导/Win 包 | [phases/OA-phase-a.md](phases/OA-phase-a.md) 阶段验收 |
+| OB | OA | 示例/剪映/官网回流 | [phases/OB-phase-b.md](phases/OB-phase-b.md) 阶段验收 |
+| OC | OB | 商业边界/扩展/CI/切口 | [phases/OC-phase-c.md](phases/OC-phase-c.md) 阶段验收 |
 
 ## 工作量粗估（有 AI 协助）
 

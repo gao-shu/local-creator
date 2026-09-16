@@ -1,0 +1,78 @@
+NOTICE
+======
+
+本地漫创（local-creator）
+Copyright (c) 2026 local-creator contributors
+
+This product is licensed under the MIT License. See the LICENSE file.
+
+This distribution may include third-party software. The following notices
+are provided for attribution and license compliance. This list is not
+exhaustive; see package-lock.json and each package's own license files
+for the full dependency tree.
+
+---------------------------------------------------------------------------
+Electron
+---------------------------------------------------------------------------
+Copyright (c) Electron contributors
+Copyright (c) 2013-2020 GitHub Inc.
+Licensed under the MIT License.
+https://www.electronjs.org/
+
+---------------------------------------------------------------------------
+Chromium / Node.js (via Electron)
+---------------------------------------------------------------------------
+Chromium and Node.js are included as part of Electron builds and are
+subject to their respective licenses (BSD-style / other). See Electron
+documentation for bundled component licenses.
+
+---------------------------------------------------------------------------
+FFmpeg
+---------------------------------------------------------------------------
+This product may bundle or invoke FFmpeg binaries for local media probe
+and audio extraction.
+
+FFmpeg is a trademark of Fabrice Bellard.
+FFmpeg is licensed under the GNU Lesser General Public License (LGPL)
+version 2.1 or later, or the GNU General Public License (GPL) version 2
+or later, depending on how it was configured/built.
+
+If you redistribute FFmpeg binaries with this application, you must
+comply with the applicable LGPL/GPL obligations (including offering
+corresponding source for the FFmpeg build you distribute, where required).
+
+Project: https://ffmpeg.org/
+License overview: https://ffmpeg.org/legal.html
+
+Windows helper script in this repo: scripts/fetch-ffmpeg-win.mjs
+
+---------------------------------------------------------------------------
+React / Vite / related npm packages
+---------------------------------------------------------------------------
+This project depends on numerous npm packages (React, Vite, Zustand,
+Radix UI primitives, Tailwind CSS, @xyflow/react, and others). Each is
+licensed under its own terms (commonly MIT, Apache-2.0, or BSD).
+
+To inspect licenses locally:
+
+  npx license-checker --summary
+
+or review package-lock.json and the license field of each package.
+
+---------------------------------------------------------------------------
+Fonts
+---------------------------------------------------------------------------
+If bundled fonts are added under build/ or public/, list their OFL/SIL
+or other license texts here in a future revision. Current placeholder
+branding may rely on system fonts.
+
+---------------------------------------------------------------------------
+CapCut / 剪映
+---------------------------------------------------------------------------
+CapCut / 剪映 are third-party products. This software may export draft
+packages for use with those applications; it is not affiliated with or
+endorsed by ByteDance / CapCut unless explicitly stated elsewhere.
+
+---------------------------------------------------------------------------
+End of NOTICE
+---------------------------------------------------------------------------

@@ -28,6 +28,8 @@ win:
   executableName: 本地漫创
   icon: build/icon.ico
   forceCodeSigning: false
+  # 未签名发版：跳过 winCodeSign 解包（Windows 无开发者模式时 symlink 会失败）
+  signAndEditExecutable: false
   # normal：降低 7z 内存峰值，避免本机 OOM（maximum=mx=9）
   compression: normal
   target:

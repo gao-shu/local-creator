@@ -177,7 +177,7 @@ export interface WorkflowAsset {
   generatedImagePaths?: string[]
   /** 角色卡/场景图主图索引（对应 generatedImagePaths） */
   primaryGeneratedImageIndex?: number
-  /** 即梦审核 assetId（后续接入） */
+  /** 遗留远程审核 assetId（只读兼容旧数据） */
   jimengAssetId?: string
   jimengAssetStatus?: string
   /** 提交审核时绑定的本地图片路径（切换角色卡图后需重新审核） */

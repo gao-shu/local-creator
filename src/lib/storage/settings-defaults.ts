@@ -154,12 +154,13 @@ export function createDefaultSettings(dataRoot = ''): AppSettings {
       lastUsedStoryboardLlmModelId: BUILTIN_AGNES_LLM_ID,
       lastUsedAssetImageModelId: BUILTIN_AGNES_IMAGE_ID,
       lastUsedStoryboardImageModelId: BUILTIN_AGNES_IMAGE_ID,
+      onboardingCompleted: false,
     }),
     dataRoot,
   )
 }
 
-/** 合并 settings 中的全局默认布局；旧版角色默认为「特写+三视图」时迁移至「即梦+大头+三视图」 */
+/** 合并 settings 中的全局默认布局；旧版角色默认为「特写+三视图」时迁移至「大头+三视图」 */
 export function ensureDefaultAssetLayoutKeys(
   saved?: Partial<Record<'character' | 'scene' | 'prop', string>>,
 ): Record<'character' | 'scene' | 'prop', string> {
@@ -217,6 +218,11 @@ export function mergeSettings(
 
   merged.apiBaseUrl = migrateApiBaseUrl(merged.apiBaseUrl, defaults.apiBaseUrl)
   merged.defaultAssetLayoutKeys = ensureDefaultAssetLayoutKeys(partial.defaultAssetLayoutKeys)
+  if (!Object.prototype.hasOwnProperty.call(partial, 'onboardingCompleted')) {
+    merged.onboardingCompleted = Boolean(merged.dataRootPath?.trim())
+  } else {
+    merged.onboardingCompleted = Boolean(partial.onboardingCompleted)
+  }
   if (merged.storyboardValidateMode !== 'quick' && merged.storyboardValidateMode !== 'deep') {
     delete merged.storyboardValidateMode
   }

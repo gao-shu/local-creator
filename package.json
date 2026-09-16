@@ -4,7 +4,7 @@
   "version": "0.1.28",
   "description": "本地 AI 漫剧/短剧创作桌面工具（开源底子）",
   "author": "local-creator contributors",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "type": "module",
   "main": "out/main/index.cjs",
   "scripts": {
@@ -109,7 +109,8 @@
     "test:e2e:canvas-phase4": "node scripts/e2e/run.mjs canvas-video-generate,canvas-mock-failure,canvas-agent-chat",
     "test:e2e:canvas-full": "node scripts/e2e/run.mjs canvas-project-create,canvas-list-smoke,canvas-editor-flow,canvas-restart-persistence,canvas-image-generate,canvas-image-material-save,canvas-image-edit,canvas-image-edit-toolbar,canvas-generation-stop,canvas-prompt-ai-cancel,canvas-prompt-ai-cancel-queue,canvas-prompt-extract-cancel,canvas-agent-smoke,canvas-doubao-web-panel,canvas-video-generate,canvas-mock-failure,canvas-agent-chat,canvas-capcut-export,canvas-capcut-no-clips",
     "test:canvas-logic-extra": "npx --yes tsx scripts/test-canvas-run-queue-sort.ts && npx --yes tsx scripts/test-canvas-run-history.ts && npx --yes tsx scripts/test-canvas-file-drop-scripts.ts",
-    "test:dev-scripts": "npx --yes tsx scripts/test-storyboard-json-escape.ts && npx --yes tsx scripts/test-canvas-continuity-preflight.ts && npx --yes tsx scripts/test-canvas-voice-binding.ts && npx --yes tsx scripts/test-episode-asset-reextract.ts",
+    "test:first-run-onboarding": "npx --yes tsx scripts/test-first-run-onboarding.ts",
+    "test:dev-scripts": "npx --yes tsx scripts/test-storyboard-json-escape.ts && npx --yes tsx scripts/test-canvas-continuity-preflight.ts && npx --yes tsx scripts/test-canvas-voice-binding.ts && npx --yes tsx scripts/test-episode-asset-reextract.ts && npm run test:first-run-onboarding",
     "test:dev-adhoc": "npm run test:dev-scripts",
     "verify:e2e:canvas": "npm run compile && npm run test:e2e:canvas-phase1",
     "verify:e2e:canvas-full": "npm run compile && npm run test:e2e:canvas-full",

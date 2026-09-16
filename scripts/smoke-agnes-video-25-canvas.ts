@@ -8,7 +8,11 @@ import {
 } from '../src/lib/video/agnes-video-25-client'
 import type { ModelConfig } from '../src/types/settings'
 
-const apiKey = process.env.AGNES_API_KEY || 'sk-ZwiKGxKYSaRyWy9kmsmsFPwGJChWevm4EL2kW6SISNKkufQw'
+const apiKey = process.env.AGNES_API_KEY?.trim()
+if (!apiKey) {
+  console.error('[smoke] set AGNES_API_KEY env var before running this script')
+  process.exit(1)
+}
 
 const model: ModelConfig = {
   id: 'smoke-agnes-25',

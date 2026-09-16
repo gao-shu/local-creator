@@ -36,9 +36,15 @@
 | 图片 | Agnes（Endpoint / Key 自配） |
 | 视频 | **无品牌内置**；用户自行添加 OpenAI 兼容等视频服务（可仍用 minimax 等，但不写死拾光/本机 3300） |
 
-## 待开源前再定（未锁死）
+## 开源 GTM（门禁 D · 已锁定 2026-09-15）
 
-- 开源许可证（MIT / Apache-2.0 / GPL 等）
-- 正式产品名、appId、图标
-- 公开 Gitee 仓库名与组织账号
-- 商业版与开源版的代码关系（另仓 vs 私有模块）
+详见 [oss-gtm-decisions.md](oss-gtm-decisions.md)。摘要：
+
+| # | 锁定 |
+|---|------|
+| D1 许可证 | MIT |
+| D2 商业模块 | 后期再定（OA 仅写边界文档）→ [appendix-commercial-boundary.md](appendix-commercial-boundary.md) |
+| D3 品牌 | OA 仍用占位「本地漫创」；正式名 / appId 于 OB 前改 |
+| D4 托管 | 双发（主=Gitee，镜像=GitHub）；公开须另授权 |
+| D5 成片 | 剪映 + 最小导出 MP4 |
+| D6 商业切口 | OC 再定 |

@@ -4,7 +4,7 @@ import type { ModelConfig } from '@/types/settings'
 import type { WorkflowAsset } from '@/types/workflow'
 import { pickAssetReviewImagePath } from '@/lib/workflow/asset-utils'
 
-/** 角色远程审核通道已移除；即梦遗留字段仅用于只读展示 */
+/** 角色远程审核通道已移除；遗留字段仅用于只读展示旧项目数据 */
 export type ReviewProvider = 'jimeng'
 
 export function resolveReviewProvider(_model?: ModelConfig | null): ReviewProvider | null {

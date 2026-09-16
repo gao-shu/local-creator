@@ -44,7 +44,7 @@ function templateToLayoutPreset(tpl: PromptTemplate): LayoutPreset | null {
   }
 }
 
-/** 角色默认布局：即梦+大头+三视图 */
+/** 角色默认布局：大头+三视图（key 保留 layout_character_jimeng_three 以兼容旧 settings） */
 export const DEFAULT_CHARACTER_LAYOUT_KEY = 'layout_character_jimeng_three'
 export const DEFAULT_SCENE_LAYOUT_KEY = 'layout_scene_four'
 export const DEFAULT_PROP_LAYOUT_KEY = 'layout_item_grid'
@@ -56,9 +56,12 @@ export const DEFAULT_ASSET_LAYOUT_KEYS: Record<AssetKind, string> = {
   prop: DEFAULT_PROP_LAYOUT_KEY,
 }
 
-/** 即梦+大头+三视图 */
-export const CHARACTER_JIMENG_THREE_VIEW_PROMPT =
+/** 大头+三视图 */
+export const CHARACTER_HEADSHOT_THREE_VIEW_PROMPT =
   '在纯白色背景上，生成角色的三视图，左边是微侧正面（全身），右边是微侧背面（全身），中间是角色的大头照（角色设计在一张图中,不包含其他物品，人物不手中不拿物品，嘴角等其他地方不残留食物等其他痕迹）注意：左右俩边必须是全身照（需要可以看见脚）'
+
+/** @deprecated 使用 CHARACTER_HEADSHOT_THREE_VIEW_PROMPT */
+export const CHARACTER_JIMENG_THREE_VIEW_PROMPT = CHARACTER_HEADSHOT_THREE_VIEW_PROMPT
 
 /** 特写+三视图（对齐画镜） */
 export const CHARACTER_CLOSEUP_THREE_VIEW_PROMPT =
@@ -166,9 +169,9 @@ export const ITEM_GRID_LAYOUT_PROMPT = `物品设计参考图布局要求：
 export const LAYOUT_PRESETS: LayoutPreset[] = [
   {
     key: 'layout_character_jimeng_three',
-    name: '即梦+大头+三视图',
+    name: '大头+三视图',
     subtype: 'character',
-    value: CHARACTER_JIMENG_THREE_VIEW_PROMPT,
+    value: CHARACTER_HEADSHOT_THREE_VIEW_PROMPT,
   },
   {
     key: 'layout_character_three',

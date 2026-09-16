@@ -1,6 +1,7 @@
 # 附录 · 开源公开发布前（后期）
 
-L2 私有开发完成后，公开前再执行。
+L2 私有开发完成后，公开前再执行。  
+**执行主线已升级为 OA→OC**：见 [03-oss-gtm-overview.md](03-oss-gtm-overview.md) 与 [phases/OA-phase-a.md](phases/OA-phase-a.md)。本页保留为检查表；OA 期间逐项勾掉。
 
 ## 必须完成
 

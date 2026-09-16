@@ -389,7 +389,7 @@ function normalizeReviewStatus(raw?: string): string | undefined {
   return status
 }
 
-/** 兼容多种审核字段命名，读写统一为 camelCase（仅保留即梦遗留字段） */
+/** 兼容多种审核字段命名，读写统一为 camelCase（遗留远程审核字段） */
 export function pickAssetReviewFields(
   row: Record<string, unknown>,
 ): Pick<WorkflowAsset, 'jimengAssetId' | 'jimengAssetStatus'> {

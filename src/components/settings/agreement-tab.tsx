@@ -57,10 +57,11 @@ export function AgreementTab() {
         </section>
 
         <section>
-          <h3 className="text-foreground font-medium mb-2">6. 免声明</h3>
+          <h3 className="text-foreground font-medium mb-2">7. 开源许可与第三方声明</h3>
           <p>
-            因网络、第三方 API 故障、模型服务中断或您本地环境（含路径、权限、磁盘空间）导致的数据丢失或任务失败，
-            我们将在合理范围内提供排查支持，但不承担由此产生的间接损失。建议您定期使用「打包导出」备份便携数据目录。
+            本软件源代码以 MIT 许可分发，详见仓库根目录 <code className="text-foreground">LICENSE</code>。
+            Electron、FFmpeg 等第三方组件声明见根目录 <code className="text-foreground">NOTICE</code>
+            （亦可在项目 README 中打开同名链接）。使用第三方模型 API 的费用与条款由您自行承担。
           </p>
         </section>
       </GlassCard>

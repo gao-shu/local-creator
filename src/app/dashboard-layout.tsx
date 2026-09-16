@@ -6,6 +6,7 @@ import { AppHeader } from '@/components/dashboard/app-header'
 import { SidebarNav } from '@/components/dashboard/sidebar-nav'
 import { SidebarUserDock } from '@/components/dashboard/sidebar-user-dock'
 import { SidebarFeedbackButton } from '@/components/dashboard/sidebar-feedback-button'
+import { FirstRunWizardHost } from '@/components/onboarding/first-run-wizard'
 import { useProfileRefreshOnRoute } from '@/hooks/use-profile-refresh-on-route'
 import { LayoutContext, useLayoutState } from '@/hooks/use-layout'
 import { isCanvasProjectPath, isWorkshopProjectPath } from '@/lib/nav/list-section-paths'
@@ -154,6 +155,7 @@ export function DashboardLayout() {
             </div>
           </main>
         </motion.div>
+        <FirstRunWizardHost />
       </div>
     </LayoutContext.Provider>
   )

@@ -224,6 +224,11 @@ function copyArtifactsToRelease(outputDir) {
 /** 北京时间 YYYY-MM-DD HH:mm:ss — 见 scripts/lib/sync-version-json.mjs */
 function syncWebsiteVersionJson(macOnlyBuild) {
   if (!existsSync(releaseDir)) return
+  const websiteDir = resolve(projectRoot, 'website')
+  if (!existsSync(websiteDir)) {
+    console.log('[build] 跳过 website/version.json（目录不存在；W2b 减负后由网盘/Release 分发）')
+    return
+  }
   const data = syncVersionJson({
     readEnv: readEnvValue,
     touchUpdatedAt: true,

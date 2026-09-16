@@ -1,4 +1,4 @@
-// Copyright (c) 2025 好的 AI. All rights reserved.
+// Copyright (c) local-creator contributors. All rights reserved.
 
 import type { ModelConfig } from '@/types/settings'
 import type { VideoRequestPreview } from '@/lib/video/video-request-preview'

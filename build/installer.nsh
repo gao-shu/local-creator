@@ -1,4 +1,4 @@
-; Haode Manchuang NSIS custom macros
+; local-creator NSIS custom macros
 ; UX:
 ; - First install: user can change install directory (allowToChangeInstallationDirectory)
 ; - Upgrade: reuse old directory (electron-builder skips DIRECTORY page via skipPageIfUpdated)

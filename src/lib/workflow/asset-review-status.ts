@@ -51,7 +51,7 @@ function isJimengAssetFailed(status: string): boolean {
   return status === 'failed' || status === 'error' || status === 'rejected'
 }
 
-/** 从资产字段推断审核通道（仅保留即梦遗留字段） */
+/** 从资产遗留字段推断远程审核通道（字段名兼容旧数据，UI 不展示原厂商品牌） */
 export function resolveAssetReviewProvider(asset: WorkflowAsset): ReviewProvider | null {
   if (asset.jimengAssetId?.trim() || asset.jimengAssetStatus?.trim()) return 'jimeng'
   return null
@@ -67,7 +67,7 @@ export function getAssetReviewSnapshot(
   const provider = resolveAssetReviewProvider(asset)
   if (!provider) return EMPTY_SNAPSHOT
 
-  const providerLabel = '即梦'
+  const providerLabel = '外部审核'
   const assetId = asset.jimengAssetId?.trim() || ''
   const status = normalizeReviewStatus(asset.jimengAssetStatus)
 
