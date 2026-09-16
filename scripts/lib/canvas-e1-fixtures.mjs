@@ -32,7 +32,7 @@ export function storageKey(projectId = PROJECT_ID) {
 
 export function buildRemoteJobSnapshot(now = Date.now()) {
   return {
-    provider: 'weishi',
+    provider: 'openai_compatible',
     apiTaskId: E1_API_TASK_ID,
     createUrl: 'https://example.invalid/v1/video/tasks',
     modelId: 'verify-model',

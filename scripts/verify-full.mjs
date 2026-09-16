@@ -1,12 +1,10 @@
 /**
- * 发版前 / 全量回归聚合（Mock E2E + 纯逻辑 + 计价客户端层 + FFmpeg Layer A）
+ * 发版前 / 全量回归聚合（Mock E2E + 纯逻辑 + FFmpeg Layer A）
  *
  *   npm run verify:full
  *   VERIFY_FULL_SKIP_E2E=1 npm run verify:full   # 跳过 Electron E2E（约 40s）
- *   VERIFY_FULL_SKIP_PRICING=1 npm run verify:full
  *
  * 不含：verify:ui（需 dev）、真实 API、scan:security、verify:ffmpeg-win-pack（打包专项）
- * 计价：图片/视频 Layer A（跳过已移除的公司 billing smoke）
  * 清单见 docs/（试用仓已精简）
  */
 import { spawnSync } from 'node:child_process'
@@ -39,7 +37,6 @@ console.log('[verify:full] 全量回归（自动化 Mock 线）开始…')
 console.log(`[verify:full] 根目录: ${root}`)
 
 const skipE2e = process.env.VERIFY_FULL_SKIP_E2E === '1'
-const skipPricing = process.env.VERIFY_FULL_SKIP_PRICING === '1'
 
 runStep('compile', ['run', 'compile'])
 
@@ -54,18 +51,6 @@ runStep('画布 P0 纯逻辑', ['run', 'test:canvas-p0'])
 runStep('全局库纯逻辑', ['run', 'test:global-libraries'])
 runStep('分镜模板纯逻辑', ['run', 'test:storyboard-all'])
 runStep('FFmpeg / IPC Layer A', ['run', 'test:ffmpeg-layer-a'])
-
-if (!skipPricing) {
-  const pricingEnv = {
-    PROBE_SKIP_COMPILE: '1',
-    PROBE_SKIP_BACKEND: '1',
-    PROBE_SKIP_BILLING: '1',
-  }
-  runStep('图片分档计价 Layer A', ['run', 'verify:image-pricing'], pricingEnv)
-  runStep('视频分档计价 Layer A', ['run', 'verify:video-pricing'], pricingEnv)
-} else {
-  console.log('[verify:full] 跳过计价（VERIFY_FULL_SKIP_PRICING=1）')
-}
 
 const failed = results.filter((r) => !r.ok)
 console.log('\n[verify:full] ── 汇总 ──')

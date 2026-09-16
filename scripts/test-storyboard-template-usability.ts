@@ -44,7 +44,6 @@ function baseSettingsFields(): Omit<AppSettings, 'storyboardTemplates'> {
     styleTemplates: [],
     debugEnabled: false,
     openAtLogin: false,
-    weishiReferenceMediaUploadMode: 'weishi_asset',
     apiBaseUrl: 'https://example.test',
     affixPresets: [],
     defaultAssetLayoutKeys: { character: '', scene: '', prop: '' },

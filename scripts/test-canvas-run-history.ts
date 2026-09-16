@@ -110,7 +110,7 @@ async function main() {
       createdAt: overnightAt,
       updatedAt: overnightAt,
       remoteJob: {
-        provider: 'weishi',
+        provider: 'openai_compatible',
         apiTaskId: 'task-old-1',
         createdAt: overnightAt,
       },
@@ -124,7 +124,7 @@ async function main() {
       createdAt: Date.now() - 60_000,
       updatedAt: Date.now() - 30_000,
       remoteJob: {
-        provider: 'weishi',
+        provider: 'openai_compatible',
         apiTaskId: 'task-active-2',
         createdAt: Date.now() - 60_000,
       },
@@ -141,7 +141,7 @@ async function main() {
         status: 'running',
         videoName: '视频 镜 2',
         remoteJob: {
-          provider: 'weishi',
+          provider: 'openai_compatible',
           apiTaskId: 'task-active-2',
           createdAt: Date.now() - 60_000,
         },
@@ -208,7 +208,7 @@ async function main() {
       createdAt: staleAt,
       updatedAt: staleAt,
       remoteJob: {
-        provider: 'weishi',
+        provider: 'openai_compatible',
         apiTaskId: 'old-task',
         createdAt: staleAt,
       },
@@ -224,7 +224,7 @@ async function main() {
         videoName: '视频 镜 1',
         progressMessage: '生成中 0%',
         remoteJob: {
-          provider: 'weishi',
+          provider: 'openai_compatible',
           apiTaskId: 'old-task',
           createdAt: staleAt,
         },
