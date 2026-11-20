@@ -1,7 +1,7 @@
-# OA 阶段汇总（AI 自检 · 2026-09-15）
+# OA 阶段汇总（AI 自检 · 2026-09-15；公开前复扫 2026-11-20）
 
 > 门禁 D 已锁定（MIT / 占位品牌 / 双发托管 / 剪映+MP4 / 商业切口 OC 再定）。  
-> **默认未公开仓库**。人审项见各节点与下方清单。
+> **2026-11-20**：维护者授权 GitHub Public；人审手测 / 实机截图仍可后补。
 
 ## 安全最小集
 
@@ -10,9 +10,10 @@ rg -n -i "sk-[a-zA-Z0-9]{10,}|api[_-]?key\s*[:=]\s*['\"][^'\"]{8,}" --glob "!nod
 rg -n -i "haodou|weishi_api|好的漫创" --glob "!node_modules/**" --glob "!docs/**" --glob "!scripts/**" src electron
 ```
 
-- 密钥扫描：仅测试夹具 / CLI 参数解析（见 [OA2-rg.md](OA2-rg.md)）
-- `src/` + `electron/`：公司禁词 / `weishi_api` 无命中
-- `scripts/` 历史计价探针：记例外，不阻塞 OA2
+- 密钥扫描（2026-11-20）：无真实 Key；仅 `scripts/test-zhipu-video-live.mjs` CLI `--api-key=` 解析
+- `src/` + `electron/`：公司禁词 / `weishi_api` / 即梦 UI 文案 **无命中**
+- 已修：`scripts/generate-prompt-templates-seed.mjs` 生成版权头 `Haode AI` → `local-creator contributors`
+- 未跟踪 `.env`；仅有 `.env.example`（无密钥）
 
 ## 节点状态
 
